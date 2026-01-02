@@ -9,16 +9,13 @@ title: Postman Collection
 
 A Postman Collection da API de Integração ProExtend fornece exemplos práticos de todas as requisições disponíveis, facilitando o teste e a implementação da integração.
 
-## Download da Coleção
+## Acessar a Collection
 
-A coleção está disponível para importação no Postman e inclui:
+:::tip Postman Collection
+Acesse nossa collection completa no Postman com exemplos de todas as requisições da API, variáveis de ambiente pré-configuradas e casos de teste prontos para usar.
 
-- Exemplos de todas as requisições de sincronização
-- Exemplos de consultas (GET)
-- Configuração de variáveis de ambiente
-- Exemplos de tratamento de erros
-
-**Link para download**: _Em breve_
+**[Acessar Postman Collection](https://lda-softwares-s-team.postman.co/workspace/Team-Workspace~ac49d64e-5fb1-46c0-8843-5910af5be93e/collection/47901490-fe93de95-88c6-449a-bcdd-5a392b5828a7?action=share&creator=47901490&active-environment=47901490-2ad184cd-8423-4e08-8944-add588c116df)**
+:::
 
 ## Configuração
 
