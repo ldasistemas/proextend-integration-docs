@@ -1,0 +1,145 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Cores do ProExtend - Azul #0090E7 */
+:root {
+  --ifm-color-primary: #0090E7;
+  --ifm-color-primary-dark: #0081d0;
+  --ifm-color-primary-darker: #007ac4;
+  --ifm-color-primary-darkest: #0065a2;
+  --ifm-color-primary-light: #1a9eea;
+  --ifm-color-primary-lighter: #2ca5ec;
+  --ifm-color-primary-lightest: #4db3ef;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 144, 231, 0.1);
+}
+
+/* Modo escuro - variação mais clara do azul ProExtend */
+[data-theme='dark'] {
+  --ifm-color-primary: #4db3ef;
+  --ifm-color-primary-dark: #2ca5ec;
+  --ifm-color-primary-darker: #1a9eea;
+  --ifm-color-primary-darkest: #0090E7;
+  --ifm-color-primary-light: #6ec1f2;
+  --ifm-color-primary-lighter: #80c9f4;
+  --ifm-color-primary-lightest: #a3d9f7;
+  --docusaurus-highlighted-code-line-bg: rgba(77, 179, 239, 0.2);
+}
+
+/* Ajustes da logo */
+.navbar__logo {
+  height: 23px;
+  width: auto;
+  margin-right: 20px;
+}
+
+.navbar__title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Estilos para Changelog */
+article h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ifm-color-emphasis-200);
+}
+
+article h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Badges de versão */
+article h2 code {
+  background-color: var(--ifm-color-primary);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+/* Listas do changelog */
+article ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+article ul li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.6;
+}
+
+article ul li::before {
+  content: "▪";
+  position: absolute;
+  left: 0;
+  color: var(--ifm-color-primary);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+article ul li strong {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+/* Tabela de suporte a versões */
+article table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+article table th {
+  background-color: var(--ifm-color-primary);
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+article table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+article table tr:hover {
+  background-color: var(--ifm-color-emphasis-100);
+}
+
+/* Blocos de aviso */
+article blockquote {
+  border-left: 4px solid var(--ifm-color-primary);
+  background-color: var(--ifm-color-emphasis-100);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+}
+
+/* Separadores */
+article hr {
+  margin: 3rem 0;
+  border: none;
+  border-top: 2px dashed var(--ifm-color-emphasis-300);
+}
+
+/* Modo escuro - ajustes */
+[data-theme='dark'] article table {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='dark'] article blockquote {
+  background-color: var(--ifm-color-emphasis-200);
+}
