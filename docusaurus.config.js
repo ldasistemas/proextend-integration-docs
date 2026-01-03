@@ -93,7 +93,14 @@ const config = {
           src: 'img/logo.svg',
           height: 24,
         },
-        items: [],
+        items: [
+          {
+            href: 'https://proextend.com.br/',
+            label: 'ProExtend',
+            position: 'right',
+            className: 'header-proextend-link',
+          },
+        ],
       },
       prism: {
         theme: prismThemes.github,
