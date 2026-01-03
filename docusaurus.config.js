@@ -16,7 +16,7 @@ const config = {
   url: 'https://ldasistemas.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/proextend-integration-docs/',
+  baseUrl: '/',
 
 
   // GitHub pages deployment config.
