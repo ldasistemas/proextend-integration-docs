@@ -7,28 +7,72 @@ const sidebars = {
       type: 'doc',
       id: 'intro',
       label: 'Introdução',
+      customProps: {
+        icon: 'lucide:book-open',
+      },
+    },
+
+    {
+      type: 'doc',
+      id: 'visao-geral',
+      label: 'Visão Geral',
+      customProps: {
+        icon: 'lucide:eye',
+      },
     },
 
     {
       type: 'category',
-      label: 'Guia de Integração',
+      label: 'Conceitos',
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
+      customProps: {
+        icon: 'lucide:lightbulb',
+      },
       items: [
-        'visao-geral',
         'conceitos-fundamentais',
-        'autenticacao',
-        'fluxo-de-sincronizacao',
         'identificadores-e-codes',
-        'postman',
       ],
     },
 
-    // {
-    //   type: 'doc',
-    //   id: 'changelog',
-    //   label: '📋 Changelog',
-    // },
+    {
+      type: 'category',
+      label: 'Autenticação e Segurança',
+      collapsible: true,
+      collapsed: false,
+      customProps: {
+        icon: 'lucide:shield-check',
+      },
+      items: [
+        'autenticacao',
+      ],
+    },
+
+    {
+      type: 'category',
+      label: 'Sincronização',
+      collapsible: true,
+      collapsed: false,
+      customProps: {
+        icon: 'lucide:refresh-cw',
+      },
+      items: [
+        'fluxo-de-sincronizacao',
+      ],
+    },
+
+    {
+      type: 'category',
+      label: 'Recursos',
+      collapsible: true,
+      collapsed: true,
+      customProps: {
+        icon: 'lucide:wrench',
+      },
+      items: [
+        'postman',
+      ],
+    },
   ],
 };
 

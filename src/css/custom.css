@@ -142,3 +142,12 @@
   -webkit-mask-position: 50% !important;
   filter: none !important;
 }
+
+.menu__list-item svg {
+  color: var(--ifm-color-primary);
+  flex-shrink: 0;
+}
+
+.menu__link--active svg {
+  color: var(--ifm-color-primary);
+}
