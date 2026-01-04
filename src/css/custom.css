@@ -61,3 +61,84 @@
   font-size: 0.9em;
   opacity: 0.7;
 }
+
+.collapseSidebarButton_PEFL {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapseSidebarButton_PEFL .collapseSidebarButtonIcon_kv0_ {
+  display: none;
+}
+
+.collapseSidebarButton_PEFL::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230980D8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.collapseSidebarButton_PEFL:hover::after {
+  opacity: 0.7;
+}
+
+.expandButton_TmdG {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expandButton_TmdG .expandButtonIcon_i1dp {
+  display: none;
+}
+
+.expandButton_TmdG::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230980D8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.expandButton_TmdG:hover::after {
+  opacity: 0.7;
+}
+
+[data-theme='dark'] .collapseSidebarButton_PEFL::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%235aadea' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
+}
+
+[data-theme='dark'] .expandButton_TmdG::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%235aadea' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
+
+/* Customizar cor da seta de categoria no menu sidebar */
+.menu__link--sublist::after {
+  background: var(--ifm-color-primary) !important;
+  mask-image: var(--ifm-menu-link-sublist-icon) !important;
+  mask-size: 2rem 2rem !important;
+  mask-position: 50% !important;
+  -webkit-mask-image: var(--ifm-menu-link-sublist-icon) !important;
+  -webkit-mask-size: 2rem 2rem !important;
+  -webkit-mask-position: 50% !important;
+  filter: none !important;
+}
+
+[data-theme='dark'] .menu__link--sublist::after {
+  background: var(--ifm-color-primary) !important;
+  mask-image: var(--ifm-menu-link-sublist-icon) !important;
+  mask-size: 2rem 2rem !important;
+  mask-position: 50% !important;
+  -webkit-mask-image: var(--ifm-menu-link-sublist-icon) !important;
+  -webkit-mask-size: 2rem 2rem !important;
+  -webkit-mask-position: 50% !important;
+  filter: none !important;
+}

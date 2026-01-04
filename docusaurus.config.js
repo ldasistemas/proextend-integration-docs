@@ -75,6 +75,16 @@ const config = {
     ],
   ],
 
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
+        rel: 'stylesheet',
+      },
+    },
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
