@@ -66,10 +66,10 @@ Campus ou unidade física da instituição.
 
 #### Atributos
 
-- **code**: Código único da área (ex: "TECH", "HEALTH")
-- **name**: Nome da área
+- **code**: Código único da área (ex: "TECH", "HEALTH") 
+- **name**: Nome da área 
 - **unit_code**: Código da unidade (obrigatório, deve existir)
-- **responsible_email**: Email do responsável (opcional)
+- **responsible_email** OU **responsible_code**
 
 #### Exemplo
 
@@ -84,9 +84,9 @@ Campus ou unidade física da instituição.
 
 #### Características
 
-- **Depende de**: Unidade
+- **Depende de**: Unidade (Unit)
 - Agrupa cursos relacionados
-- Pode ter coordenador responsável
+- **Deve ter coordenador responsável que seja Administrador ativo**
 
 ---
 
@@ -96,12 +96,12 @@ Curso de graduação ou pós-graduação oferecido pela instituição.
 
 #### Atributos
 
-- **code**: Código único do curso (ex: "CC001", "ENF001")
-- **name**: Nome do curso
+- **code**: Código único do curso (ex: "CC001", "ENF001") 
+- **name**: Nome do curso 
 - **description**: Descrição detalhada (opcional)
 - **area_code**: Código da área (obrigatório, deve existir)
 - **unit_code**: Código da unidade (obrigatório, deve existir)
-- **responsible_email** OU **responsible_code**: Coordenador do curso
+- **responsible_email** OU **responsible_code**
 
 #### Exemplo
 
@@ -112,15 +112,15 @@ Curso de graduação ou pós-graduação oferecido pela instituição.
   "description": "Bacharelado em Ciência da Computação - Duração 4 anos",
   "area_code": "TECH",
   "unit_code": "CAMPUS_CENTRO",
-  "responsible_code": "PROF001"
+  "responsible_code": "ADMIN001"
 }
 ```
 
 #### Características
 
-- **Depende de**: Unidade e Área
-- Pode usar `responsible_email` (email) OU `responsible_code` (code do usuário)
-- Se ambos forem fornecidos, `responsible_code` tem prioridade
+- **Depende de**: Unidade (Unit) e Área (Area)
+- **Deve ter coordenador responsável que seja Administrador ativo**
+- Pode usar `responsible_email` (email) ou `responsible_code` (código do Administrador)
 
 ---
 
@@ -130,8 +130,8 @@ Componente curricular que faz parte da grade do curso.
 
 #### Atributos
 
-- **code**: Código único da disciplina (ex: "ALG001", "LIBRAS")
-- **name**: Nome da disciplina
+- **code**: Código único da disciplina (ex: "ALG001", "LIBRAS") 
+- **name**: Nome da disciplina 
 - **description**: Ementa ou descrição (opcional)
 - **course_code**: Código do curso (obrigatório, deve existir)
 - **type**: Tipo da disciplina (opcional, padrão: "obrigatoria")
@@ -164,11 +164,13 @@ Docente que leciona disciplinas na instituição.
 
 #### Atributos
 
-- **code**: Código único do professor (matrícula, CPF ou código funcional)
+- **code**: Código único do professor (matrícula, CPF ou código funcional) 
 - **name**: Nome completo
 - **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (obrigatório, 11 dígitos)
-- **phone**: Telefone (opcional)
+- **cpf**: CPF (opcional, aceita formatado ou sem formatação)
+  - Formato 1: `12345678901` (11 dígitos)
+  - Formato 2: `123.456.789-01` (formatado)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
 - **area_code**: Código da área de atuação (opcional)
 
 #### Exemplo
@@ -188,9 +190,10 @@ Docente que leciona disciplinas na instituição.
 
 - Não depende de outras entidades (pode ser sincronizado a qualquer momento)
 - Email deve ser único
-- CPF deve ser único
+- CPF é campo opcional (se fornecido, deve ser único e válido)
+- Phone (telefone) aceita apenas dígitos (sem formatação: parênteses, espaços ou hífens)
 - Sistema cria credenciais de acesso automaticamente
-- Pode ser vinculado a múltiplas turmas
+- Pode ser vinculado a múltiplas turmas (Enrollments)
 
 ---
 
@@ -200,11 +203,13 @@ Discente matriculado em um curso da instituição.
 
 #### Atributos
 
-- **code**: Código único do aluno (matrícula, CPF ou RA)
-- **name**: Nome completo
+- **code**: Código único do aluno (matrícula, CPF ou RA) 
+- **name**: Nome completo 
 - **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, se fornecido deve ter 11 dígitos e ser único)
-- **phone**: Telefone (opcional)
+- **cpf**: CPF (opcional, aceita formatado ou sem formatação)
+  - Formato 1: `12345678901` (11 dígitos)
+  - Formato 2: `123.456.789-01` (formatado)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
 - **course_code**: Código do curso (obrigatório, deve existir)
 
 #### Exemplo
@@ -222,11 +227,13 @@ Discente matriculado em um curso da instituição.
 
 #### Características
 
-- Não depende de outras entidades, exceto Curso
+- Não depende de outras entidades, exceto Curso (Course)
 - Email deve ser único
+- CPF é campo opcional (se fornecido, deve ser único e válido)
+- Phone (telefone) aceita apenas dígitos (sem formatação: parênteses, espaços ou hífens)
 - Campo `code` aceita matrícula, CPF ou RA do sistema origem
 - Sistema cria credenciais de acesso automaticamente
-- Pode ser vinculado a múltiplas turmas
+- Pode ser vinculado a múltiplas turmas (Enrollments)
 
 ---
 
@@ -240,7 +247,7 @@ Instância de uma Disciplina Base em período letivo específico, com professor 
 - **subject_code**: Código da disciplina base (obrigatório, deve existir)
 - **professor_code**: Código do professor responsável (obrigatório, deve existir)
 - **semester**: Período letivo (obrigatório, formato: "YYYY.N")
-- **student_codes**: Array de códigos de alunos (obrigatório, devem existir)
+- **student_codes**: Array de códigos de alunos (opcional, devem existir se fornecidos)
 
 #### Exemplo
 
@@ -311,14 +318,14 @@ Instância da disciplina base em período letivo específico, com professor e al
 | Entidade | Campos Obrigatórios | Campos Opcionais |
 |----------|---------------------|------------------|
 | Unidade (Unit) | code, name | address |
-| Área (Area) | code, name, unit_code | responsible_email |
+| Área (Area) | code, name, unit_code, responsible* |  |
 | Curso (Course) | code, name, area_code, unit_code, responsible* | description |
 | Disciplina Base (Subject) | code, name, course_code | description, type |
-| Professor (Professor) | code, name, email, cpf | phone, area_code |
+| Professor (Professor) | code, name, email | cpf, phone, area_code |
 | Aluno (Student) | code, name, email, course_code | cpf, phone |
-| Turma (Enrollment) | code, subject_code, professor_code, semester, student_codes | - |
+| Turma (Enrollment) | code, subject_code, professor_code, semester | student_codes |
 
-\* Course requer `responsible_email` **OU** `responsible_code`
+\* Área (Area) e Curso (Course) requerem `responsible_email` **OU** `responsible_code` (deve ser Administrador ativo)
 
 ## Boas Práticas
 
@@ -326,18 +333,22 @@ Instância da disciplina base em período letivo específico, com professor e al
 
 | Campo | Regra | Formato/Exemplo |
 |-------|-------|-----------------|
-| **code** | Obrigatório, único por tipo de entidade | Alfanumérico, até 100 caracteres |
-| **cpf** | 11 dígitos, único (quando fornecido) | `"12345678901"` (apenas números) |
+| **code** | Obrigatório, único por tipo de entidade | Máximo 255 caracteres |
+| **name** | Obrigatório | Máximo 255 caracteres |
+| **cpf** | Opcional (Professor/Student), aceita formatação | `"12345678901"` ou `"123.456.789-01"` |
 | **email** | Formato válido, único | `"usuario@dominio.com"` |
-| **phone** | Opcional, formato flexível | `"11999999999"` ou `"(11) 99999-9999"` |
+| **phone** | Opcional, apenas dígitos | `"11999999999"` (10-11 dígitos) |
 | **semester** | Formato ano.período | `"2025.1"`, `"2025.2"` |
+| **responsible** | Obrigatório (Área/Curso), deve ser Administrador ativo | email ou code de Admin |
 | **codes** de referência | Devem existir previamente | `area_code`, `unit_code`, `course_code`, etc. |
 
 **Validações automáticas**:
-- CPF: Valida formato e dígitos verificadores
+- CPF: Valida formato e dígitos verificadores (aceita formatado ou não)
 - Email: Valida formato e unicidade
-- Codes: Valida unicidade dentro do tipo de entidade
+- Phone: Aceita apenas dígitos numéricos
+- Codes: Valida unicidade dentro do tipo de entidade e tamanho máximo 255
 - Referências: Valida existência antes de criar vínculo
+- Responsible: Valida que seja Admin
 
 ### Utilização de Identificadores
 

@@ -138,13 +138,25 @@ POST /integration/v1/areas/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único da área
-- `name`: Nome da área
+- `code`: Código único da área (máximo 255 caracteres)
+- `name`: Nome da área (máximo 255 caracteres)
 - `unit_code`: Código da unidade (deve existir)
+- `responsible_email` **OU** `responsible_code`: Pelo menos um deles é obrigatório
 
 ### Campos Opcionais
 
-- `responsible_email`: Email do responsável pela área
+- `responsible_email`: Email do responsável (deve ser Admin ativo)
+- `responsible_code`: Código do responsável (deve ser Admin ativo)
+
+:::tip[IMPORTANTE]
+O responsável pela área **DEVE ser um Administrador (Admin)**:
+
+- Deve ter `profile_type = 'admin'`
+- Não pode estar suspenso (`suspended_at` deve ser `null`)
+- Não aceita Professor (Professor) ou Student (Aluno) como responsável
+
+Se o responsável fornecido não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
+:::
 
 ## 3. Sincronizar Cursos
 
@@ -185,17 +197,26 @@ POST /integration/v1/courses/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único do curso
-- `name`: Nome do curso
+- `code`: Código único do curso (máximo 255 caracteres)
+- `name`: Nome do curso (máximo 255 caracteres)
 - `area_code`: Código da área (deve existir)
 - `unit_code`: Código da unidade (deve existir)
-- `responsible_email` **OU** `responsible_code`: Responsável pelo curso
+- `responsible_email` **OU** `responsible_code`: Pelo menos um deles é obrigatório
 
 ### Campos Opcionais
 
 - `description`: Descrição detalhada
 
-**IMPORTANTE**: Use `responsible_email` (email do usuário) **OU** `responsible_code` (code de professor/admin). Se ambos forem fornecidos, `responsible_code` tem prioridade.
+:::tip[IMPORTANTE]
+O responsável pelo curso **DEVE ser um Administrador (Admin)**:
+
+- Deve ter `profile_type = 'admin'`
+- Não pode estar suspenso (`suspended_at` deve ser `null`)
+- Não aceita Professor (Professor) ou Student (Aluno) como responsável
+- Se ambos `responsible_email` e `responsible_code` forem fornecidos, `responsible_code` tem prioridade
+
+Se o responsável fornecido não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
+:::
 
 ## 4. Sincronizar Disciplinas Base
 
@@ -238,8 +259,8 @@ POST /integration/v1/subjects/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único da disciplina
-- `name`: Nome da disciplina
+- `code`: Código único da disciplina (máximo 255 caracteres)
+- `name`: Nome da disciplina (máximo 255 caracteres)
 - `course_code`: Código do curso (deve existir)
 
 ### Campos Opcionais
@@ -290,14 +311,20 @@ POST /integration/v1/professors/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único do professor (matrícula, CPF ou código funcional)
-- `name`: Nome completo do docente
+- `code`: Código único do professor (máximo 255 caracteres) - matrícula, CPF ou código funcional
+- `name`: Nome completo do docente (máximo 255 caracteres)
 - `email`: Email institucional (deve ser único na plataforma)
-- `cpf`: CPF com 11 dígitos numéricos
 
 ### Campos Opcionais
 
+- `cpf`: CPF (aceita formatado ou sem formatação)
+  - Formato aceito 1: `12345678901` (11 dígitos sem formatação)
+  - Formato aceito 2: `123.456.789-01` (formatado com pontos e hífen)
+  - Deve ser válido conforme algoritmo de validação de CPF
 - `phone`: Telefone de contato
+  - Apenas dígitos numéricos
+  - Exemplo válido: `11999999999`, `1133334444`
+  - Exemplo inválido: `(11) 99999-9999`, `11 99999-9999`
 - `area_code`: Código da área de atuação (deve existir se fornecido)
 
 ### Validações Importantes
@@ -305,6 +332,7 @@ POST /integration/v1/professors/sync
 - Email duplicado resulta em erro 422 (Unprocessable Entity)
 - CPF duplicado resulta em erro 422 (Unprocessable Entity)
 - Code deve ser único entre professores
+- CPF é campo opcional
 
 ## 6. Sincronizar Alunos
 
@@ -345,21 +373,28 @@ POST /integration/v1/students/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único do aluno (matrícula, CPF ou RA)
-- `name`: Nome completo do estudante
+- `code`: Código único do aluno (máximo 255 caracteres) - matrícula, CPF ou RA
+- `name`: Nome completo do estudante (máximo 255 caracteres)
 - `email`: Email institucional (deve ser único na plataforma)
 - `course_code`: Código do curso ao qual está matriculado (deve existir)
 
 ### Campos Opcionais
 
-- `cpf`: CPF com 11 dígitos (se fornecido, deve ser único)
+- `cpf`: CPF (aceita formatado ou sem formatação)
+  - Formato aceito 1: `12345678901` (11 dígitos sem formatação)
+  - Formato aceito 2: `123.456.789-01` (formatado com pontos e hífen)
+  - Deve ser válido conforme algoritmo de validação de CPF
 - `phone`: Telefone de contato
+  - Apenas dígitos numéricos
+  - Exemplo válido: `11999999999`, `1133334444`
+  - Exemplo inválido: `(11) 99999-9999`, `11 99999-9999`
 
 ### Observações Importantes
 
 - Campo `code` possui formato flexível: matrícula, CPF ou RA
 - Email duplicado resulta em erro 422 (Unprocessable Entity)
 - CPF duplicado (se fornecido) resulta em erro 422
+- CPF é campo opcional
 
 ## 7. Sincronizar Turmas (Enrollments)
 
@@ -403,11 +438,17 @@ POST /integration/v1/enrollments/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único da turma (recomendado incluir semestre, ex: "ALG001-2025.1")
+- `code`: Código único da turma (máximo 255 caracteres) - recomendado incluir semestre, ex: "ALG001-2025.1"
 - `subject_code`: Código da disciplina base vinculada (deve existir)
 - `professor_code`: Código do docente responsável (deve existir)
 - `semester`: Período letivo (formato: "YYYY.N", exemplos: "2025.1", "2025.2")
+
+### Campos Opcionais
+
 - `student_codes`: Array contendo códigos dos alunos matriculados (devem existir)
+  - Campo opcional (pode ser omitido)
+  - Pode ser enviado como array vazio `[]`
+  - Útil para criar turmas antes de ter alunos matriculados
 
 ### Comportamento de Sincronização
 
@@ -556,14 +597,42 @@ Units → Areas → Courses → Subjects → Professors/Students → Enrollments
 
 ### Erros de Validação de Formato
 
-**Resposta de Erro**:
+**Cenário 1: CPF inválido**
 
 ```json
 {
   "success": false,
   "message": "Erro de validação",
   "errors": {
-    "cpf": ["CPF deve conter exatamente 11 dígitos numéricos"]
+    "professors.0.cpf": ["O CPF informado é inválido."]
+  }
+}
+```
+
+**Observação**: O CPF é validado conforme algoritmo oficial. Aceita tanto formato sem pontuação (`12345678901`) quanto formatado (`123.456.789-01`).
+
+**Cenário 2: Telefone com formato inválido**
+
+```json
+{
+  "success": false,
+  "message": "Erro de validação",
+  "errors": {
+    "professors.0.phone": ["O telefone deve conter apenas dígitos."]
+  }
+}
+```
+
+**Observação**: O telefone deve conter apenas números, sem parênteses, espaços ou hífens.
+
+**Cenário 3: Campo excede tamanho máximo**
+
+```json
+{
+  "success": false,
+  "message": "Erro de validação",
+  "errors": {
+    "areas.0.code": ["O código não pode ter mais de 255 caracteres."]
   }
 }
 ```
