@@ -59,7 +59,17 @@ Especifica o processo de autenticação:
 
 Referência: [Autenticação](autenticacao)
 
-### 4. Fluxo de Sincronização
+### 4. SSO (Single Sign-On)
+
+Funcionalidade de autenticação única:
+- Geração de tokens de acesso
+- Integração com portais institucionais
+- Acesso via emails automatizados
+- Convites temporários
+
+Referência: [SSO](sso)
+
+### 5. Fluxo de Sincronização
 
 Descreve o processo completo de sincronização:
 - Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments
@@ -71,7 +81,7 @@ Descreve o processo completo de sincronização:
 
 Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao)
 
-### 5. Identificadores e Codes
+### 6. Identificadores e Codes
 
 Explica o sistema de identificação de entidades:
 - Uso de identificadores próprios do sistema origem (codes)
@@ -82,7 +92,7 @@ Explica o sistema de identificação de entidades:
 
 Referência: [Identificadores e Codes](identificadores-e-codes)
 
-### 6. Postman Collection
+### 7. Postman Collection
 
 Exemplos práticos de requisições:
 - Configuração de variáveis de ambiente
@@ -101,6 +111,7 @@ Referência: [Postman Collection](postman)
 3. Configurar [Autenticação](autenticacao) no painel administrativo (requer permissões de administrador)
 4. Implementar sincronização seguindo [Fluxo de Sincronização](fluxo-de-sincronizacao)
 5. Aplicar diretrizes de [Identificadores e Codes](identificadores-e-codes)
+6. (Opcional) Configurar [SSO](sso) para login direto de usuários
 
 ### Consulta de Referência
 

@@ -234,7 +234,6 @@ Exemplos completos em [Fluxo de Sincronização](fluxo-de-sincronizacao).
 2. **Operações Idempotentes**: Sincronizações múltiplas sem efeitos colaterais
 3. **Sincronização Seletiva**: Possibilidade de sincronizar subconjuntos de entidades
 4. **Rastreabilidade**: Vinculação de dados através de identificadores do sistema origem
-5. **Isolamento Multi-tenant**: Segregação completa de dados entre instituições
 
 ## Próximas Etapas
 
@@ -244,6 +243,7 @@ Para implementação da integração:
 2. Configurar [Autenticação](autenticacao) para obtenção de credenciais
 3. Implementar [Fluxo de Sincronização](fluxo-de-sincronizacao) conforme sequência especificada
 4. Aplicar diretrizes de [Identificadores e Codes](identificadores-e-codes)
+5. (Opcional) Implementar [SSO](sso) para login direto de usuários
 
 ## Recursos de Monitoramento
 

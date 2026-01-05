@@ -45,6 +45,7 @@ const sidebars = {
       },
       items: [
         'autenticacao',
+        'sso',
       ],
     },
 
