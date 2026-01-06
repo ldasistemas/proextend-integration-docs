@@ -9,11 +9,19 @@ title: SSO (Single Sign-On)
 
 A funcionalidade SSO (Single Sign-On - Login Único) permite que sistemas externos gerem tokens de acesso para login direto de usuários na plataforma ProExtend sem necessidade de credenciais.
 
-**Casos de uso**:
-- Integração com portais institucionais
-- Acesso via emails automatizados
-- Autenticação entre sistemas integrados
-- Convites temporários
+### Casos de Uso
+
+**Portais Institucionais**  
+Adicione links diretos de acesso ao ProExtend no portal da sua instituição.
+
+**Convites e E-mails**  
+Envie links de acesso temporário para novos usuários ou ações específicas.
+
+**Suporte Técnico**  
+Gere acessos temporários para equipes de suporte realizarem manutenções.
+
+**Sistemas Integrados**  
+Conecte sistemas acadêmicos ao ProExtend de forma simples.
 
 ## Fluxo de Autenticação
 
@@ -54,7 +62,7 @@ POST /integration/v1/sso/generate-token
 
 ### Parâmetros
 
-:::tip[IMPORTANTE]
+:::note[IMPORTANTE]
 O usuário pode ser identificado por **email (e-mail)** ou **code (código)**. É obrigatório fornecer **pelo menos um** dos dois campos.
 :::
 
@@ -70,6 +78,12 @@ O usuário pode ser identificado por **email (e-mail)** ou **code (código)**. �
 
 Define por quanto tempo o token SSO permanecerá válido.
 
+:::info[REUTILIZAÇÃO DE LINKS]
+Quando `single_use` é `false`, o **link completo gerado** (exemplo: `https://instituicao.proextend.com.br/login?token=TbbVa3x8KlMnPqRsUvWxYz...`) pode ser **cadastrado em portais** e **acessado múltiplas vezes** durante todo o período definido em `expires_in`. 
+
+Por exemplo, um token com `expires_in: 15552000` (180 dias) permite que o link seja utilizado quantas vezes for necessário por até 6 meses. Ideal para links permanentes em portais institucionais onde usuários acessam recorrentemente.
+:::
+
 - **Mínimo**: 60 segundos (1 minuto)
 - **Máximo**: 31536000 segundos (365 dias)
 - **Padrão**: 86400 segundos (24 horas)
@@ -80,7 +94,8 @@ Define por quanto tempo o token SSO permanecerá válido.
 - 24 horas (`86400`): Acesso padrão
 - 7 dias (`604800`): Convites de primeiro acesso
 - 30 dias (`2592000`): Acesso de longa duração
-- 90 dias (`7776000`): Portal institucional
+- 90 dias (`7776000`): Acesso de longa duração
+- 180 dias (`15552000`): Portal institucional ou período semestral
 
 #### single_use (Uso Único)
 
@@ -89,7 +104,7 @@ Define se o token pode ser usado apenas uma vez ou múltiplas vezes.
 - `true`: Token é invalidado automaticamente após primeiro uso (ideal para links em e-mails, convites, acessos sensíveis)
 - `false`: Token permanece válido até expirar - padrão (ideal para portais institucionais, acessos recorrentes)
 
-:::tip[SEGURANÇA]
+:::warning[SEGURANÇA]
 Para links enviados por e-mail ou convites de primeiro acesso, **sempre use** `single_use: true`. Isso garante que o token não possa ser reutilizado caso seja interceptado ou compartilhado indevidamente.
 :::
 
@@ -123,7 +138,7 @@ Para links enviados por e-mail ou convites de primeiro acesso, **sempre use** `s
 
 Revoga tokens SSO de um usuário específico.
 
-:::tip[AUTO-REVOGAÇÃO]
+:::info[AUTO-REVOGAÇÃO]
 Ao gerar um novo token SSO para um usuário, **todos os tokens anteriores deste usuário são automaticamente revogados**. Isso garante que apenas um token esteja ativo por vez, aumentando a segurança.
 :::
 
@@ -177,13 +192,13 @@ Link permanente no portal da instituição.
 ```json
 {
   "user_code": "PROF001",
-  "expires_in": 7776000,
+  "expires_in": 15552000,
   "single_use": false
 }
 ```
 
 **Características**:
-- Expira em 90 dias
+- Expira em 180 dias (1 semestre)
 - Token reutilizável
 - Ideal para acesso recorrente
 
@@ -249,7 +264,7 @@ Acesso para manutenção ou suporte.
 }
 ```
 
-:::tip[VALIDAÇÃO]
+:::note[VALIDAÇÃO]
 Apenas usuários **ativos** podem gerar tokens SSO. Usuários suspensos (`suspended_at` não nulo) não podem autenticar via SSO até que a suspensão seja removida.
 :::
 
@@ -279,19 +294,23 @@ Apenas usuários **ativos** podem gerar tokens SSO. Usuários suspensos (`suspen
 
 ## Boas Práticas de Segurança
 
-### Monitoramento e Auditoria
+### Tempos de Expiração
 
-- Monitore todos os tokens gerados e utilizados no sistema
-- Configure logs de acesso para rastrear autenticações via SSO
-- Implemente notificações automáticas de login via SSO
-- Revise periodicamente tokens ativos e revogue os desnecessários
+Utilize tempos de expiração adequados ao contexto de uso:
 
-### Gestão de Tokens
+**Curtos (15min-1h)**  
+Para acessos sensíveis e suporte técnico.
 
-- Revogue tokens imediatamente em caso de suspeita de comprometimento
-- Utilize tempos de expiração adequados ao contexto de uso:
-  - **Curtos** (15min-1h) para acessos sensíveis e suporte técnico
-  - **Médios** (1-7 dias) para convites e primeiro acesso
-  - **Longos** (30-90 dias) apenas para portais institucionais confiáveis
-- Prefira `single_use: true` para links enviados por e-mail
-- Evite tokens com validade superior a 90 dias
+**Médios (1-7 dias)**  
+Para convites e primeiro acesso.
+
+**Longos (30-180 dias)**  
+Para portais institucionais ou períodos semestrais.
+
+### Tokens de Uso Único
+
+Prefira `single_use: true` para links enviados por e-mail.
+
+### Limite de Validade
+
+Evite tokens com validade superior a 180 dias.
