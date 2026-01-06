@@ -7,9 +7,9 @@ title: SSO (Single Sign-On)
 
 ## Introdução
 
-A funcionalidade SSO (Single Sign-On) permite que sistemas externos gerem tokens de acesso para login direto de usuários na plataforma ProExtend sem necessidade de credenciais.
+A funcionalidade SSO (Single Sign-On - Login Único) permite que sistemas externos gerem tokens de acesso para login direto de usuários na plataforma ProExtend sem necessidade de credenciais.
 
-Casos de uso:
+**Casos de uso**:
 - Integração com portais institucionais
 - Acesso via emails automatizados
 - Autenticação entre sistemas integrados
@@ -17,17 +17,31 @@ Casos de uso:
 
 ## Fluxo de Autenticação
 
+O processo de autenticação SSO segue os seguintes passos:
+
 ```
-1. Sistema Externo → API ProExtend
+1. Sistema Externo solicita geração de token
+   ↓
+2. Sistema Externo → API ProExtend
    POST /integration/v1/sso/generate-token
-   { "user_code": "PROF001" }
+   {
+     "user_code": "PROF001",
+     "expires_in": 86400,
+     "single_use": false
+   }
    ↓
-2. API ProExtend → Sistema Externo
-   { "login_url": "https://{{instituicao}}.proextend.com.br/login?token=..." }
+3. API ProExtend valida usuário e gera token
    ↓
-3. Sistema redireciona usuário para login_url
+4. API ProExtend → Sistema Externo
+   {
+     "login_url": "https://{{instituicao}}.proextend.com.br/login?token=abc123..."
+   }
    ↓
-4. Usuário autentica automaticamente
+5. Sistema Externo redireciona usuário para login_url
+   ↓
+6. Usuário é autenticado automaticamente no ProExtend
+   ↓
+7. Usuário acessa plataforma ProExtend sem digitar credenciais
 ```
 
 ## Gerar Token SSO
@@ -38,54 +52,46 @@ Casos de uso:
 POST /integration/v1/sso/generate-token
 ```
 
-### Identificação do Usuário
-
-O usuário pode ser identificado por **email** ou **code**:
-
-```json
-{
-  "user_email": "professor@faculdade.edu.br"
-}
-```
-
-ou
-
-```json
-{
-  "user_code": "PROF001"
-}
-```
-
 ### Parâmetros
+
+:::tip[IMPORTANTE]
+O usuário pode ser identificado por **email (e-mail)** ou **code (código)**. É obrigatório fornecer **pelo menos um** dos dois campos.
+:::
 
 | Campo | Tipo | Obrigatório | Descrição |
 |-------|------|-------------|-----------|
-| `user_email` | string | Condicional | Email do usuário (obrigatório se `user_code` não fornecido) |
+| `user_email` | string | Condicional | E-mail do usuário (obrigatório se `user_code` não fornecido) |
 | `user_code` | string | Condicional | Código do usuário (obrigatório se `user_email` não fornecido) |
-| `expires_in` | integer | Não | Tempo de expiração em segundos (padrão: 86400) |
-| `single_use` | boolean | Não | Token de uso único (padrão: false) |
+| `expires_in` | integer | Não | Tempo de expiração em segundos - padrão: 86400 (24 horas) |
+| `single_use` | boolean | Não | Token de uso único - padrão: false (reutilizável) |
 
 
-#### expires_in
+#### expires_in (Tempo de Expiração)
 
-Tempo de expiração do token em segundos.
+Define por quanto tempo o token SSO permanecerá válido.
 
-- **Mínimo**: 60 (1 minuto)
-- **Máximo**: 31536000 (365 dias)
-- **Padrão**: 86400 (24 horas)
+- **Mínimo**: 60 segundos (1 minuto)
+- **Máximo**: 31536000 segundos (365 dias)
+- **Padrão**: 86400 segundos (24 horas)
 
-Exemplos:
-- 15 minutos: `900`
-- 1 hora: `3600`
-- 7 dias: `604800`
-- 30 dias: `2592000`
+**Valores comuns**:
+- 15 minutos (`900`): Acesso temporário urgente
+- 1 hora (`3600`): Suporte técnico
+- 24 horas (`86400`): Acesso padrão
+- 7 dias (`604800`): Convites de primeiro acesso
+- 30 dias (`2592000`): Acesso de longa duração
+- 90 dias (`7776000`): Portal institucional
 
-#### single_use
+#### single_use (Uso Único)
 
-Define se o token pode ser usado uma única vez.
+Define se o token pode ser usado apenas uma vez ou múltiplas vezes.
 
-- `true`: Após primeiro uso, token é invalidado
-- `false`: Token reutilizável (padrão)
+- `true`: Token é invalidado automaticamente após primeiro uso (ideal para links em e-mails, convites, acessos sensíveis)
+- `false`: Token permanece válido até expirar - padrão (ideal para portais institucionais, acessos recorrentes)
+
+:::tip[SEGURANÇA]
+Para links enviados por e-mail ou convites de primeiro acesso, **sempre use** `single_use: true`. Isso garante que o token não possa ser reutilizado caso seja interceptado ou compartilhado indevidamente.
+:::
 
 ### Exemplo de Requisição
 
@@ -113,17 +119,13 @@ Define se o token pode ser usado uma única vez.
 }
 ```
 
-#### Tipos de Perfil
-
-| Valor | Descrição |
-|-------|-----------|
-| `admin` | Administrador |
-| `professor` | Professor |
-| `student` | Aluno |
-
 ## Revogar Token SSO
 
 Revoga tokens SSO de um usuário específico.
+
+:::tip[AUTO-REVOGAÇÃO]
+Ao gerar um novo token SSO para um usuário, **todos os tokens anteriores deste usuário são automaticamente revogados**. Isso garante que apenas um token esteja ativo por vez, aumentando a segurança.
+:::
 
 ### Endpoint
 
@@ -135,9 +137,9 @@ POST /integration/v1/sso/revoke-token
 
 | Campo | Tipo | Obrigatório | Descrição |
 |-------|------|-------------|-----------|
-| `user_email` | string | Condicional | Email do usuário (obrigatório se `user_code` não fornecido) |
+| `user_email` | string | Condicional | E-mail do usuário (obrigatório se `user_code` não fornecido) |
 | `user_code` | string | Condicional | Código do usuário (obrigatório se `user_email` não fornecido) |
-| `revoke_all` | boolean | Não | `true` = revoga todos tokens (padrão) / `false` = apenas expirados |
+| `revoke_all` | boolean | Não | true = revoga todos tokens ativos (padrão) / false = revoga apenas expirados |
 
 ### Exemplo de Requisição
 
@@ -157,6 +159,7 @@ POST /integration/v1/sso/revoke-token
   "data": {
     "revoked_count": 3,
     "user": {
+      "name": "Dr. João Silva",
       "email": "professor@faculdade.edu.br",
       "profile_type": "professor"
     }
@@ -164,12 +167,13 @@ POST /integration/v1/sso/revoke-token
 }
 ```
 
-## Casos de Uso
+## Casos de Uso Práticos
 
-### Portal Institucional
+### 1. Portal Institucional
 
 Link permanente no portal da instituição.
 
+**Configuração**:
 ```json
 {
   "user_code": "PROF001",
@@ -178,12 +182,16 @@ Link permanente no portal da instituição.
 }
 ```
 
-Características: Expira em 90 dias, reutilizável.
+**Características**:
+- Expira em 90 dias
+- Token reutilizável
+- Ideal para acesso recorrente
 
-### Email de Convite
+### 2. E-mail de Convite
 
 Link temporário para primeiro acesso.
 
+**Configuração**:
 ```json
 {
   "user_email": "novoprofessor@faculdade.edu.br",
@@ -192,12 +200,16 @@ Link temporário para primeiro acesso.
 }
 ```
 
-Características: Expira em 7 dias, uso único.
+**Características**:
+- Expira em 7 dias
+- Uso único
+- Ideal para novos usuários
 
-### Acesso Temporário
+### 3. Acesso Temporário
 
 Acesso para manutenção ou suporte.
 
+**Configuração**:
 ```json
 {
   "user_code": "ADMIN001",
@@ -206,7 +218,10 @@ Acesso para manutenção ou suporte.
 }
 ```
 
-Características: Expira em 15 minutos, uso único.
+**Características**:
+- Expira em 15 minutos
+- Uso único
+- Ideal para suporte técnico
 
 ## Tratamento de Erros
 
@@ -234,6 +249,10 @@ Características: Expira em 15 minutos, uso único.
 }
 ```
 
+:::tip[VALIDAÇÃO]
+Apenas usuários **ativos** podem gerar tokens SSO. Usuários suspensos (`suspended_at` não nulo) não podem autenticar via SSO até que a suspensão seja removida.
+:::
+
 ### Parâmetro Inválido
 
 ```json
@@ -253,25 +272,26 @@ Características: Expira em 15 minutos, uso único.
   "success": false,
   "message": "Dados inválidos.",
   "errors": {
-    "user_email": ["O email ou código do usuário é obrigatório."]
+    "user_email": ["O e-mail ou código do usuário é obrigatório."]
   }
 }
 ```
 
-## Boas Práticas
+## Boas Práticas de Segurança
 
-### Tempo de Expiração
+### Monitoramento e Auditoria
 
-| Caso de Uso | Tempo Recomendado |
-|-------------|-------------------|
-| Convite de primeiro acesso | 3-7 dias |
-| Suporte temporário | 1-24 horas |
-| Portal institucional | 30-90 dias |
+- Monitore todos os tokens gerados e utilizados no sistema
+- Configure logs de acesso para rastrear autenticações via SSO
+- Implemente notificações automáticas de login via SSO
+- Revise periodicamente tokens ativos e revogue os desnecessários
 
-### Tokens de Uso Único
+### Gestão de Tokens
 
-Prefira `single_use: true` para:
-- Convites de primeiro acesso
-- Redefinição de senha
-- Acessos sensíveis
-- Links em emails
+- Revogue tokens imediatamente em caso de suspeita de comprometimento
+- Utilize tempos de expiração adequados ao contexto de uso:
+  - **Curtos** (15min-1h) para acessos sensíveis e suporte técnico
+  - **Médios** (1-7 dias) para convites e primeiro acesso
+  - **Longos** (30-90 dias) apenas para portais institucionais confiáveis
+- Prefira `single_use: true` para links enviados por e-mail
+- Evite tokens com validade superior a 90 dias
