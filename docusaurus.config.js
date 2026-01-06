@@ -8,9 +8,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'ProExtend Integration API',
-  tagline: 'Documentação oficial para integração com a API ProExtend',
-  favicon: 'img/favicon.ico',
+  title: 'ProExtend Integração',
+  tagline: 'Documentação oficial para integração com ProExtend',
+  favicon: 'img/favicon.svg',
 
   // Set the production url of your site here
   url: 'https://ldasistemas.github.io',
@@ -230,7 +230,6 @@ const config = {
         },
       },
       navbar: {
-        title: 'Integração ProExtend API',
         logo: {
           alt: 'ProExtend Logo',
           src: 'img/logo.svg',
