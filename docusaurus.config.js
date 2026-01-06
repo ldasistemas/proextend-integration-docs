@@ -50,6 +50,12 @@ const config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
+        },
       }),
     ],
   ],
@@ -83,6 +89,127 @@ const config = {
         rel: 'stylesheet',
       },
     },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'description',
+        content: 'Documentação técnica completa para integração de sistemas de gestão acadêmica com o ProExtend - plataforma especializada em gestão de projetos, eventos e cursos de extensão universitária. Inclui especificações de API, autenticação, sincronização de dados e SSO.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'keywords',
+        content: 'ProExtend, API, Integração, Documentação, REST API, ERP Acadêmico, Gestão Acadêmica, Extensão Universitária, Projetos de Extensão, Cursos de Extensão, Eventos Acadêmicos, Gestão de Projetos, SSO, Single Sign-On, Sincronização de Dados, Sistema de Ensino, Certificação Acadêmica',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'author',
+        content: 'ProExtend',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'robots',
+        content: 'index, follow',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:type',
+        content: 'website',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:site_name',
+        content: 'ProExtend Integration API',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:title',
+        content: 'ProExtend Integration API - Documentação Oficial',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:description',
+        content: 'Documentação técnica para integração com o ProExtend - plataforma especializada em gestão de projetos, eventos e cursos de extensão universitária.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:url',
+        content: 'https://ldasistemas.github.io/proextend-integration-docs/',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image',
+        content: 'https://ldasistemas.github.io/proextend-integration-docs/img/logo.svg',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:locale',
+        content: 'pt_BR',
+      },
+    },
+    // Twitter Card Meta Tags
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:title',
+        content: 'ProExtend Integration API - Documentação Oficial',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:description',
+        content: 'Documentação técnica para integração com o ProExtend - plataforma especializada em gestão de projetos, eventos e cursos de extensão universitária.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:image',
+        content: 'https://ldasistemas.github.io/proextend-integration-docs/img/logo.svg',
+      },
+    },
+    // Additional SEO Tags
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'theme-color',
+        content: '#0980D8',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'canonical',
+        href: 'https://ldasistemas.github.io/proextend-integration-docs/',
+      },
+    },
   ],
 
   themeConfig:
@@ -90,6 +217,12 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/logo.svg',
+      metadata: [
+        {
+          name: 'google-site-verification',
+          content: 'your-google-verification-code', // Substituir quando configurar Google Search Console
+        },
+      ],
       docs: {
         sidebar: {
           hideable: true,
