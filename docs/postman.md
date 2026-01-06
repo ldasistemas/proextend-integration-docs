@@ -11,8 +11,8 @@ A Postman Collection da API de Integração ProExtend fornece exemplos práticos
 
 ## Acessar a Collection
 
-:::tip Postman Collection
-Acesse nossa collection completa no Postman com exemplos de todas as requisições da API, variáveis de ambiente pré-configuradas e casos de teste prontos para usar.
+:::info Postman Collection
+Collection completa com exemplos de todas as requisições da API de Integração ProExtend, incluindo variáveis de ambiente pré-configuradas e casos de teste prontos para utilização.
 
 **[Acessar Postman Collection](https://lda-softwares-s-team.postman.co/workspace/Team-Workspace~ac49d64e-5fb1-46c0-8843-5910af5be93e/collection/47901490-fe93de95-88c6-449a-bcdd-5a392b5828a7?action=share&creator=47901490&active-environment=47901490-2ad184cd-8423-4e08-8944-add588c116df)**
 :::
