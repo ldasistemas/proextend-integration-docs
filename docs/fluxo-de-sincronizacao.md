@@ -148,14 +148,14 @@ POST /integration/v1/areas/sync
 - `responsible_email`: Email do responsável (deve ser Admin ativo)
 - `responsible_code`: Código do responsável (deve ser Admin ativo)
 
-:::tip[IMPORTANTE]
-O responsável pela área **DEVE ser um Administrador (Admin)**:
+:::note[IMPORTANTE]
+O responsável pela área deve ser um Administrador (Admin):
 
-- Deve ter `profile_type = 'admin'`
+- Profile type deve ser `'admin'`
 - Não pode estar suspenso (`suspended_at` deve ser `null`)
-- Não aceita Professor (Professor) ou Student (Aluno) como responsável
+- Não aceita Professor ou Aluno como responsável
 
-Se o responsável fornecido não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
+Se o responsável não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
 :::
 
 ## 3. Sincronizar Cursos
@@ -207,15 +207,15 @@ POST /integration/v1/courses/sync
 
 - `description`: Descrição detalhada
 
-:::tip[IMPORTANTE]
-O responsável pelo curso **DEVE ser um Administrador (Admin)**:
+:::note[IMPORTANTE]
+O responsável pelo curso deve ser um Administrador (Admin):
 
-- Deve ter `profile_type = 'admin'`
+- Profile type deve ser `'admin'`
 - Não pode estar suspenso (`suspended_at` deve ser `null`)
-- Não aceita Professor (Professor) ou Student (Aluno) como responsável
+- Não aceita Professor ou Aluno como responsável
 - Se ambos `responsible_email` e `responsible_code` forem fornecidos, `responsible_code` tem prioridade
 
-Se o responsável fornecido não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
+Se o responsável não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
 :::
 
 ## 4. Sincronizar Disciplinas Base
