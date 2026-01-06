@@ -38,7 +38,7 @@ Campus ou unidade física da instituição.
 
 #### Atributos
 
-- **code**: Código único da unidade (ex: "CAMPUS_CENTRO", "SEDE")
+- **code**: Código único da unidade (exemplo: "CAMPUS_CENTRO", "SEDE")
 - **name**: Nome da unidade
 - **address**: Endereço completo (opcional)
 
@@ -66,7 +66,7 @@ Campus ou unidade física da instituição.
 
 #### Atributos
 
-- **code**: Código único da área (ex: "TECH", "HEALTH") 
+- **code**: Código único da área (exemplo: "TECH", "HEALTH") 
 - **name**: Nome da área 
 - **unit_code**: Código da unidade (obrigatório, deve existir)
 - **responsible_email** OU **responsible_code**
@@ -96,7 +96,7 @@ Curso de graduação ou pós-graduação oferecido pela instituição.
 
 #### Atributos
 
-- **code**: Código único do curso (ex: "CC001", "ENF001") 
+- **code**: Código único do curso (exemplo: "CC001", "ENF001") 
 - **name**: Nome do curso 
 - **description**: Descrição detalhada (opcional)
 - **area_code**: Código da área (obrigatório, deve existir)
@@ -130,7 +130,7 @@ Componente curricular que faz parte da grade do curso.
 
 #### Atributos
 
-- **code**: Código único da disciplina (ex: "ALG001", "LIBRAS") 
+- **code**: Código único da disciplina (exemplo: "ALG001", "LIBRAS") 
 - **name**: Nome da disciplina 
 - **description**: Ementa ou descrição (opcional)
 - **course_code**: Código do curso (obrigatório, deve existir)
@@ -243,7 +243,7 @@ Instância de uma Disciplina Base em período letivo específico, com professor 
 
 #### Atributos
 
-- **code**: Código único da turma (ex: "ALG001-2025.1", "TURMA001")
+- **code**: Código único da turma (exemplo: "ALG001-2025.1", "TURMA001")
 - **subject_code**: Código da disciplina base (obrigatório, deve existir)
 - **professor_code**: Código do professor responsável (obrigatório, deve existir)
 - **semester**: Período letivo (obrigatório, formato: "YYYY.N")

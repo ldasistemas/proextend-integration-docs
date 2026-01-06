@@ -83,7 +83,7 @@ curl -X POST https://{{instituicao}}.proextend.com.br/api/integration/v1/units/s
 
 ### Campos Obrigatórios
 
-- `code`: Código único da unidade (ex: "CAMPUS_CENTRO")
+- `code`: Código único da unidade (exemplo: "CAMPUS_CENTRO")
 - `name`: Nome da unidade
 
 ### Campos Opcionais
@@ -438,7 +438,7 @@ POST /integration/v1/enrollments/sync
 
 ### Campos Obrigatórios
 
-- `code`: Código único da turma (máximo 255 caracteres) - recomendado incluir semestre, ex: "ALG001-2025.1"
+- `code`: Código único da turma (máximo 255 caracteres) - recomendado incluir semestre (exemplo: "ALG001-2025.1")
 - `subject_code`: Código da disciplina base vinculada (deve existir)
 - `professor_code`: Código do docente responsável (deve existir)
 - `semester`: Período letivo (formato: "YYYY.N", exemplos: "2025.1", "2025.2")

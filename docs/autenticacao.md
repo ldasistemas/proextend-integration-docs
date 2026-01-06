@@ -240,7 +240,7 @@ Solução: Aguardar `retry_after` segundos, implementar backoff exponencial ou a
 - Restrinja acesso à API Key apenas a pessoal autorizado
 - Documente quem tem acesso à chave
 - Revise periodicamente os acessos
-- Estabeleça política de rotação (ex: a cada 6 meses)
+- Estabeleça política de rotação (exemplo: a cada 6 meses)
 - Regenere se houver suspeita de vazamento
 - Teste nova chave antes de invalidar antiga
 
