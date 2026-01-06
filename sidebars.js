@@ -8,7 +8,7 @@ const sidebars = {
       id: 'intro',
       label: 'Introdução',
       customProps: {
-        icon: 'lucide:book-open',
+        icon: 'lucide:file-text',
       },
     },
 
@@ -41,7 +41,7 @@ const sidebars = {
       collapsible: true,
       collapsed: false,
       customProps: {
-        icon: 'lucide:shield-check',
+        icon: 'lucide:lock',
       },
       items: [
         'autenticacao',
@@ -55,7 +55,7 @@ const sidebars = {
       collapsible: true,
       collapsed: false,
       customProps: {
-        icon: 'lucide:refresh-cw',
+        icon: 'lucide:arrow-right-left',
       },
       items: [
         'fluxo-de-sincronizacao',
