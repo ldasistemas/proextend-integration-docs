@@ -134,13 +134,17 @@ Campos editáveis:
 - Scope de acesso
 - Rate limit
 
-Nota: Token não pode ser editado, apenas regenerado.
+:::note
+Token não pode ser editado, apenas regenerado.
+:::
 
-### Regenerar API Key
+### Gerar/Regenerar API Key
 
 Procedimento para chaves comprometidas ou perdidas:
 
-Nota: Regeneração invalida imediatamente todos os serviços que utilizam a chave.
+:::warning
+Regeneração invalida imediatamente todos os serviços que utilizam a chave.
+:::
 
 1. Acesse a API Key específica
 2. Selecione "Regenerar Token"
@@ -172,30 +176,6 @@ Remoção permanente:
 2. Selecione "Deletar"
 3. Confirme a operação
 4. Chave removida permanentemente sem possibilidade de recuperação
-
-## Monitoramento e Logs
-
-### Visualizar Logs de Acesso
-
-No painel administrativo é possível ver:
-
-- **Total de requisições**: Quantidade de chamadas feitas
-- **Taxa de sucesso**: Percentual de requisições bem-sucedidas
-- **Últimas requisições**: Log detalhado com:
-  - Endpoint acessado
-  - Método HTTP
-  - Status da resposta
-  - Data/hora
-  - IP de origem
-
-### Estatísticas
-
-Acesse estatísticas detalhadas:
-
-- Requisições por dia/hora
-- Endpoints mais utilizados
-- Erros mais frequentes
-- Tempo médio de resposta
 
 ## Tratamento de Erros
 

@@ -65,7 +65,9 @@ Componentes curriculares que compõem a grade de cursos.
 
 Exemplo: Algoritmos I, Banco de Dados, LIBRAS
 
-Nota: Disciplinas Base representam o cadastro curricular permanente, sem vínculo com períodos letivos ou discentes.
+:::note
+Disciplinas Base representam o cadastro curricular permanente, sem vínculo com períodos letivos ou discentes.
+:::
 
 ### 5. Professores (Professors)
 Docentes responsáveis por ministrar disciplinas.
@@ -82,7 +84,9 @@ Instâncias de disciplinas base vinculadas a período letivo específico, inclui
 
 Exemplo: "Algoritmos I - 2025.1" (turma com 30 alunos, Prof. João)
 
-Nota: Turmas são instâncias de Disciplinas Base em um período letivo.
+:::note
+Turmas são instâncias de Disciplinas Base em um período letivo.
+:::
 
 ## Distinção: Disciplina Base vs Turma
 
