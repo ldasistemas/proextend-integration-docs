@@ -17,34 +17,39 @@ A ordem de sincronização é fundamental devido às dependências entre entidad
 
 A configuração inicial requer sincronização completa na seguinte ordem:
 
-```
-1. Sincronizar Unidades/Campus (Units)
-   ↓
-2. Sincronizar Áreas (Areas)
-   ↓
-3. Sincronizar Cursos (Courses)
-   ↓
-4. Sincronizar Disciplinas Base (Subjects)
-   ↓
-5. Sincronizar Professores (Professors)
-   ↓
-6. Sincronizar Alunos (Students)
-   ↓
-7. Sincronizar Turmas (Enrollments)
+```mermaid
+flowchart LR
+    A[1. Unidades] --> B[2. Áreas]
+    B --> C[3. Cursos]
+    C --> D[4. Disciplinas Base]
+    D --> E[5. Professores]
+    D --> F[6. Alunos]
+    E --> G[7. Turmas]
+    F --> G
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style G fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ### Sincronizações Subsequentes
 
 Após a configuração inicial, sincronizações periódicas devem seguir o processo:
 
-```
-1. Identificar alterações no sistema origem desde última sincronização
-   ↓
-2. Sincronizar apenas entidades modificadas (incremental)
-   ↓
-3. Verificar status e logs da sincronização
-   ↓
-4. Registrar timestamp para próxima execução
+```mermaid
+flowchart LR
+    A[Identificar alterações] --> B[Sincronizar modificados]
+    B --> C[Verificar status e logs]
+    C --> D[Registrar timestamp]
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ## 1. Sincronizar Unidades
@@ -181,7 +186,7 @@ POST /integration/v1/courses/sync
       "description": "Bacharelado em Ciência da Computação - Duração 4 anos",
       "area_code": "TECH",
       "unit_code": "CAMPUS_CENTRO",
-      "responsible_code": "PROF001"
+      "responsible_code": "ADMIN001"
     },
     {
       "code": "ENF001",
@@ -517,7 +522,7 @@ GET /integration/v1/units?per_page=50&page=1&search=centro
 ```
 
 Parâmetros:
-- `per_page`: Registros por página (padrão: 15, máximo: 100)
+- `per_page`: Registros por página (padrão: 50, máximo: 200)
 - `page`: Número da página
 - `search`: Termo de busca (opcional)
 
