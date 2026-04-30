@@ -418,4 +418,4 @@ Isso facilita identificação e evita conflitos entre semestres.
 
 1. Revisar [Conceitos Fundamentais](conceitos-fundamentais) para compreender modelo de dados
 2. Seguir [Fluxo de Sincronização](fluxo-de-sincronizacao) para implementar integração
-3. Consultar [Postman Collection](postman) para exemplos práticos de requisições
+3. Testar requisições diretamente pelo [playground interativo](/api)

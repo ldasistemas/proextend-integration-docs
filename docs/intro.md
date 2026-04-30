@@ -8,6 +8,12 @@ title: Introdução
 
 Documentação técnica para integração de sistemas de gestão acadêmica com a plataforma ProExtend.
 
+:::info
+Todos os endpoints da integração estão disponíveis para teste diretamente no navegador.
+
+**<a href="/api" target="_blank">Acessar API →</a>**
+:::
+
 ## Escopo da Documentação
 
 Esta documentação especifica os processos, conceitos e fluxos de sincronização necessários para garantir a interoperabilidade entre sistemas de gestão acadêmica (ERP) e a plataforma ProExtend. O escopo abrange processos de integração completos, incluindo modelo de dados, mecanismos de autenticação e padrões de sincronização.
@@ -91,16 +97,6 @@ Explica o sistema de identificação de entidades:
 - Erros comuns relacionados a identificadores
 
 Referência: [Identificadores e Codes](identificadores-e-codes)
-
-### 7. Postman Collection
-
-Exemplos práticos de requisições:
-- Configuração de variáveis de ambiente
-- Exemplos de sincronização para todas as entidades
-- Exemplos de consultas (GET)
-- Cenários de tratamento de erros
-
-Referência: [Postman Collection](postman)
 
 ## Guia de Utilização
 

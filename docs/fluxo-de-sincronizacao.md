@@ -690,6 +690,6 @@ Agrupe múltiplos registros em uma única requisição para melhorar a performan
 ## Próximos Passos
 
 1. Compreender sistema de [Identificadores e Codes](identificadores-e-codes)
-2. Consultar [Postman Collection](postman) para exemplos práticos de requisições
+2. Testar requisições diretamente pelo [playground interativo](/api)
 3. Configurar rotina de sincronização periódica (incremental)
 4. Implementar monitoramento e alertas de falhas

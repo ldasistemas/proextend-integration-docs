@@ -264,7 +264,7 @@ Antes de iniciar a integração:
 
 ## Recursos Adicionais
 
-Consulte a [Postman Collection](postman) para exemplos práticos de requisições e testes de autenticação.
+Teste os endpoints de autenticação diretamente pelo [playground interativo](/api).
 
 ## Suporte
 
