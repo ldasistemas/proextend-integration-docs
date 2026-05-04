@@ -1,16 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { DEFAULT_API_BASE_URL } from '../constants/api';
+import { API_BASE_URL } from '../constants/api';
 
 const CDN_URL = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
 
 export default function ApiReference() {
-  const { siteConfig } = useDocusaurusContext();
-  const apiBaseUrl = siteConfig.customFields?.apiBaseUrl || DEFAULT_API_BASE_URL;
-  const openApiUrl = `${apiBaseUrl}/proextend-integration-api.json`;
   const containerRef = useRef(null);
+  const openApiUrl = `${API_BASE_URL}/proextend-integration-api.json`;
 
   useEffect(() => {
     const init = () => {
