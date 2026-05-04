@@ -1,6 +1,6 @@
 const ENV = {
   local: 'http://localhost/api/integration/v1',
-  production: 'https://api.proextend.com.br/integration/v1',
+  production: 'https://dev-api.proextend.com.br/integration/v1',
 };
 
 export const API_BASE_URL =
