@@ -8,6 +8,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+  customFields: {
+    apiBaseUrl: process.env.API_BASE_URL || 'http://localhost/api/integration/v1',
+  },
   title: 'ProExtend Integração',
   tagline: 'Documentação oficial para integração com ProExtend',
   favicon: 'img/favicon.svg',
@@ -60,7 +63,25 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          { from: '/acesse-a-api', to: '/api' },
+          { from: '/referencia-api', to: '/api' },
+          { from: '/api-reference', to: '/api' },
+        ],
+      },
+    ],
+  ],
+
+  markdown: {
+    mermaid: true,
+  },
+
   themes: [
+    '@docusaurus/theme-mermaid',
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
       /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
@@ -217,12 +238,7 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/logo.svg',
-      metadata: [
-        {
-          name: 'google-site-verification',
-          content: 'your-google-verification-code', // Substituir quando configurar Google Search Console
-        },
-      ],
+      metadata: [],
       docs: {
         sidebar: {
           hideable: true,
@@ -237,6 +253,13 @@ const config = {
         },
         items: [
           {
+            href: '/api',
+            label: 'Acesse a API',
+            position: 'left',
+            className: 'header-api-link',
+            target: '_blank',
+          },
+          {
             href: 'https://proextend.com.br/',
             label: 'ProExtend',
             position: 'right',
@@ -250,8 +273,8 @@ const config = {
         additionalLanguages: ['bash', 'json', 'javascript', 'typescript'],
       },
       colorMode: {
-        defaultMode: 'light',
-        disableSwitch: false,
+        defaultMode: 'dark',
+        disableSwitch: true,
         respectPrefersColorScheme: false,
       },
     }),
