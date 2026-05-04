@@ -11,13 +11,29 @@ A API de Integração ProExtend permite que sistemas de gestão acadêmica (ERPs
 
 ## Arquitetura de Comunicação
 
-```
-Sistema Origem          →    API ProExtend
-(Instituição)                    (Plataforma)
+```mermaid
+flowchart LR
+    subgraph Instituição
+        A[Submissão de dados]
+        B[Identificadores próprios]
+        C[Sincronização periódica]
+    end
+    subgraph ProExtend
+        D[Validação de payload]
+        E[Persistência e atualização]
+        F[Garantia de consistência]
+    end
 
-- Submissão de dados        →    - Validação de payload
-- Identificadores próprios  →    - Persistência/atualização
-- Sincronização periódica   →    - Garantia de consistência
+    A --> D
+    B --> E
+    C --> F
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ### Características Arquiteturais
@@ -88,6 +104,18 @@ Exemplo: "Algoritmos I - 2025.1" (turma com 30 alunos, Prof. João)
 Turmas são instâncias de Disciplinas Base em um período letivo.
 :::
 
+### 8. Administradores (Admins)
+
+Gestores da instituição com acesso ao painel ProExtend. Podem ser vinculados a unidades, áreas e cursos como responsáveis.
+
+:::note
+Administradores **não são criados via integração**, são gerenciados pelo painel ProExtend. A integração permite apenas consulta via `GET /admins` e `GET /admins/{code}`.
+
+Os endpoints de consulta são úteis para obter os `code` válidos de administradores, necessários ao sincronizar Áreas e Cursos com `responsible_code`.
+
+Filtros disponíveis: `unit_code`, `area_code`, `active_only`.
+:::
+
 ## Distinção: Disciplina Base vs Turma
 
 - **Disciplina Base (Subject)**: Registro permanente no catálogo curricular, sem vínculo temporal ou matrícula de alunos
@@ -95,24 +123,19 @@ Turmas são instâncias de Disciplinas Base em um período letivo.
 
 Detalhamento em [Conceitos Fundamentais](conceitos-fundamentais).
 
-## Hierarquia de Entidades
-
-Estrutura hierárquica: Unidades → Áreas → Cursos → Disciplinas Base
-
-Relacionamento de Turmas: Disciplina Base + Professor + Alunos
-
-Especificação completa em [Conceitos Fundamentais](conceitos-fundamentais).
-
 ## Processo de Integração
 
-### Configuração Inicial
+```mermaid
+flowchart LR
+    A[Gerar API Key\nno painel] --> B[Sincronizar\nentidades na ordem]
+    B --> C[Consultar dados\nvia GET]
+    C --> D[Sincronizações\nperiódicas incrementais]
 
-1. Geração de API Key via painel administrativo
-2. Sincronização de entidades respeitando ordem de dependências: Units → Areas → Courses → Subjects → Professors/Students → Enrollments
-
-### Sincronização Incremental
-
-Submissão de entidades modificadas. A API realiza atualização baseada em identificador (code).
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+```
 
 Especificação detalhada em [Fluxo de Sincronização](fluxo-de-sincronizacao).
 
@@ -142,6 +165,18 @@ Comportamento de sincronização:
 - Entidade com code existente: atualização de dados
 - Entidade com code inexistente: criação de novo registro
 - Operação idempotente: execução múltipla não resulta em duplicação
+
+### Operações de Remoção (DELETE)
+
+Remoção de entidades por code.
+
+Permissão requerida: scope `write` ou `full`
+
+Exemplos:
+- `DELETE /integration/v1/units/{code}` - Remove unidade e entidades dependentes
+- `DELETE /integration/v1/professors/{code}` - Remove professor
+
+Todas as remoções são soft delete. Entidades pai removem filhos em cascata. Consulte [Remoção de Entidades](remocao) para detalhes.
 
 ## Segurança e Controle de Acesso
 
@@ -251,4 +286,5 @@ Para implementação da integração:
 
 ## Recursos de Monitoramento
 
-- **Sync Status**: Endpoint para monitoramento de estado de sincronização (`GET /integration/v1/sync-status`)
+- **Health Check**: `GET /integration/v1/health`. Endpoint público sem autenticação. Retorna status da API, versão e tempo de resposta. Útil para verificar disponibilidade antes de sincronizar.
+- **Sync Status**: `GET /integration/v1/sync-status`. Retorna contagem de entidades sincronizadas e informações da última sincronização da chave em uso.

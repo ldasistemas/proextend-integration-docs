@@ -59,21 +59,19 @@ const sidebars = {
       },
       items: [
         'fluxo-de-sincronizacao',
+        'remocao',
       ],
     },
 
     {
-      type: 'category',
-      label: 'Recursos',
-      collapsible: true,
-      collapsed: true,
+      type: 'doc',
+      id: 'relatorios',
+      label: 'Relatórios e Consultas',
       customProps: {
-        icon: 'lucide:wrench',
+        icon: 'lucide:bar-chart-2',
       },
-      items: [
-        'postman',
-      ],
     },
+
   ],
 };
 

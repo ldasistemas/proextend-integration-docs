@@ -27,29 +27,20 @@ Conecte sistemas acadêmicos ao ProExtend de forma simples.
 
 O processo de autenticação SSO segue os seguintes passos:
 
-```
-1. Sistema Externo solicita geração de token
-   ↓
-2. Sistema Externo → API ProExtend
-   POST /integration/v1/sso/generate-token
-   {
-     "user_code": "PROF001",
-     "expires_in": 86400,
-     "single_use": false
-   }
-   ↓
-3. API ProExtend valida usuário e gera token
-   ↓
-4. API ProExtend → Sistema Externo
-   {
-     "login_url": "https://{{instituicao}}.proextend.com.br/login?token=abc123..."
-   }
-   ↓
-5. Sistema Externo redireciona usuário para login_url
-   ↓
-6. Usuário é autenticado automaticamente no ProExtend
-   ↓
-7. Usuário acessa plataforma ProExtend sem digitar credenciais
+```mermaid
+flowchart LR
+    A[Sistema Externo\nsolicita token] --> B[POST /sso/generate-token]
+    B --> C[API valida usuário\ne gera token]
+    C --> D[Retorna login_url]
+    D --> E[Sistema redireciona\nusuário]
+    E --> F[Usuário acessa\nProExtend sem senha]
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ## Gerar Token SSO

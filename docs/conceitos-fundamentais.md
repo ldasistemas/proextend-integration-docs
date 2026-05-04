@@ -13,21 +13,26 @@ Este documento detalha as entidades do sistema de integração ProExtend e seus 
 
 ### Hierarquia de Entidades
 
-```
-Instituição
-├── Unidades (Units)
-│   └── Áreas (Areas)
-│       └── Cursos (Courses)
-│           └── Disciplinas Base (Subjects)
-│
-├── Professores (Professors)
-│
-├── Alunos (Students)
-│
-└── Turmas (Enrollments)
-    ├── Disciplina Base
-    ├── Professor
-    └── Alunos
+```mermaid
+flowchart TD
+    A[Instituição] --> B[Unidades]
+    B --> C[Áreas]
+    C --> D[Cursos]
+    D --> E[Disciplinas Base]
+    A --> F[Professores]
+    A --> G[Alunos]
+    E --> H[Turmas]
+    F --> H
+    G --> H
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style G fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style H fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ## Entidades Detalhadas
@@ -132,7 +137,6 @@ Componente curricular que faz parte da grade do curso.
 
 - **code**: Código único da disciplina (exemplo: "ALG001", "LIBRAS") 
 - **name**: Nome da disciplina 
-- **description**: Ementa ou descrição (opcional)
 - **course_code**: Código do curso (obrigatório, deve existir)
 - **type**: Tipo da disciplina (opcional, padrão: "obrigatoria")
   - `obrigatoria`: Disciplina obrigatória
@@ -145,8 +149,7 @@ Componente curricular que faz parte da grade do curso.
 {
   "code": "ALG001",
   "name": "Algoritmos e Programação I",
-  "description": "Introdução a algoritmos e lógica de programação",
-  "course_code": "CC001",
+  "course_code": "CC001"
 }
 ```
 
@@ -167,11 +170,13 @@ Docente que leciona disciplinas na instituição.
 - **code**: Código único do professor (matrícula, CPF ou código funcional) 
 - **name**: Nome completo
 - **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, aceita formatado ou sem formatação)
-  - Formato 1: `12345678901` (11 dígitos)
-  - Formato 2: `123.456.789-01` (formatado)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
 - **area_code**: Código da área de atuação (opcional)
+- **active**: Controla o status do professor (opcional)
+  - `true` → reativa o professor (remove suspensão)
+  - `false` → suspende o professor
+  - Omitir → não altera o status atual
 
 #### Exemplo
 
@@ -206,11 +211,13 @@ Discente matriculado em um curso da instituição.
 - **code**: Código único do aluno (matrícula, CPF ou RA) 
 - **name**: Nome completo 
 - **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, aceita formatado ou sem formatação)
-  - Formato 1: `12345678901` (11 dígitos)
-  - Formato 2: `123.456.789-01` (formatado)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
 - **course_code**: Código do curso (obrigatório, deve existir)
+- **active**: Controla o status do aluno (opcional)
+  - `true` → reativa o aluno (remove suspensão)
+  - `false` → suspende o aluno
+  - Omitir → não altera o status atual
 
 #### Exemplo
 
@@ -271,6 +278,30 @@ Instância de uma Disciplina Base em período letivo específico, com professor 
 
 ---
 
+### 8. Administrador (Admin)
+
+Gestor da instituição com acesso ao painel ProExtend. Pode ser vinculado a unidades, áreas e cursos.
+
+#### Atributos
+
+- **code**: Código único do administrador
+- **name**: Nome completo
+- **email**: Email institucional (obrigatório, único)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
+- **unit_code**: Código da unidade de atuação (opcional)
+- **area_code**: Código da área de atuação (opcional)
+- **course_code**: Código do curso de atuação (opcional)
+
+#### Características
+
+- Pode ser sincronizado via `POST /admins/sync`
+- Consultável via `GET /admins` e `GET /admins/{code}`
+- Filtros de consulta: `unit_code`, `area_code`, `active_only`
+- O `code` do administrador é usado como `responsible_code` em Áreas e Cursos
+
+---
+
 ## Diferença: Disciplina Base vs Turma
 
 Distinção fundamental do modelo de dados:
@@ -320,10 +351,11 @@ Instância da disciplina base em período letivo específico, com professor e al
 | Unidade (Unit) | code, name | address |
 | Área (Area) | code, name, unit_code, responsible* |  |
 | Curso (Course) | code, name, area_code, unit_code, responsible* | description |
-| Disciplina Base (Subject) | code, name, course_code | description, type |
-| Professor (Professor) | code, name, email | cpf, phone, area_code |
-| Aluno (Student) | code, name, email, course_code | cpf, phone |
-| Turma (Enrollment) | code, subject_code, professor_code, semester | student_codes |
+| Disciplina Base (Subject) | code, name, course_code | type |
+| Professor (Professor) | code, name, email | cpf, phone, area_code, active |
+| Aluno (Student) | code, name, email, course_code | cpf, phone, active |
+| Turma (Enrollment) | code, subject_code, professor_code, semester | student_codes, student_sync_mode |
+| Administrador (Admin) | code, name, email | cpf, phone, unit_code, area_code, course_code |
 
 \* Área (Area) e Curso (Course) requerem `responsible_email` **OU** `responsible_code` (deve ser Administrador ativo)
 
@@ -335,7 +367,7 @@ Instância da disciplina base em período letivo específico, com professor e al
 |-------|-------|-----------------|
 | **code** | Obrigatório, único por tipo de entidade | Máximo 255 caracteres |
 | **name** | Obrigatório | Máximo 255 caracteres |
-| **cpf** | Opcional (Professor/Student), aceita formatação | `"12345678901"` ou `"123.456.789-01"` |
+| **cpf** | Opcional (Professor/Student), apenas 11 dígitos | `"12345678901"` |
 | **email** | Formato válido, único | `"usuario@dominio.com"` |
 | **phone** | Opcional, apenas dígitos | `"11999999999"` (10-11 dígitos) |
 | **semester** | Formato ano.período | `"2025.1"`, `"2025.2"` |
@@ -343,7 +375,7 @@ Instância da disciplina base em período letivo específico, com professor e al
 | **codes** de referência | Devem existir previamente | `area_code`, `unit_code`, `course_code`, etc. |
 
 **Validações automáticas**:
-- CPF: Valida formato e dígitos verificadores (aceita formatado ou não)
+- CPF: Valida formato e dígitos verificadores (apenas 11 dígitos sem formatação)
 - Email: Valida formato e unicidade
 - Phone: Aceita apenas dígitos numéricos
 - Codes: Valida unicidade dentro do tipo de entidade e tamanho máximo 255
@@ -376,6 +408,8 @@ Os identificadores devem corresponder aos codes já utilizados no ERP institucio
 1. Configure [Autenticação](autenticacao)
 2. Siga o [Fluxo de Sincronização](fluxo-de-sincronizacao)
 3. Entenda [Identificadores e Codes](identificadores-e-codes)
+4. Consulte [Remoção de Entidades](remocao) para gerenciar o ciclo de vida dos dados
+5. Veja [Relatórios e Consultas](relatorios) para leitura de atividades e notas
 
 ## Suporte
 

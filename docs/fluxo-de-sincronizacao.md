@@ -52,6 +52,39 @@ flowchart LR
     style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
+## Falhas Parciais na Sincronização
+
+Todos os endpoints de sincronização processam os itens individualmente. Se um item falhar, os demais são processados normalmente. A requisição retorna **HTTP 200** mesmo com falhas parciais.
+
+A resposta sempre inclui os campos `created`, `updated`, `failed` e, quando há falhas, um array `errors` com o detalhamento de cada erro:
+
+```json
+{
+  "success": true,
+  "message": "Sincronização concluída com erros.",
+  "data": {
+    "created": 8,
+    "updated": 1,
+    "failed": 1,
+    "errors": [
+      {
+        "index": 2,
+        "code": "PROF003",
+        "error": "O e-mail já está cadastrado por outro usuário."
+      }
+    ]
+  }
+}
+```
+
+- `index`: posição do item no array enviado (começa em 0)
+- `code`: identificador do item que falhou (quando disponível)
+- `error`: descrição do motivo da falha
+
+:::note
+Cada request aceita no máximo **500 itens** por sincronização. Para volumes maiores, divida em múltiplas requisições.
+:::
+
 ## 1. Sincronizar Unidades
 
 Unidades representam campus ou estabelecimentos físicos da instituição de ensino.
@@ -243,13 +276,11 @@ POST /integration/v1/subjects/sync
     {
       "code": "ALG001",
       "name": "Algoritmos e Programação I",
-      "description": "Introdução a algoritmos e lógica de programação",
       "course_code": "CC001"
     },
     {
       "code": "BD001",
       "name": "Banco de Dados I",
-      "description": "Fundamentos de banco de dados relacionais",
       "course_code": "CC001"
     },
     {
@@ -270,7 +301,6 @@ POST /integration/v1/subjects/sync
 
 ### Campos Opcionais
 
-- `description`: Descrição da disciplina
 - `type`: Tipo de disciplina
   - `obrigatoria` (padrão se omitido)
   - `optativa`
@@ -322,14 +352,8 @@ POST /integration/v1/professors/sync
 
 ### Campos Opcionais
 
-- `cpf`: CPF (aceita formatado ou sem formatação)
-  - Formato aceito 1: `12345678901` (11 dígitos sem formatação)
-  - Formato aceito 2: `123.456.789-01` (formatado com pontos e hífen)
-  - Deve ser válido conforme algoritmo de validação de CPF
-- `phone`: Telefone de contato
-  - Apenas dígitos numéricos
-  - Exemplo válido: `11999999999`, `1133334444`
-  - Exemplo inválido: `(11) 99999-9999`, `11 99999-9999`
+- `cpf`: CPF, apenas 11 dígitos numéricos sem formatação (ex: `12345678901`). Deve ser válido conforme algoritmo de verificação
+- `phone`: Telefone de contato, apenas dígitos numéricos (ex: `11999999999`). Não aceita parênteses, espaços ou hífens
 - `area_code`: Código da área de atuação (deve existir se fornecido)
 
 ### Validações Importantes
@@ -385,14 +409,8 @@ POST /integration/v1/students/sync
 
 ### Campos Opcionais
 
-- `cpf`: CPF (aceita formatado ou sem formatação)
-  - Formato aceito 1: `12345678901` (11 dígitos sem formatação)
-  - Formato aceito 2: `123.456.789-01` (formatado com pontos e hífen)
-  - Deve ser válido conforme algoritmo de validação de CPF
-- `phone`: Telefone de contato
-  - Apenas dígitos numéricos
-  - Exemplo válido: `11999999999`, `1133334444`
-  - Exemplo inválido: `(11) 99999-9999`, `11 99999-9999`
+- `cpf`: CPF, apenas 11 dígitos numéricos sem formatação (ex: `12345678901`). Deve ser válido conforme algoritmo de verificação
+- `phone`: Telefone de contato, apenas dígitos numéricos (ex: `11999999999`). Não aceita parênteses, espaços ou hífens
 
 ### Observações Importantes
 
@@ -401,7 +419,58 @@ POST /integration/v1/students/sync
 - CPF duplicado (se fornecido) resulta em erro 422
 - CPF é campo opcional
 
-## 7. Sincronizar Turmas (Enrollments)
+## 7. Sincronizar Administradores
+
+Administradores são os gestores da instituição que podem ser vinculados a unidades, áreas e cursos como responsáveis.
+
+**Dependências**: Nenhuma (entidade independente)
+
+:::note
+Administradores também podem ser criados e gerenciados diretamente pelo painel ProExtend. A sincronização via API é opcional e complementar.
+:::
+
+### Endpoint
+
+```
+POST /integration/v1/admins/sync
+```
+
+### Exemplo
+
+```json
+{
+  "admins": [
+    {
+      "code": "ADMIN001",
+      "name": "Carlos Souza",
+      "email": "carlos.souza@faculdade.edu.br",
+      "unit_code": "CAMPUS_CENTRO"
+    },
+    {
+      "code": "ADMIN002",
+      "name": "Fernanda Costa",
+      "email": "fernanda.costa@faculdade.edu.br",
+      "area_code": "TECH"
+    }
+  ]
+}
+```
+
+### Campos Obrigatórios
+
+- `code`: Código único do administrador (máximo 255 caracteres)
+- `name`: Nome completo (máximo 255 caracteres)
+- `email`: Email institucional (deve ser único na plataforma)
+
+### Campos Opcionais
+
+- `cpf`: CPF, apenas 11 dígitos numéricos sem formatação (ex: `12345678901`)
+- `phone`: Telefone de contato, apenas dígitos numéricos (ex: `11999999999`)
+- `unit_code`: Código da unidade de atuação (deve existir se fornecido)
+- `area_code`: Código da área de atuação (deve existir se fornecido)
+- `course_code`: Código do curso de atuação (deve existir se fornecido)
+
+## 8. Sincronizar Turmas (Enrollments)
 
 Turmas representam instâncias de disciplinas base em períodos letivos específicos, incluindo docente responsável e estudantes matriculados.
 
@@ -451,18 +520,71 @@ POST /integration/v1/enrollments/sync
 ### Campos Opcionais
 
 - `student_codes`: Array contendo códigos dos alunos matriculados (devem existir)
-  - Campo opcional (pode ser omitido)
-  - Pode ser enviado como array vazio `[]`
+  - Pode ser omitido ou enviado como array vazio `[]`
   - Útil para criar turmas antes de ter alunos matriculados
+- `student_sync_mode`: Define como os alunos enviados são processados (padrão: `replace`)
+
+### Modo de Sincronização de Alunos (`student_sync_mode`)
+
+| Valor | Comportamento |
+|---|---|
+| `replace` (padrão) | Substitui toda a lista. Alunos não enviados são desvinculados |
+| `add` | Apenas adiciona os alunos enviados, sem remover os já matriculados |
+
+Use `replace` quando quiser garantir que a turma tenha exatamente os alunos enviados. Use `add` para adicionar alunos incrementalmente sem precisar reenviar a lista completa.
+
+```json
+{
+  "enrollments": [
+    {
+      "code": "ALG001-2025.1",
+      "subject_code": "ALG001",
+      "professor_code": "PROF001",
+      "semester": "2025.1",
+      "student_codes": ["ALU2024010", "ALU2024011"],
+      "student_sync_mode": "add"
+    }
+  ]
+}
+```
 
 ### Comportamento de Sincronização
 
-- **Turma existente** (code já cadastrado): Atualiza professor e substitui lista completa de alunos
+- **Turma existente** (code já cadastrado): Atualiza professor e processa alunos conforme `student_sync_mode`
 - **Turma nova** (code não existe): Cria nova turma com vínculos especificados
-- **Alunos removidos**: Desvinculados automaticamente da turma
-- **Alunos adicionados**: Vinculados automaticamente à turma
 
-**Observação**: A sincronização substitui completamente a lista de alunos. Certifique-se de enviar a lista completa desejada.
+## Matrícula e Desmatrícula Avulsa
+
+Para adicionar ou remover um único aluno de uma turma sem precisar reenviar a lista completa, use os endpoints avulsos:
+
+### Matricular um aluno
+
+```
+POST /integration/v1/enrollments/{code}/students/{studentCode}
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "student_code": "ALU2024010",
+    "enrollment_code": "ALG001-2025.1",
+    "students_count": 25
+  }
+}
+```
+
+### Desmatricular um aluno
+
+```
+DELETE /integration/v1/enrollments/{code}/students/{studentCode}
+```
+
+Remove o aluno especificado sem alterar os demais matriculados.
+
+:::note
+O aluno precisa pertencer ao mesmo curso da disciplina da turma, caso contrário a operação retorna erro 422.
+:::
 
 ## Consultando Status da Sincronização
 
@@ -511,42 +633,43 @@ curl -X GET https://{{instituicao}}.proextend.com.br/api/integration/v1/sync-sta
 
 ## Consultando Dados Sincronizados
 
-A API disponibiliza endpoints de consulta (GET) para verificação de dados sincronizados.
+A API disponibiliza endpoints de consulta (GET) para verificação de dados sincronizados. Todos os endpoints de listagem suportam paginação com `per_page` (padrão: 50, máximo: 200) e `page`.
 
-### Listar Unidades
+### Filtros Disponíveis por Endpoint
 
-Listação paginada com suporte a busca textual:
+| Endpoint | Filtros disponíveis |
+|---|---|
+| `GET /units` | `search` |
+| `GET /areas` | `unit_code`, `search` |
+| `GET /courses` | `area_code`, `unit_code`, `search` |
+| `GET /subjects` | `course_code` |
+| `GET /professors` | `active_only` |
+| `GET /students` | `course_code`, `active_only` |
+| `GET /enrollments` | `professor_code`, `subject_code`, `semester` |
+| `GET /professors/{code}/subjects` | `semester` |
+| `GET /admins` | `unit_code`, `area_code`, `active_only` |
+| `GET /students/{code}/enrollments` | (sem filtros, paginação padrão) |
+
+O filtro `active_only` aceita qualquer valor para ativar (ex: `active_only=1`). Retorna apenas usuários não suspensos.
+
+### Exemplos de Consulta
 
 ```
-GET /integration/v1/units?per_page=50&page=1&search=centro
+GET /integration/v1/units?search=centro
+GET /integration/v1/areas?unit_code=CAMPUS_CENTRO
+GET /integration/v1/courses?area_code=TECH&unit_code=CAMPUS_CENTRO
+GET /integration/v1/professors?active_only=1&per_page=100
+GET /integration/v1/students?course_code=CC001&active_only=1
+GET /integration/v1/enrollments?professor_code=PROF001&semester=2025.1
+GET /integration/v1/professors/PROF001/subjects?semester=2025.1
 ```
 
-Parâmetros:
-- `per_page`: Registros por página (padrão: 50, máximo: 200)
-- `page`: Número da página
-- `search`: Termo de busca (opcional)
-
-### Buscar Unidade Específica por Code
+### Buscar Entidade por Code
 
 ```
 GET /integration/v1/units/CAMPUS_CENTRO
-```
-
-### Buscar Professor Específico por Code
-
-```
 GET /integration/v1/professors/PROF001
-```
-
-### Listar Turmas Vinculadas a Professor
-
-```
-GET /integration/v1/professors/PROF001/subjects
-```
-
-### Buscar Turma Específica por Code
-
-```
+GET /integration/v1/students/ALU2024001
 GET /integration/v1/enrollments/ALG001-2025.1
 ```
 
@@ -562,16 +685,25 @@ GET /integration/v1/enrollments/ALG001-2025.1
 
 ### Erros de Dependência
 
-**Cenário**: Tentativa de criar curso antes de sincronizar área ou unidade
+**Cenário**: Um ou mais itens do lote referenciam entidades que ainda não existem (ex: `area_code` inválido em um sync de cursos).
 
-**Resposta de Erro**:
+O item com a referência inválida falha individualmente — os demais do lote são processados normalmente. A requisição retorna **HTTP 200** com `failed: N`:
 
 ```json
 {
-  "success": false,
-  "message": "Erro de validação",
-  "errors": {
-    "area_code": ["A área especificada não existe"]
+  "success": true,
+  "message": "Sincronização de cursos concluída com erros.",
+  "data": {
+    "created": 1,
+    "updated": 0,
+    "failed": 1,
+    "errors": [
+      {
+        "index": 1,
+        "code": "ENF001",
+        "error": "Área 'HEALTH' não encontrada."
+      }
+    ]
   }
 }
 ```
@@ -614,7 +746,7 @@ Units → Areas → Courses → Subjects → Professors/Students → Enrollments
 }
 ```
 
-**Observação**: O CPF é validado conforme algoritmo oficial. Aceita tanto formato sem pontuação (`12345678901`) quanto formatado (`123.456.789-01`).
+**Observação**: O CPF é validado conforme algoritmo oficial. Deve ser enviado com apenas 11 dígitos numéricos, sem formatação (`12345678901`).
 
 **Cenário 2: Telefone com formato inválido**
 
@@ -656,9 +788,10 @@ A sincronização completa deve ser utilizada na configuração inicial do siste
 4. **Disciplinas Base** - Disciplinas que compõem os cursos
 5. **Professores** - Corpo docente
 6. **Alunos** - Estudantes matriculados
-7. **Turmas** - Matrículas e vínculos entre alunos e disciplinas
+7. **Administradores** - Gestores da instituição (independente, pode ser em qualquer momento)
+8. **Turmas** - Matrículas e vínculos entre alunos e disciplinas
 
-> **Importante**: Respeite essa ordem para evitar erros de dependência.
+> **Importante**: Respeite essa ordem para evitar erros de dependência. Áreas e Cursos precisam de um Admin como `responsible_code`, então sincronize Admins antes se for usar esse campo.
 
 ### Sincronização Incremental (Recomendada para Atualizações)
 

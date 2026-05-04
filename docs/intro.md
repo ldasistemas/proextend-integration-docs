@@ -87,7 +87,19 @@ Descreve o processo completo de sincronização:
 
 Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao)
 
-### 6. Identificadores e Codes
+### 6. Remoção de Entidades
+
+Documenta os endpoints `DELETE` e o comportamento de soft delete em cascata.
+
+Referência: [Remoção de Entidades](remocao)
+
+### 7. Relatórios e Consultas
+
+Endpoints de leitura de dados acadêmicos: atividades, notas e submissões.
+
+Referência: [Relatórios e Consultas](relatorios)
+
+### 9. Identificadores e Codes
 
 Explica o sistema de identificação de entidades:
 - Uso de identificadores próprios do sistema origem (codes)

@@ -13,14 +13,16 @@ A API de Integração ProExtend utiliza autenticação baseada em API Keys. As c
 
 ### Fluxo de Autenticação
 
-```
-1. Administrador acessa painel ProExtend
-   ↓
-2. Gera API Key com configurações de escopo e rate limit
-   ↓
-3. Copia token gerado (formato: pex_xxxxxxxxxxxxxxxxxxxxxxxx)
-   ↓
-4. Inclui token no header Authorization de todas as requisições
+```mermaid
+flowchart LR
+    A[Administrador acessa\no painel ProExtend] --> B[Gera API Key com\nescopo e rate limit]
+    B --> C[Copia o token\npex_xxx...]
+    C --> D[Inclui no header\nAuthorization]
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ## Gerando API Key no Painel Administrativo

@@ -15,18 +15,36 @@ Este documento especifica o sistema de identificação de entidades na API de In
 
 ### Fluxo de Identificação
 
-```
-Sistema Origem (ERP)      →      Plataforma ProExtend
-code: "ALG001"            →      identificador: "ALG001"
-code: "PROF001"           →      identificador: "PROF001"
-code: "ALU2024001"        →      identificador: "ALU2024001"
+```mermaid
+flowchart LR
+    subgraph ERP["Sistema Origem (ERP)"]
+        A["code: ALG001"]
+        B["code: PROF001"]
+        C["code: ALU2024001"]
+    end
+    subgraph PE["Plataforma ProExtend"]
+        D["identificador: ALG001"]
+        E["identificador: PROF001"]
+        F["identificador: ALU2024001"]
+    end
+
+    A --> D
+    B --> E
+    C --> F
+
+    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
+    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 Esta abordagem elimina a necessidade de mapeamento entre sistemas e simplifica a integração.
 
 ## O que é um Code
 
-Um **code** é o identificador único que definido no sistema e envia para a plataforma.
+Um **code** é o identificador único definido no sistema origem e enviado para a plataforma.
 
 ### Exemplos Práticos
 
