@@ -272,6 +272,29 @@ const config = {
         darkTheme: prismThemes.dracula,
         additionalLanguages: ['bash', 'json', 'javascript', 'typescript'],
       },
+      mermaid: {
+        theme: {
+          light: 'base',
+          dark: 'base',
+        },
+        options: {
+          flowchart: {
+            curve: 'basis',
+            padding: 18,
+            nodeSpacing: 42,
+            rankSpacing: 52,
+          },
+          themeVariables: {
+            primaryColor: '#111b24',
+            primaryTextColor: '#e8f3fb',
+            primaryBorderColor: '#25465f',
+            lineColor: '#5aadea',
+            secondaryColor: '#0e1821',
+            tertiaryColor: '#162738',
+            fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          },
+        },
+      },
       colorMode: {
         defaultMode: 'dark',
         disableSwitch: true,

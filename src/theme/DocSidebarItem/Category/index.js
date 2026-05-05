@@ -13,9 +13,9 @@ export default function CategoryWrapper(props) {
         item={{
           ...item,
           label: (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon icon={icon} width="18" height="18" style={{ flexShrink: 0 }} />
-              <span>{item.label}</span>
+            <span className="sidebar-item-label">
+              <Icon icon={icon} width="18" height="18" className="sidebar-item-icon" />
+              <span className="sidebar-item-text">{item.label}</span>
             </span>
           ),
         }}

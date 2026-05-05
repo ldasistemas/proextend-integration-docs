@@ -25,14 +25,6 @@ flowchart TD
     F --> H
     G --> H
 
-    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style G fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style H fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ## Entidades Detalhadas

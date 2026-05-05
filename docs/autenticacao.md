@@ -19,10 +19,6 @@ flowchart LR
     B --> C[Copia o token\npex_xxx...]
     C --> D[Inclui no header\nAuthorization]
 
-    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ## Gerando API Key no Painel Administrativo

@@ -32,12 +32,6 @@ flowchart LR
     B --> E
     C --> F
 
-    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 Esta abordagem elimina a necessidade de mapeamento entre sistemas e simplifica a integração.

@@ -28,12 +28,6 @@ flowchart LR
     B --> E
     C --> F
 
-    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style E fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style F fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 ### Características Arquiteturais
@@ -131,10 +125,6 @@ flowchart LR
     B --> C[Consultar dados\nvia GET]
     C --> D[Sincronizações\nperiódicas incrementais]
 
-    style A fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style B fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style C fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
-    style D fill:#0980D8,stroke:#065a97,stroke-width:2px,color:#fff
 ```
 
 Especificação detalhada em [Fluxo de Sincronização](fluxo-de-sincronizacao).
