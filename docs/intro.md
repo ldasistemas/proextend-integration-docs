@@ -53,7 +53,18 @@ Detalha as entidades do sistema e seus relacionamentos:
 
 Referência: [Conceitos Fundamentais](conceitos-fundamentais)
 
-### 3. Autenticação
+### 3. Identificadores e codes
+
+Explica o sistema de identificação de entidades:
+- Uso de identificadores próprios do sistema de origem (`codes`)
+- Comportamento idempotente da API
+- Convenções de nomenclatura
+- Casos de uso e exemplos práticos
+- Erros comuns relacionados a identificadores
+
+Referência: [Identificadores e codes](identificadores-e-codes)
+
+### 4. Autenticação
 
 Especifica o processo de autenticação:
 - Geração de API Key no painel administrativo
@@ -65,7 +76,7 @@ Especifica o processo de autenticação:
 
 Referência: [Autenticação](autenticacao)
 
-### 4. SSO (Single Sign-On)
+### 5. SSO (Single Sign-On)
 
 Funcionalidade de autenticação única:
 - Geração de tokens de acesso
@@ -75,7 +86,7 @@ Funcionalidade de autenticação única:
 
 Referência: [SSO](sso)
 
-### 5. Fluxo de Sincronização
+### 6. Fluxo de Sincronização
 
 Descreve o processo completo de sincronização:
 - Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments
@@ -87,28 +98,17 @@ Descreve o processo completo de sincronização:
 
 Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao)
 
-### 6. Remoção de Entidades
+### 7. Remoção de Entidades
 
 Documenta os endpoints `DELETE` e o comportamento de soft delete em cascata.
 
 Referência: [Remoção de Entidades](remocao)
 
-### 7. Relatórios e Consultas
+### 8. Relatórios e Consultas
 
 Endpoints de leitura de dados acadêmicos: atividades, notas e submissões.
 
 Referência: [Relatórios e Consultas](relatorios)
-
-### 9. Identificadores e Codes
-
-Explica o sistema de identificação de entidades:
-- Uso de identificadores próprios do sistema origem (codes)
-- Comportamento idempotente da API
-- Convenções de nomenclatura
-- Casos de uso e exemplos práticos
-- Erros comuns relacionados a identificadores
-
-Referência: [Identificadores e Codes](identificadores-e-codes)
 
 ## Guia de Utilização
 
@@ -118,7 +118,7 @@ Referência: [Identificadores e Codes](identificadores-e-codes)
 2. Estudar [Conceitos Fundamentais](conceitos-fundamentais) para familiarização com o modelo de dados
 3. Configurar [Autenticação](autenticacao) no painel administrativo (requer permissões de administrador)
 4. Implementar sincronização seguindo [Fluxo de Sincronização](fluxo-de-sincronizacao)
-5. Aplicar diretrizes de [Identificadores e Codes](identificadores-e-codes)
+5. Aplicar diretrizes de [Identificadores e codes](identificadores-e-codes)
 6. (Opcional) Configurar [SSO](sso) para login direto de usuários
 
 ### Consulta de Referência
@@ -156,7 +156,7 @@ Para especificação completa de endpoints, consulte [Fluxo de Sincronização](
 
 ### Armazenamento de IDs Retornados
 
-O sistema não requer armazenamento de IDs internos retornados pela API. A identificação de entidades é realizada através dos codes do sistema origem. Referência: [Identificadores e Codes](identificadores-e-codes).
+O sistema não requer armazenamento de IDs internos retornados pela API. A identificação de entidades é realizada através dos `codes` do sistema de origem. Referência: [Identificadores e codes](identificadores-e-codes).
 
 ### Mecanismo de Autenticação
 
@@ -164,7 +164,7 @@ A autenticação é realizada via API Key gerada no painel administrativo. A cha
 
 ### Sincronização Múltipla
 
-A API implementa comportamento idempotente. Múltiplas sincronizações com mesmo identificador (code) resultam em atualização da entidade existente, não em duplicação. Referência: [Identificadores e Codes](identificadores-e-codes).
+A API implementa comportamento idempotente. Múltiplas sincronizações com mesmo identificador (`code`) resultam em atualização da entidade existente, não em duplicação. Referência: [Identificadores e codes](identificadores-e-codes).
 
 ### Sequência de Sincronização
 

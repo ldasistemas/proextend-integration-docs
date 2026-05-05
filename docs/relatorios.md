@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: Relatórios e Consultas
 ---
 
@@ -251,6 +251,35 @@ GET /integration/v1/students/{code}/enrollments
 
 - `code`: Código do aluno
 
+### Resposta
+
+```json
+{
+  "success": true,
+  "data": {
+    "student": {
+      "code": "ALU2024001",
+      "name": "Pedro Oliveira Santos",
+      "email": "pedro.oliveira@aluno.edu.br"
+    },
+    "enrollments": [
+      {
+        "code": "ALG001-2025.1",
+        "semester": "2025.1",
+        "subject_name": "Algoritmos e Programação I",
+        "professor_name": "Dr. João Silva"
+      }
+    ]
+  },
+  "pagination": {
+    "total": 1,
+    "per_page": 50,
+    "current_page": 1,
+    "last_page": 1
+  }
+}
+```
+
 ## Turmas do Professor
 
 Turmas vinculadas a um professor, com filtro opcional por semestre.
@@ -265,3 +294,32 @@ GET /integration/v1/professors/{code}/subjects
 
 - `code`: Código do professor
 - `semester`: Filtrar por semestre, exemplo: `2025.1` (opcional)
+
+### Resposta
+
+```json
+{
+  "success": true,
+  "data": {
+    "professor": {
+      "code": "PROF001",
+      "name": "Dr. João Silva",
+      "email": "joao.silva@faculdade.edu.br"
+    },
+    "subjects": [
+      {
+        "code": "ALG001-2025.1",
+        "semester": "2025.1",
+        "subject_name": "Algoritmos e Programação I",
+        "students_count": 28
+      }
+    ]
+  },
+  "pagination": {
+    "total": 1,
+    "per_page": 50,
+    "current_page": 1,
+    "last_page": 1
+  }
+}
+```

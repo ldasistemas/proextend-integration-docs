@@ -32,7 +32,7 @@ flowchart LR
 
 ### Características Arquiteturais
 
-1. **Sistema de Identificação Baseado em Codes**: Utiliza identificadores do sistema origem
+1. **Sistema de identificação baseado em codes**: utiliza identificadores do sistema de origem
 2. **Operações Idempotentes**: Sincronizações múltiplas não resultam em duplicação de dados
 3. **Arquitetura RESTful**: Protocolo HTTP com payloads JSON
 4. **Autenticação via API Key**: Credenciais de longa duração geradas administrativamente
@@ -41,15 +41,15 @@ flowchart LR
 
 A API implementa autenticação baseada em API Keys geradas através do painel administrativo (Avançado > Integrações).
 
-## Sistema de Identificadores (Codes)
+## Sistema de identificadores (codes)
 
-O sistema utiliza identificadores próprios do ERP origem (denominados "codes") para todas as entidades. A API ProExtend não gera novos identificadores.
+O sistema utiliza identificadores próprios do ERP de origem (denominados `codes`) para todas as entidades. A API ProExtend não gera novos identificadores.
 
 O mapeamento de entidades é realizado exclusivamente através dos codes fornecidos. Não é necessário armazenar IDs internos da plataforma.
 
 A API possui comportamento idempotente: ao sincronizar uma entidade cujo code já existe, os dados são atualizados sem criar registros duplicados.
 
-Especificação detalhada em [Identificadores e Codes](identificadores-e-codes).
+Especificação detalhada em [Identificadores e codes](identificadores-e-codes).
 
 ## Modelo de Dados
 
@@ -259,10 +259,10 @@ Exemplos completos em [Fluxo de Sincronização](fluxo-de-sincronizacao).
 
 ## Características da Solução
 
-1. **Independência de Identificadores Internos**: Utilização de códigos do sistema origem
+1. **Independência de identificadores internos**: utilização de códigos do sistema de origem
 2. **Operações Idempotentes**: Sincronizações múltiplas sem efeitos colaterais
 3. **Sincronização Seletiva**: Possibilidade de sincronizar subconjuntos de entidades
-4. **Rastreabilidade**: Vinculação de dados através de identificadores do sistema origem
+4. **Rastreabilidade**: vinculação de dados através de identificadores do sistema de origem
 
 ## Próximas Etapas
 
@@ -271,7 +271,7 @@ Para implementação da integração:
 1. Revisar [Conceitos Fundamentais](conceitos-fundamentais) para compreensão do modelo de dados
 2. Configurar [Autenticação](autenticacao) para obtenção de credenciais
 3. Implementar [Fluxo de Sincronização](fluxo-de-sincronizacao) conforme sequência especificada
-4. Aplicar diretrizes de [Identificadores e Codes](identificadores-e-codes)
+4. Aplicar diretrizes de [Identificadores e codes](identificadores-e-codes)
 5. (Opcional) Implementar [SSO](sso) para login direto de usuários
 
 ## Recursos de Monitoramento

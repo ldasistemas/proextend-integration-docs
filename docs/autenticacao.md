@@ -258,7 +258,7 @@ Antes de iniciar a integração:
 ## Próximos Passos
 
 1. Siga o [Fluxo de Sincronização](fluxo-de-sincronizacao)
-2. Consulte [Identificadores e Codes](identificadores-e-codes)
+2. Consulte [Identificadores e codes](identificadores-e-codes)
 
 ## Recursos Adicionais
 

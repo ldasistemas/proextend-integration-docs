@@ -1,17 +1,17 @@
 ---
-sidebar_position: 6
-title: Identificadores e Codes
+sidebar_position: 7
+title: Identificadores e codes
 ---
 
-# Identificadores e Codes
+# Identificadores e codes
 
 ## Introdução
 
-Este documento especifica o sistema de identificação de entidades na API de Integração ProExtend, detalhando o uso de codes (identificadores próprios do sistema origem), comportamento idempotente, convenções e casos de uso práticos.
+Este documento especifica o sistema de identificação de entidades na API de Integração ProExtend, detalhando o uso de `codes` (identificadores próprios do sistema de origem), comportamento idempotente, convenções e casos de uso práticos.
 
 ## Conceito Principal
 
-**A API utiliza identificadores do sistema origem (codes)**. A plataforma ProExtend não gera novos identificadores através da API de integração.
+**A API utiliza identificadores do sistema de origem (`codes`)**. A plataforma ProExtend não gera novos identificadores através da API de integração.
 
 ### Fluxo de Identificação
 
@@ -38,7 +38,7 @@ Esta abordagem elimina a necessidade de mapeamento entre sistemas e simplifica a
 
 ## O que é um Code
 
-Um **code** é o identificador único definido no sistema origem e enviado para a plataforma.
+Um **code** é o identificador único definido no sistema de origem e enviado para a plataforma.
 
 ### Exemplos Práticos
 
@@ -62,7 +62,7 @@ Um **code** é o identificador único definido no sistema origem e enviado para 
 - `"ALG001-2025.1"` (disciplina + semestre)
 - `"TURMA001"` (código único)
 
-## Como Funcionam os Codes
+## Como funcionam os codes
 
 ### 1. Criação
 
@@ -124,7 +124,7 @@ A plataforma usa os codes para encontrar e vincular as entidades corretas.
 
 ### 1. Simplicidade de Integração
 
-Não é necessário armazenar ou mapear IDs internos da plataforma. Os códigos do sistema origem são suficientes para todas as operações.
+Não é necessário armazenar ou mapear IDs internos da plataforma. Os códigos do sistema de origem são suficientes para todas as operações.
 
 ### 2. Operações Idempotentes
 
@@ -191,7 +191,7 @@ Aluno code: "ALU2024001" - único entre todos os alunos
 Disciplina code: "ALG001" - único entre todas as disciplinas
 ```
 
-**Observação Importante**: Codes podem ser idênticos entre tipos diferentes de entidades:
+**Observação importante**: `codes` podem ser idênticos entre tipos diferentes de entidades:
 - Professor com code "001"
 - Aluno com code "001"
 - Disciplina com code "001"
@@ -351,7 +351,7 @@ Isso facilita identificação e evita conflitos entre semestres.
 
 **Erro**: Email duplicado (porque code duplicado tenta atualizar)
 
-**Solução**: Codes únicos
+**Solução**: `codes` únicos
 ```json
 {
   "professors": [
@@ -412,7 +412,7 @@ Isso facilita identificação e evita conflitos entre semestres.
 
 ### Princípios Fundamentais
 
-1. **Códigos Próprios**: Utilize identificadores do sistema origem
+1. **Códigos próprios**: utilize identificadores do sistema de origem
 2. **Idempotência**: Mesmo code atualiza registro existente ao invés de duplicar
 3. **Relacionamentos**: Vínculo entre entidades através de codes
 4. **Independência**: Não requer armazenamento de IDs internos da plataforma

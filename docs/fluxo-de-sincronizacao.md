@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: Fluxo de Sincronização
 ---
 
@@ -408,58 +408,7 @@ POST /integration/v1/students/sync
 - CPF duplicado (se fornecido) resulta em erro 422
 - CPF é campo opcional
 
-## 7. Sincronizar Administradores
-
-Administradores são os gestores da instituição que podem ser vinculados a unidades, áreas e cursos como responsáveis.
-
-**Dependências**: Nenhuma (entidade independente)
-
-:::note
-Administradores também podem ser criados e gerenciados diretamente pelo painel ProExtend. A sincronização via API é opcional e complementar.
-:::
-
-### Endpoint
-
-```
-POST /integration/v1/admins/sync
-```
-
-### Exemplo
-
-```json
-{
-  "admins": [
-    {
-      "code": "ADMIN001",
-      "name": "Carlos Souza",
-      "email": "carlos.souza@faculdade.edu.br",
-      "unit_code": "CAMPUS_CENTRO"
-    },
-    {
-      "code": "ADMIN002",
-      "name": "Fernanda Costa",
-      "email": "fernanda.costa@faculdade.edu.br",
-      "area_code": "TECH"
-    }
-  ]
-}
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único do administrador (máximo 255 caracteres)
-- `name`: Nome completo (máximo 255 caracteres)
-- `email`: Email institucional (deve ser único na plataforma)
-
-### Campos Opcionais
-
-- `cpf`: CPF, apenas 11 dígitos numéricos sem formatação (ex: `12345678901`)
-- `phone`: Telefone de contato, apenas dígitos numéricos (ex: `11999999999`)
-- `unit_code`: Código da unidade de atuação (deve existir se fornecido)
-- `area_code`: Código da área de atuação (deve existir se fornecido)
-- `course_code`: Código do curso de atuação (deve existir se fornecido)
-
-## 8. Sincronizar Turmas (Enrollments)
+## 7. Sincronizar Turmas (Enrollments)
 
 Turmas representam instâncias de disciplinas base em períodos letivos específicos, incluindo docente responsável e estudantes matriculados.
 
@@ -763,7 +712,7 @@ Units → Areas → Courses → Subjects → Professors/Students → Enrollments
 }
 ```
 
-**Solução**: Validar formato e consistência dos dados no sistema origem antes do envio.
+**Solução**: Validar formato e consistência dos dados no sistema de origem antes do envio.
 
 ## Estratégias de Sincronização
 
@@ -816,7 +765,7 @@ Agrupe múltiplos registros em uma única requisição para melhorar a performan
 
 ## Próximos Passos
 
-1. Compreender sistema de [Identificadores e Codes](identificadores-e-codes)
+1. Compreender sistema de [Identificadores e codes](identificadores-e-codes)
 2. Testar requisições diretamente pelo [playground interativo](/api)
 3. Configurar rotina de sincronização periódica (incremental)
 4. Implementar monitoramento e alertas de falhas

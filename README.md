@@ -21,9 +21,12 @@ A documentação cobre:
 
 - **Visão Geral**: Introdução à API de integração e conceitos principais
 - **Conceitos Fundamentais**: Entidades e seus relacionamentos
+- **Identificadores e codes**: Como funcionam os identificadores do sistema
 - **Autenticação**: Como gerar e usar API Keys
+- **SSO**: Login único via tokens temporários
 - **Fluxo de Sincronização**: Passo a passo completo de integração
-- **Identificadores e Codes**: Como funcionam os identificadores do sistema
+- **Remoção de Entidades**: Comportamento de soft delete e cascata
+- **Relatórios e Consultas**: Endpoints de leitura de atividades, notas e submissões
 
 ## Desenvolvimento Local
 

@@ -230,7 +230,7 @@ Discente matriculado em um curso da instituição.
 - Email deve ser único
 - CPF é campo opcional (se fornecido, deve ser único e válido)
 - Phone (telefone) aceita apenas dígitos (sem formatação: parênteses, espaços ou hífens)
-- Campo `code` aceita matrícula, CPF ou RA do sistema origem
+- Campo `code` aceita matrícula, CPF ou RA do sistema de origem
 - Sistema cria credenciais de acesso automaticamente
 - Pode ser vinculado a múltiplas turmas (Enrollments)
 
@@ -287,9 +287,9 @@ Gestor da instituição com acesso ao painel ProExtend. Pode ser vinculado a uni
 
 #### Características
 
-- Pode ser sincronizado via `POST /admins/sync`
 - Consultável via `GET /admins` e `GET /admins/{code}`
 - Filtros de consulta: `unit_code`, `area_code`, `active_only`
+- É gerenciado pelo painel ProExtend, não pela sincronização da API
 - O `code` do administrador é usado como `responsible_code` em Áreas e Cursos
 
 ---
@@ -370,13 +370,13 @@ Instância da disciplina base em período letivo específico, com professor e al
 - CPF: Valida formato e dígitos verificadores (apenas 11 dígitos sem formatação)
 - Email: Valida formato e unicidade
 - Phone: Aceita apenas dígitos numéricos
-- Codes: Valida unicidade dentro do tipo de entidade e tamanho máximo 255
+- `codes`: valida unicidade dentro do tipo de entidade e tamanho máximo 255
 - Referências: Valida existência antes de criar vínculo
 - Responsible: Valida que seja Admin
 
 ### Utilização de Identificadores
 
-Utilize identificadores existentes no sistema origem (ERP):
+Utilize identificadores existentes no sistema de origem (ERP):
 - Matrícula de professor: `"PROF-2023-001"`
 - Código de disciplina: `"CC-ALG-001"`
 - RA de aluno: `"202410001"`
@@ -392,14 +392,14 @@ Os identificadores devem corresponder aos codes já utilizados no ERP institucio
 - **Turma (Enrollment)**: Instância de disciplina base em período letivo, com professor e alunos
 - **Professor (Professor)**: Docente responsável por ministrar disciplinas
 - **Aluno (Student)**: Discente matriculado em curso
-- **Code**: Identificador único do sistema origem (ERP)
+- **Code**: Identificador único do sistema de origem (ERP)
 - **Período Letivo (Semester)**: Semestre acadêmico (formato "YYYY.N")
 
 ## Próximos Passos
 
 1. Configure [Autenticação](autenticacao)
 2. Siga o [Fluxo de Sincronização](fluxo-de-sincronizacao)
-3. Entenda [Identificadores e Codes](identificadores-e-codes)
+3. Entenda [Identificadores e codes](identificadores-e-codes)
 4. Consulte [Remoção de Entidades](remocao) para gerenciar o ciclo de vida dos dados
 5. Veja [Relatórios e Consultas](relatorios) para leitura de atividades e notas
 

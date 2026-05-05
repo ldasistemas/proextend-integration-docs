@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: Remoção de Entidades
 ---
 
@@ -23,7 +23,6 @@ Remoções em cascata afetam todas as entidades filhas vinculadas. Avalie o impa
 | `DELETE /subjects/{code}` | Remove a disciplina base e, em cascata, todas as turmas vinculadas |
 | `DELETE /professors/{code}` | Remove o professor. Turmas são preservadas |
 | `DELETE /students/{code}` | Remove o aluno. Matrículas históricas são preservadas |
-| `DELETE /admins/{code}` | Remove o administrador |
 | `DELETE /enrollments/{code}` | Remove a turma e desmatricula todos os alunos vinculados |
 
 ## Exemplo de Requisição

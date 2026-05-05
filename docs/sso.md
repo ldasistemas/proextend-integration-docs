@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 5
 title: SSO (Single Sign-On)
 ---
 
@@ -28,8 +28,8 @@ Conecte sistemas acadêmicos ao ProExtend de forma simples.
 O processo de autenticação SSO segue os seguintes passos:
 
 ```mermaid
-flowchart LR
-    A[Sistema Externo\nsolicita token] --> B[POST /sso/generate-token]
+flowchart TD
+    A[Sistema Externo\nsolicita token] --> B[POST /integration/v1/sso/generate-token]
     B --> C[API valida usuário\ne gera token]
     C --> D[Retorna login_url]
     D --> E[Sistema redireciona\nusuário]
