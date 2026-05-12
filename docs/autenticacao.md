@@ -14,11 +14,29 @@ A API de Integração ProExtend utiliza autenticação baseada em API Keys. As c
 ### Fluxo de Autenticação
 
 ```mermaid
-flowchart LR
-    A[Administrador acessa\no painel ProExtend] --> B[Gera API Key com\nescopo e rate limit]
-    B --> C[Copia o token\npex_xxx...]
-    C --> D[Inclui no header\nAuthorization]
+flowchart TD
+    ADMIN["Administrador\ngera API Key no painel\n(Avançado → Integrações)"]
+    KEY["API Key gerada\npex_xxx...\nescopo + rate limit"]
+    REQ["Requisição HTTP\nAuthorization: Bearer pex_xxx...\nContent-Type: application/json"]
 
+    VAL{"API Key\nválida?"}
+    SCOPE{"Escopo\nsuficiente?"}
+    RATE{"Rate limit\natingido?"}
+
+    R401["401 Unauthorized"]
+    R403["403 Forbidden"]
+    R429["429 Too Many Requests"]
+    OK["✓ Requisição processada"]
+
+    ADMIN --> KEY
+    KEY --> REQ
+    REQ --> VAL
+    VAL -->|não| R401
+    VAL -->|sim| SCOPE
+    SCOPE -->|não| R403
+    SCOPE -->|sim| RATE
+    RATE -->|sim| R429
+    RATE -->|não| OK
 ```
 
 ## Gerando API Key no Painel Administrativo
@@ -84,13 +102,9 @@ Após criar, a plataforma exibe a API Key gerada:
 pex_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 ```
 
-Nota de segurança:
-- A chave é exibida apenas uma vez durante a criação
-- Armazene imediatamente em local seguro
-- Não será possível visualizar novamente após fechar
-- Perda da chave requer geração de nova API Key
-- Regeneração invalida imediatamente a chave anterior
-- Planeje substituição em todos os sistemas antes de regenerar
+:::warning[Atenção]
+A chave é exibida **apenas uma vez**. Copie e armazene imediatamente em local seguro, não será possível recuperá-la depois. Caso seja perdida ou comprometida, será necessário gerar uma nova, o que invalida a anterior imediatamente em todos os sistemas que a utilizam.
+:::
 
 ## Usando API Key nas Requisições
 
@@ -102,6 +116,12 @@ Todas as requisições à API de integração devem incluir:
 Authorization: Bearer pex_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 Content-Type: application/json
 ```
+
+:::info
+Todos os endpoints estão disponíveis para teste diretamente no navegador.
+
+**<a href="/api" target="_blank">Acessar API →</a>**
+:::
 
 ### Exemplo de Requisição
 

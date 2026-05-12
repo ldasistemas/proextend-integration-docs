@@ -15,16 +15,25 @@ Este documento detalha as entidades do sistema de integração ProExtend e seus 
 
 ```mermaid
 flowchart TD
-    A[Instituição] --> B[Unidades]
-    B --> C[Áreas]
-    C --> D[Cursos]
-    D --> E[Disciplinas Base]
-    A --> F[Professores]
-    A --> G[Alunos]
-    E --> H[Turmas]
-    F --> H
-    G --> H
+    INST[Instituição]
 
+    INST --> UNI[Unidades]
+    INST --> PROF[Professores]
+    INST --> ALU[Alunos]
+
+    UNI --> DIR[Diretores]
+    UNI --> ASSES[Assessores Pedagógicos]
+    UNI --> AREA[Áreas]
+
+    AREA --> GEST[Gestores de Área]
+    AREA --> CURSO[Cursos]
+
+    CURSO --> COORD[Coordenadores]
+    CURSO --> DISC[Disciplinas Base]
+
+    DISC --> TURMA[Turmas]
+    PROF --> TURMA
+    ALU --> TURMA
 ```
 
 ## Entidades Detalhadas
@@ -35,7 +44,7 @@ Campus ou unidade física da instituição.
 
 #### Atributos
 
-- **code**: Código único da unidade (exemplo: "CAMPUS_CENTRO", "SEDE")
+- **code**: Identificador único do sistema de origem (ERP). Usado em todas as entidades para mapeamento idempotente. Exemplo: "CAMPUS_CENTRO", "SEDE"
 - **name**: Nome da unidade
 - **address**: Endereço completo (opcional)
 
@@ -52,21 +61,112 @@ Campus ou unidade física da instituição.
 #### Características
 
 - Não depende de outras entidades
-- Pode conter múltiplas áreas
-- Deve ser sincronizada antes das demais entidades
+- Possui Diretores (Directors), Assessores Pedagógicos (Pedagogical Advisors), Áreas (Areas) e Cursos (Courses) vinculados
 
 ---
 
-### 2. Área (Area)
+### 2. Diretor (Director)
+
+Diretor de unidade, responsável pela gestão de um campus.
+
+#### Atributos
+
+- **code**: Código único do diretor
+- **name**: Nome completo
+- **email**: Email institucional (obrigatório, único)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
+- **unit_code**: Código da unidade que dirige (obrigatório, deve existir)
+- **active**: Controla o status (opcional)
+  - `true` → reativa (remove suspensão)
+  - `false` → suspende
+  - Omitir → não altera o status atual
+
+#### Exemplo
+
+```json
+{
+  "code": "DIR001",
+  "name": "Roberto Lima",
+  "email": "roberto.lima@faculdade.edu.br",
+  "unit_code": "CAMPUS_CENTRO"
+}
+```
+
+#### Características
+
+- **Depende de**: Unidade (Unit)
+- Sistema cria credenciais de acesso automaticamente
+- Pode ser suspenso sem ser removido via campo `active: false`
+
+O Diretor tem visibilidade sobre todas as turmas da sua unidade. Como a unidade agrupa áreas, e cada área agrupa cursos, o acesso percorre toda essa hierarquia: qualquer turma vinculada a um curso de qualquer área da unidade estará visível.
+
+```mermaid
+flowchart TD
+    DIR["Diretor\n(ex: DIR001)"]
+    UNI["Unidade\n(ex: CAMPUS_CENTRO)"]
+    A1["Área: Tecnologia"]
+    A2["Área: Saúde"]
+    C1["Curso: Ciência da Computação"]
+    C2["Curso: Sistemas de Informação"]
+    C3["Curso: Enfermagem"]
+    T["Turmas de todos\nos cursos da unidade"]
+
+    DIR -->|dirige| UNI
+    UNI --> A1 --> C1 --> T
+    A1 --> C2 --> T
+    UNI --> A2 --> C3 --> T
+```
+
+---
+
+### 3. Assessor Pedagógico (Pedagogical Advisor)
+
+Assessor responsável pelo suporte pedagógico em uma unidade.
+
+#### Atributos
+
+- **code**: Código único do assessor
+- **name**: Nome completo
+- **email**: Email institucional (obrigatório, único)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
+- **unit_code**: Código da unidade de atuação (obrigatório, deve existir)
+- **active**: Controla o status (opcional)
+  - `true` → reativa (remove suspensão)
+  - `false` → suspende
+  - Omitir → não altera o status atual
+
+#### Exemplo
+
+```json
+{
+  "code": "ASSES001",
+  "name": "Fernanda Costa",
+  "email": "fernanda.costa@faculdade.edu.br",
+  "unit_code": "CAMPUS_CENTRO"
+}
+```
+
+#### Características
+
+- **Depende de**: Unidade (Unit)
+- Sistema cria credenciais de acesso automaticamente
+- Pode ser suspenso sem ser removido via campo `active: false`
+
+O Assessor Pedagógico tem a mesma visibilidade de turmas que o Diretor (Director): acesso a todas as turmas de todos os cursos e áreas da unidade. A diferença está no papel dentro da instituição, não no escopo de acesso à plataforma.
+
+---
+
+### 4. Área (Area)
 
 Área de conhecimento que agrupa cursos relacionados.
 
 #### Atributos
 
-- **code**: Código único da área (exemplo: "TECH", "HEALTH") 
-- **name**: Nome da área 
+- **code**: Código único da área (exemplo: "TECH", "HEALTH")
+- **name**: Nome da área
 - **unit_code**: Código da unidade (obrigatório, deve existir)
-- **responsible_email** OU **responsible_code**
 
 #### Exemplo
 
@@ -74,31 +174,81 @@ Campus ou unidade física da instituição.
 {
   "code": "TECH",
   "name": "Tecnologia da Informação",
-  "unit_code": "CAMPUS_CENTRO",
-  "responsible_email": "coord.tech@faculdade.edu.br"
+  "unit_code": "CAMPUS_CENTRO"
 }
 ```
 
 #### Características
 
 - **Depende de**: Unidade (Unit)
-- Agrupa cursos relacionados
-- **Deve ter coordenador responsável que seja Administrador ativo**
+- Possui Gestores de Área (Area Managers) e Cursos (Courses) vinculados
 
 ---
 
-### 3. Curso (Course)
+### 5. Gestor de Área (Area Manager)
+
+Gestor responsável por uma área de conhecimento.
+
+#### Atributos
+
+- **code**: Código único do gestor
+- **name**: Nome completo
+- **email**: Email institucional (obrigatório, único)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
+- **area_code**: Código da área que gerencia (obrigatório, deve existir)
+- **active**: Controla o status (opcional)
+  - `true` → reativa (remove suspensão)
+  - `false` → suspende
+  - Omitir → não altera o status atual
+
+#### Exemplo
+
+```json
+{
+  "code": "GEST001",
+  "name": "Carlos Mendes",
+  "email": "carlos.mendes@faculdade.edu.br",
+  "area_code": "TECH"
+}
+```
+
+#### Características
+
+- **Depende de**: Área (Area)
+- Sistema cria credenciais de acesso automaticamente
+- Pode ser suspenso sem ser removido via campo `active: false`
+
+O Gestor de Área tem visibilidade sobre todas as turmas dos cursos pertencentes à área que gerencia. Qualquer turma vinculada a um curso dessa área estará visível, independentemente do professor responsável.
+
+```mermaid
+flowchart TD
+    GEST["Gestor de Área\n(ex: GEST001)"]
+    AREA["Área\n(ex: Tecnologia)"]
+    C1["Curso: Ciência da Computação"]
+    C2["Curso: Sistemas de Informação"]
+    C3["Curso: Engenharia de Software"]
+    T["Turmas de todos\nos cursos da área"]
+
+    GEST -->|gerencia| AREA
+    AREA --> C1 --> T
+    AREA --> C2 --> T
+    AREA --> C3 --> T
+```
+
+---
+
+### 6. Curso (Course)
 
 Curso de graduação ou pós-graduação oferecido pela instituição.
 
 #### Atributos
 
-- **code**: Código único do curso (exemplo: "CC001", "ENF001") 
-- **name**: Nome do curso 
+- **code**: Código único do curso (exemplo: "CC001", "ENF001")
+- **name**: Nome do curso
 - **description**: Descrição detalhada (opcional)
 - **area_code**: Código da área (obrigatório, deve existir)
 - **unit_code**: Código da unidade (obrigatório, deve existir)
-- **responsible_email** OU **responsible_code**
 
 #### Exemplo
 
@@ -108,32 +258,80 @@ Curso de graduação ou pós-graduação oferecido pela instituição.
   "name": "Ciência da Computação",
   "description": "Bacharelado em Ciência da Computação - Duração 4 anos",
   "area_code": "TECH",
-  "unit_code": "CAMPUS_CENTRO",
-  "responsible_code": "ADMIN001"
+  "unit_code": "CAMPUS_CENTRO"
 }
 ```
 
 #### Características
 
 - **Depende de**: Unidade (Unit) e Área (Area)
-- **Deve ter coordenador responsável que seja Administrador ativo**
-- Pode usar `responsible_email` (email) ou `responsible_code` (código do Administrador)
+- Possui Coordenadores (Coordinators) e Disciplinas Base (Subjects) vinculadas
 
 ---
 
-### 4. Disciplina Base (Subject)
+### 7. Coordenador (Coordinator)
+
+Coordenador de curso, responsável pela gestão acadêmica de um curso específico.
+
+#### Atributos
+
+- **code**: Código único do coordenador
+- **name**: Nome completo
+- **email**: Email institucional (obrigatório, único)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
+- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
+- **course_code**: Código do curso que coordena (obrigatório, deve existir)
+- **active**: Controla o status (opcional)
+  - `true` → reativa (remove suspensão)
+  - `false` → suspende
+  - Omitir → não altera o status atual
+
+#### Exemplo
+
+```json
+{
+  "code": "COORD001",
+  "name": "Prof. Ana Souza",
+  "email": "ana.souza@faculdade.edu.br",
+  "cpf": "11122233344",
+  "phone": "11988887777",
+  "course_code": "CC001"
+}
+```
+
+#### Características
+
+- **Depende de**: Curso (Course)
+- Sistema cria credenciais de acesso automaticamente
+- Pode ser suspenso sem ser removido via campo `active: false`
+
+O Coordenador tem visibilidade sobre todas as turmas do curso que coordena, incluindo alunos matriculados e atividades criadas. Turmas de outros cursos não são acessíveis, mesmo que compartilhem disciplinas via `course_codes`.
+
+```mermaid
+flowchart LR
+    COORD["Coordenador\n(ex: COORD001)"]
+    CURSO["Curso\n(ex: CC001)"]
+    T1["Turma ALG001-2025.1"]
+    T2["Turma BD001-2025.1"]
+    T3["Turma ... "]
+
+    COORD -->|coordena| CURSO
+    CURSO --> T1
+    CURSO --> T2
+    CURSO --> T3
+```
+
+---
+
+### 8. Disciplina Base (Subject)
 
 Componente curricular que faz parte da grade do curso.
 
 #### Atributos
 
-- **code**: Código único da disciplina (exemplo: "ALG001", "LIBRAS") 
-- **name**: Nome da disciplina 
+- **code**: Código único da disciplina (exemplo: "ALG001", "LIBRAS")
+- **name**: Nome da disciplina
 - **course_code**: Código do curso (obrigatório, deve existir)
-- **type**: Tipo da disciplina (opcional, padrão: "obrigatoria")
-  - `obrigatoria`: Disciplina obrigatória
-  - `optativa`: Disciplina optativa
-  - `eletiva`: Disciplina eletiva
 
 #### Exemplo
 
@@ -147,19 +345,104 @@ Componente curricular que faz parte da grade do curso.
 
 #### Características
 
-- **Depende de**: Curso
-- Representa componente curricular permanente (sem vínculo com período letivo ou alunos)
-- Utilizada como base para criação de Turmas
+- **Depende de**: Curso (Course)
+- Representa componente curricular permanente, sem vínculo com período letivo ou alunos
+- Possui Turmas (Enrollments) vinculadas
 
 ---
 
-### 5. Professor (Professor)
+### 9. Turma (Enrollment)
+
+Instância de uma Disciplina Base em período letivo específico, com um ou mais professores responsáveis e alunos matriculados.
+
+#### Atributos
+
+- **code**: Código único da turma (exemplo: "ALG001-2025.1", "TURMA001")
+- **subject_code**: Código da disciplina base (obrigatório, deve existir)
+- **professor_codes**: Array de códigos de professores (obrigatório, pelo menos um; aceita `professor_code` singular por retrocompatibilidade)
+- **semester**: Semestre acadêmico (obrigatório, formato: "YYYY.N", ex: `"2025.1"`, `"2025.2"`)
+- **course_codes**: Array de códigos de cursos adicionais vinculados à turma (opcional)
+- **student_codes**: Array de códigos de alunos (opcional, devem existir se fornecidos)
+- **student_sync_mode**: Modo de sincronização de alunos (opcional, padrão: `replace`)
+
+#### Exemplo
+
+```json
+{
+  "code": "ALG001-2025.1",
+  "subject_code": "ALG001",
+  "professor_codes": ["PROF001", "PROF002"],
+  "semester": "2025.1",
+  "course_codes": ["CC001", "SI001"],
+  "student_codes": ["ALU2024001", "ALU2024002", "ALU2024003"]
+}
+```
+
+#### Elegibilidade de Alunos
+
+Toda disciplina base pertence a um curso. Ao criar uma turma, os alunos elegíveis para matrícula são, por padrão, os alunos desse curso.
+
+```mermaid
+flowchart LR
+    DISC["Disciplina Base\n(ex: Ética e Democracia)"]
+    CURSO_BASE["Curso base\n(ex: Administração)"]
+    TURMA["Turma\n(ex: ETICA-2025.1)"]
+    ALU_BASE["Alunos de Administração\n✓ elegíveis por padrão"]
+
+    DISC -->|pertence a| CURSO_BASE
+    CURSO_BASE -->|origina| TURMA
+    TURMA --> ALU_BASE
+```
+
+O campo `course_codes` permite vincular cursos adicionais à turma, expandindo a elegibilidade para alunos desses cursos. Útil para disciplinas compartilhadas entre diferentes cursos.
+
+```mermaid
+flowchart LR
+    TURMA["Turma\n(ex: ETICA-2025.1)"]
+    CURSO_BASE["Administração\n(curso da disciplina)"]
+    CURSO_A["Direito\n(via course_codes)"]
+    CURSO_B["Ciências Sociais\n(via course_codes)"]
+
+    ALU1["Alunos de Administração"]
+    ALU2["Alunos de Direito"]
+    ALU3["Alunos de Ciências Sociais"]
+
+    TURMA --- CURSO_BASE --> ALU1
+    TURMA --- CURSO_A --> ALU2
+    TURMA --- CURSO_B --> ALU3
+```
+
+#### Múltiplos Professores
+
+O campo `professor_codes` permite vincular mais de um professor à mesma turma. Todos os professores vinculados têm o mesmo nível de acesso à turma: podem criar atividades, avaliar alunos e visualizar submissões igualmente. Útil para turmas com co-docência ou quando dois professores dividem a responsabilidade pela disciplina.
+
+```mermaid
+flowchart LR
+    TURMA["Turma\n(ex: ALG001-2025.1)"]
+    P1["Prof. João Silva\n(PROF001)"]
+    P2["Prof. Maria Santos\n(PROF002)"]
+    ACESSO["Mesmo acesso:\ncriar atividades,\navaliar alunos,\nver submissões"]
+
+    TURMA --> P1 --> ACESSO
+    TURMA --> P2 --> ACESSO
+```
+
+#### Características
+
+- **Depende de**: Disciplina Base (Subject), Professores (Professors) e Alunos (Students)
+- Sincronizações com `code` existente adicionam professores novos sem remover os existentes
+- O comportamento dos alunos é controlado por `student_sync_mode` (`replace` ou `add`)
+- Alunos removidos da lista (em modo `replace`) são automaticamente desvinculados
+
+---
+
+### 10. Professor (Professor)
 
 Docente que leciona disciplinas na instituição.
 
 #### Atributos
 
-- **code**: Código único do professor (matrícula, CPF ou código funcional) 
+- **code**: Código único do professor (matrícula, CPF ou código funcional)
 - **name**: Nome completo
 - **email**: Email institucional (obrigatório, único)
 - **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
@@ -185,23 +468,34 @@ Docente que leciona disciplinas na instituição.
 
 #### Características
 
-- Não depende de outras entidades (pode ser sincronizado a qualquer momento)
-- Email deve ser único
-- CPF é campo opcional (se fornecido, deve ser único e válido)
-- Phone (telefone) aceita apenas dígitos (sem formatação: parênteses, espaços ou hífens)
+- Não depende de outras entidades: pode ser sincronizado a qualquer momento
 - Sistema cria credenciais de acesso automaticamente
-- Pode ser vinculado a múltiplas turmas (Enrollments)
+- Pode ser suspenso sem ser removido via campo `active: false`
+
+Um professor pode ministrar diversas turmas simultaneamente em diferentes disciplinas e semestres. Em cada turma que leciona, o professor tem acesso completo: pode criar e corrigir atividades, lançar notas e visualizar submissões dos alunos matriculados.
+
+```mermaid
+flowchart LR
+    PROF["Professor\n(ex: PROF001)"]
+    T1["Turma ALG001-2025.1"]
+    T2["Turma BD001-2025.1"]
+    T3["Turma POO-2025.2"]
+
+    PROF -->|ministra| T1
+    PROF -->|ministra| T2
+    PROF -->|ministra| T3
+```
 
 ---
 
-### 6. Aluno (Student)
+### 11. Aluno (Student)
 
 Discente matriculado em um curso da instituição.
 
 #### Atributos
 
-- **code**: Código único do aluno (matrícula, CPF ou RA) 
-- **name**: Nome completo 
+- **code**: Código único do aluno (matrícula, CPF ou RA)
+- **name**: Nome completo
 - **email**: Email institucional (obrigatório, único)
 - **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
@@ -226,130 +520,68 @@ Discente matriculado em um curso da instituição.
 
 #### Características
 
-- Não depende de outras entidades, exceto Curso (Course)
-- Email deve ser único
-- CPF é campo opcional (se fornecido, deve ser único e válido)
-- Phone (telefone) aceita apenas dígitos (sem formatação: parênteses, espaços ou hífens)
+- **Depende de**: Curso (Course)
 - Campo `code` aceita matrícula, CPF ou RA do sistema de origem
 - Sistema cria credenciais de acesso automaticamente
-- Pode ser vinculado a múltiplas turmas (Enrollments)
+- Pode ser suspenso sem ser removido via campo `active: false`
 
----
+Um aluno pode estar matriculado em diversas turmas ao mesmo tempo, correspondentes às disciplinas do seu semestre. Em cada turma à qual pertence, o aluno tem acesso para visualizar as atividades disponíveis, enviar submissões e acompanhar suas notas.
 
-### 7. Turma (Enrollment)
+```mermaid
+flowchart LR
+    ALU["Aluno\n(ex: ALU2024001)"]
+    T1["Turma ALG001-2025.1"]
+    T2["Turma BD001-2025.1"]
+    T3["Turma POO-2025.2"]
 
-Instância de uma Disciplina Base em período letivo específico, com professor responsável e alunos matriculados.
-
-#### Atributos
-
-- **code**: Código único da turma (exemplo: "ALG001-2025.1", "TURMA001")
-- **subject_code**: Código da disciplina base (obrigatório, deve existir)
-- **professor_code**: Código do professor responsável (obrigatório, deve existir)
-- **semester**: Período letivo (obrigatório, formato: "YYYY.N")
-- **student_codes**: Array de códigos de alunos (opcional, devem existir se fornecidos)
-
-#### Exemplo
-
-```json
-{
-  "code": "ALG001-2025.1",
-  "subject_code": "ALG001",
-  "professor_code": "PROF001",
-  "semester": "2025.1",
-  "student_codes": ["ALU2024001", "ALU2024002", "ALU2024003"]
-}
+    ALU -->|matriculado em| T1
+    ALU -->|matriculado em| T2
+    ALU -->|matriculado em| T3
 ```
 
-#### Características
-
-- **Depende de**: Disciplina Base, Professor e Alunos
-- Representa oferta de disciplina em período letivo
-- Vincula disciplina, professor, alunos e período acadêmico
-- Sincronizações com `code` existente atualizam professor e lista de alunos
-- Alunos removidos da lista são automaticamente desvinculados da turma
-
 ---
 
-### 8. Administrador (Admin)
+### 12. Administrador (Admin)
 
-Gestor da instituição com acesso ao painel ProExtend. Pode ser vinculado a unidades, áreas e cursos.
+Usuário com acesso administrativo completo ao painel ProExtend. Diferentemente dos demais perfis, o Administrador não é gerenciado via integração: é cadastrado diretamente no painel e possui permissões que vão além do escopo da API, como criar e revogar integrações, fazer edições manuais em turmas, reenviar convites de acesso e gerenciar outros usuários da plataforma.
 
 #### Atributos
 
 - **code**: Código único do administrador
 - **name**: Nome completo
 - **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **unit_code**: Código da unidade de atuação (opcional)
-- **area_code**: Código da área de atuação (opcional)
-- **course_code**: Código do curso de atuação (opcional)
+- **unit_code**: Código da unidade de atuação (opcional, deve existir se fornecido)
+- **area_code**: Código da área de atuação (opcional, deve existir se fornecido)
+- **course_code**: Código do curso de atuação (opcional, deve existir se fornecido)
 
 #### Características
 
-- Consultável via `GET /admins` e `GET /admins/{code}`
-- Filtros de consulta: `unit_code`, `area_code`, `active_only`
-- É gerenciado pelo painel ProExtend, não pela sincronização da API
-- O `code` do administrador é usado como `responsible_code` em Áreas e Cursos
+- Não é criado nem atualizado via integração: gerenciado exclusivamente pelo painel ProExtend
 
 ---
 
 ## Diferença: Disciplina Base vs Turma
 
-Distinção fundamental do modelo de dados:
+A Disciplina Base é o registro permanente de um componente curricular no catálogo do curso, sem vínculo com período letivo, professores ou alunos. A Turma é a instância dessa disciplina em um semestre específico: é nela que professores e alunos são vinculados e as atividades acontecem.
 
-### Disciplina Base (Subject)
+Uma turma pode ter mais de um professor responsável via `professor_codes`, todos com o mesmo nível de acesso. Além disso, via `course_codes`, a turma pode ser vinculada a cursos adicionais além do curso da disciplina base, permitindo que alunos desses cursos também sejam matriculados. Uma mesma Disciplina Base pode originar turmas em semestres diferentes, cada uma com professores e alunos distintos.
 
-Registro permanente do componente curricular no catálogo do curso.
+```mermaid
+flowchart LR
+    DISC["Disciplina Base\nÉtica e Democracia\nCurso: Administração"]
 
-```json
-{
-  "code": "ALG001",
-  "name": "Algoritmos e Programação I",
-  "course_code": "CC001"
-}
+    DISC -->|2025.1| T1["Turma ETI001-2025.1"]
+    DISC -->|2025.2| T2["Turma ETI001-2025.2"]
+
+    T1 --> P1["Prof. João\nProf. Maria"]
+    T1 --> A1["Alunos de Administração\nAlunos de Direito\nAlunos de Ciências Sociais"]
+
+    T2 --> P2["Prof. Ana"]
+    T2 --> A2["Alunos de Administração"]
 ```
 
-- Sem vínculo com período letivo
-- Sem vínculo com professor
-- Sem vínculo com alunos
-- Utilizada como base para criação de turmas
-
-### Turma (Enrollment)
-
-Instância da disciplina base em período letivo específico, com professor e alunos vinculados.
-
-```json
-{
-  "code": "ALG001-2025.1",
-  "subject_code": "ALG001",
-  "professor_code": "PROF001",
-  "semester": "2025.1",
-  "student_codes": ["ALU2024001", "ALU2024002"]
-}
-```
-
-- Vinculada a período letivo específico
-- Vinculada a professor responsável
-- Vinculada a alunos matriculados
-- Representa oferta efetiva da disciplina
-
-## Campos Obrigatórios vs Opcionais
-
-### Resumo por Entidade
-
-| Entidade | Campos Obrigatórios | Campos Opcionais |
-|----------|---------------------|------------------|
-| Unidade (Unit) | code, name | address |
-| Área (Area) | code, name, unit_code, responsible* |  |
-| Curso (Course) | code, name, area_code, unit_code, responsible* | description |
-| Disciplina Base (Subject) | code, name, course_code | type |
-| Professor (Professor) | code, name, email | cpf, phone, area_code, active |
-| Aluno (Student) | code, name, email, course_code | cpf, phone, active |
-| Turma (Enrollment) | code, subject_code, professor_code, semester | student_codes, student_sync_mode |
-| Administrador (Admin) | code, name, email | cpf, phone, unit_code, area_code, course_code |
-
-\* Área (Area) e Curso (Course) requerem `responsible_email` **OU** `responsible_code` (deve ser Administrador ativo)
 
 ## Boas Práticas
 
@@ -363,7 +595,6 @@ Instância da disciplina base em período letivo específico, com professor e al
 | **email** | Formato válido, único | `"usuario@dominio.com"` |
 | **phone** | Opcional, apenas dígitos | `"11999999999"` (10-11 dígitos) |
 | **semester** | Formato ano.período | `"2025.1"`, `"2025.2"` |
-| **responsible** | Obrigatório (Área/Curso), deve ser Administrador ativo | email ou code de Admin |
 | **codes** de referência | Devem existir previamente | `area_code`, `unit_code`, `course_code`, etc. |
 
 **Validações automáticas**:
@@ -372,28 +603,14 @@ Instância da disciplina base em período letivo específico, com professor e al
 - Phone: Aceita apenas dígitos numéricos
 - `codes`: valida unicidade dentro do tipo de entidade e tamanho máximo 255
 - Referências: Valida existência antes de criar vínculo
-- Responsible: Valida que seja Admin
 
 ### Utilização de Identificadores
 
-Utilize identificadores existentes no sistema de origem (ERP):
+Recomenda-se utilizar os identificadores já existentes no sistema de origem (ERP). Os exemplos abaixo são sugestões de formato, não obrigatórios. Consulte [Identificadores e codes](identificadores-e-codes) para mais detalhes.
 - Matrícula de professor: `"PROF-2023-001"`
 - Código de disciplina: `"CC-ALG-001"`
 - RA de aluno: `"202410001"`
 
-Os identificadores devem corresponder aos codes já utilizados no ERP institucional.
-
-## Glossário
-
-- **Unidade (Unit)**: Campus ou unidade organizacional da instituição
-- **Área (Area)**: Área de conhecimento que agrupa cursos relacionados
-- **Curso (Course)**: Programa acadêmico de graduação ou pós-graduação
-- **Disciplina Base (Subject)**: Componente curricular permanente (sem vínculo temporal)
-- **Turma (Enrollment)**: Instância de disciplina base em período letivo, com professor e alunos
-- **Professor (Professor)**: Docente responsável por ministrar disciplinas
-- **Aluno (Student)**: Discente matriculado em curso
-- **Code**: Identificador único do sistema de origem (ERP)
-- **Período Letivo (Semester)**: Semestre acadêmico (formato "YYYY.N")
 
 ## Próximos Passos
 

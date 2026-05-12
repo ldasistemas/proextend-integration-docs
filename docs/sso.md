@@ -29,12 +29,28 @@ O processo de autenticação SSO segue os seguintes passos:
 
 ```mermaid
 flowchart TD
-    A[Sistema Externo\nsolicita token] --> B[POST /integration/v1/sso/generate-token]
-    B --> C[API valida usuário\ne gera token]
-    C --> D[Retorna login_url]
-    D --> E[Sistema redireciona\nusuário]
-    E --> F[Usuário acessa\nProExtend sem senha]
+    REQ["Sistema Externo\nPOST /sso/generate-token\nuser_code ou user_email"]
 
+    VAL{"Usuário\nativo?"}
+    ERR["Erro\n401 / 422"]
+
+    TOKEN["Token gerado\nlogin_url retornado"]
+
+    SU{"single_use?"}
+
+    PORTAL["Reutilizável\naté expirar\nIdeal para portais"]
+    EMAIL["Uso único\ninvalidado após\nprimeiro acesso\nIdeal para e-mails"]
+
+    USR["Usuário acessa ProExtend\nsem precisar de senha"]
+
+    REQ --> VAL
+    VAL -->|não| ERR
+    VAL -->|sim| TOKEN
+    TOKEN --> SU
+    SU -->|false| PORTAL
+    SU -->|true| EMAIL
+    PORTAL --> USR
+    EMAIL --> USR
 ```
 
 ## Gerar Token SSO
@@ -118,6 +134,12 @@ Para links enviados por e-mail ou convites de primeiro acesso, **sempre use** `s
   }
 }
 ```
+
+O campo `profile_type` reflete o perfil do usuário na plataforma: `professor`, `student`, `coordinator`, `area_manager`, `director` ou `pedagogical_advisor`.
+
+:::note
+Basta informar o `user_code` ou `user_email` do usuário. O sistema identifica automaticamente o perfil e gera a `login_url` apontando para o ambiente correto dentro da plataforma, sem necessidade de configuração adicional.
+:::
 
 ## Revogar Token SSO
 

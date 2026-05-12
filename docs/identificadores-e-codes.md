@@ -64,154 +64,35 @@ Um **code** é o identificador único definido no sistema de origem e enviado pa
 
 ## Como funcionam os codes
 
-### 1. Criação
+Ao enviar um `code` pela primeira vez, a plataforma cria o registro. Nas sincronizações seguintes com o mesmo `code`, os dados são atualizados. Para vincular entidades, basta referenciar o `code` de cada uma nos campos correspondentes.
 
-Ao criar uma entidade, envia o `code`:
+```mermaid
+flowchart TD
+    ENV["Sincronização enviada\ncom code: ALG001"]
+    EX{"code já existe\nna plataforma?"}
+    CRIA["Cria novo registro"]
+    ATU["Atualiza registro existente"]
+    VIN["Relacionamentos resolvidos\npelos codes referenciados"]
 
-```json
-{
-  "subjects": [
-    {
-      "code": "ALG001",
-      "name": "Algoritmos I",
-      "course_code": "CC001"
-    }
-  ]
-}
+    ENV --> EX
+    EX -->|não| CRIA
+    EX -->|sim| ATU
+    CRIA --> VIN
+    ATU --> VIN
 ```
-
-A plataforma armazena usando `"ALG001"` como identificador.
-
-### 2. Atualização
-
-Para atualizar, use o mesmo `code`:
-
-```json
-{
-  "subjects": [
-    {
-      "code": "ALG001",
-      "name": "Algoritmos e Programação I",
-      "course_code": "CC001"
-    }
-  ]
-}
-```
-
-A plataforma reconhece `"ALG001"` e **atualiza** os dados ao invés de criar duplicado.
-
-### 3. Relacionamentos
-
-Para vincular entidades, use os codes:
-
-```json
-{
-  "enrollments": [
-    {
-      "code": "ALG001-2025.1",
-      "subject_code": "ALG001",
-      "professor_code": "PROF001",
-      "semester": "2025.1",
-      "student_codes": ["ALU2024001", "ALU2024002"]
-    }
-  ]
-}
-```
-
-A plataforma usa os codes para encontrar e vincular as entidades corretas.
-
-## Vantagens da Abordagem
-
-### 1. Simplicidade de Integração
-
-Não é necessário armazenar ou mapear IDs internos da plataforma. Os códigos do sistema de origem são suficientes para todas as operações.
-
-### 2. Operações Idempotentes
-
-Sincronizações múltiplas com o mesmo code não resultam em duplicação:
-
-```
-1ª sincronização: code "PROF001" → Cria professor
-2ª sincronização: code "PROF001" → Atualiza dados do professor existente
-3ª sincronização: code "PROF001" → Atualiza dados do professor existente
-```
-
-Este comportamento permite retry seguro de sincronizações sem risco de duplicação.
-
-### 3. Manutenibilidade e Rastreabilidade
-
-Códigos semanticamente significativos facilitam identificação e depuração:
-- `"ALG001"` - Imediatamente reconhecível pela equipe
-- `"PROF-2023-001"` - Contém informação contextual
-- `"CAMPUS_CENTRO"` - Autoexplicativo
-
-### 4. Independência de Implementação
-
-A integração não depende de IDs internos da plataforma, que podem variar entre ambientes ou ser alterados em migrações.
 
 ## Diretrizes e Boas Práticas
 
-### 1. Consistência de Formato
+| Diretriz | Bom | Ruim |
+|---|---|---|
+| **Consistência de formato** | `ALG001`, `ALG002`, `BD001` | `alg1`, `Alg-002`, `bd_001` |
+| **Significado semântico** | `CAMPUS_CENTRO`, `ALG001` | `C1`, `C2`, `D1` |
+| **Unicidade por tipo** | `PROF001` único entre professores | dois professores com `PROF001` |
+| **Estabilidade** | matrícula nunca muda: `PROF001` | `PROF-2024-001` → `PROF-2025-001` |
 
-**Bom**:
-```
-Disciplinas: ALG001, ALG002, BD001, BD002
-Professores: PROF001, PROF002, PROF003
-Alunos: ALU2024001, ALU2024002, ALU2024003
-```
-
-**Ruim** (inconsistente):
-```
-Disciplinas: alg1, Alg-002, bd_001
-Professores: prof1, Professor002, p003
-```
-
-### 2. Significado Semântico
-
-**Bom**:
-```
-"CAMPUS_CENTRO" - indica localização
-"ALG001" - sigla da disciplina
-"2025.1" - ano e semestre claro
-```
-
-**Ruim** (sem contexto):
-```
-"C1", "C2", "C3"
-"D1", "D2", "D3"
-```
-
-### 3. Unicidade de Códigos
-
-Cada entidade deve ter code único dentro de seu tipo:
-
-```
-Professor code: "PROF001" - único entre todos os professores
-Aluno code: "ALU2024001" - único entre todos os alunos
-Disciplina code: "ALG001" - único entre todas as disciplinas
-```
-
-**Observação importante**: `codes` podem ser idênticos entre tipos diferentes de entidades:
-- Professor com code "001"
-- Aluno com code "001"
-- Disciplina com code "001"
-
-Não há conflito pois são entidades de tipos distintos com escopos separados.
-
-### 4. Estabilidade dos Códigos
-
-Evite mudar codes após criação:
-
-**Bom**:
-```
-Matrícula do professor nunca muda: "PROF001"
-```
-
-**Ruim**:
-```
-Ano 1: "PROF-2024-001"
-Ano 2: "PROF-2025-001" (mudou sem necessidade)
-```
+:::note
+`codes` podem ser idênticos entre tipos diferentes de entidades sem conflito. Um professor e um aluno podem ter `code: "001"` pois são escopos separados.
+:::
 
 ## Exemplos Práticos
 
@@ -275,7 +156,7 @@ Tabela: matriculas
     {
       "code": "ALG001-25.1",
       "subject_code": "ALG001",
-      "professor_code": "PROF001",
+      "professor_codes": ["PROF001"],
       "semester": "2025.1",
       "student_codes": ["ALU001", "ALU002"]
     }
@@ -287,53 +168,27 @@ Utilize os códigos existentes no sistema!
 
 ### Exemplo 3: Atualizar Professor
 
-**Situação**: Professor mudou de email
+Quando um dado muda no ERP, basta sincronizar novamente com o mesmo `code`. A plataforma reconhece o identificador e atualiza o registro existente.
 
-**ERP da Instituição**:
-```sql
-UPDATE professores
-SET email = 'novo.email@faculdade.edu.br'
-WHERE codigo = 'PROF001';
+```mermaid
+flowchart LR
+    ERP["ERP\nPROF001\nemail alterado"]
+    SYNC["POST /professors/sync\ncode: PROF001\nnovo email"]
+    PE["Plataforma ProExtend\nPROF001 atualizado\n sem duplicação"]
+
+    ERP -->|detecta mudança| SYNC
+    SYNC -->|mesmo code| PE
 ```
-
-**Sincronizar mudança**:
-```json
-{
-  "professors": [
-    {
-      "code": "PROF001",
-      "name": "Dr. João Silva",
-      "email": "novo.email@faculdade.edu.br",
-      "cpf": "12345678901"
-    }
-  ]
-}
-```
-
-A plataforma reconhece `"PROF001"` e atualiza o email automaticamente.
 
 ## Códigos Flexíveis
 
-Alguns campos aceitam diferentes formatos de código:
+O campo `code` aceita qualquer identificador único do sistema de origem. A escolha do formato fica a critério da instituição, desde que mantida consistência.
 
-### Professores e Alunos
-
-Pode usar:
-- Matrícula: `"PROF001"`, `"ALU2024001"`
-- CPF: `"12345678901"`
-- Código funcional: `"JOS001"`
-- RA: `"20241234"`
-
-**Importante**: Escolha um padrão e mantenha consistência.
-
-### Turmas
-
-Recomendamos incluir semestre no code:
-- `"ALG001-2025.1"` - disciplina + semestre
-- `"TURMA001-2025.1"` - código + semestre
-- `"CC001-ALG001-2025.1"` - curso + disciplina + semestre
-
-Isso facilita identificação e evita conflitos entre semestres.
+| Entidade | Formatos aceitos | Exemplos |
+|---|---|---|
+| Professor | Matrícula, CPF, código funcional | `"PROF001"`, `"12345678901"`, `"JOS001"` |
+| Aluno | Matrícula, CPF, RA | `"ALU2024001"`, `"98765432100"`, `"20241234"` |
+| Turma | Livre (recomenda-se incluir semestre) | `"ALG001-2025.1"`, `"CC001-ALG001-2025.1"` |
 
 ## Erros Comuns
 

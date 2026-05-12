@@ -18,16 +18,35 @@ A ordem de sincronização é fundamental devido às dependências entre entidad
 A configuração inicial requer sincronização completa na seguinte ordem:
 
 ```mermaid
-flowchart LR
-    A[1. Unidades] --> B[2. Áreas]
-    B --> C[3. Cursos]
-    C --> D[4. Disciplinas Base]
-    D --> E[5. Professores]
-    D --> F[6. Alunos]
-    E --> G[7. Turmas]
-    F --> G
+flowchart TD
+    U["Unidades"]
+    AR["Áreas"]
+    CU["Cursos"]
+    DI["Disciplinas Base"]
+    TU["Turmas"]
+    PR["Professores"]
+    AL["Alunos"]
+    DIR["Diretores"]
+    ASSES["Assessores Pedagógicos"]
+    GEST["Gestores de Área"]
+    COORD["Coordenadores"]
 
+    U --> AR
+    AR --> CU
+    CU --> DI
+    DI --> TU
+    PR --> TU
+    AL --> TU
+
+    U -.->|perfil| DIR
+    U -.->|perfil| ASSES
+    AR -.->|perfil| GEST
+    CU -.->|perfil| COORD
 ```
+
+:::note
+Diretores, Assessores Pedagógicos, Gestores de Área e Coordenadores podem ser sincronizados a qualquer momento após suas dependências (Unidade, Área ou Curso). Eles não bloqueiam o fluxo principal de Turmas.
+:::
 
 ### Sincronizações Subsequentes
 
@@ -76,343 +95,69 @@ Cada request aceita no máximo **500 itens** por sincronização. Para volumes m
 
 ## 1. Sincronizar Unidades
 
-Unidades representam campus ou estabelecimentos físicos da instituição de ensino.
-
 **Dependências**: Nenhuma (primeira entidade a ser sincronizada)
-
-### Endpoint
 
 ```
 POST /integration/v1/units/sync
 ```
 
-### Exemplo de Requisição
-
-```bash
-curl -X POST https://{{instituicao}}.proextend.com.br/api/integration/v1/units/sync \
-  -H "Authorization: Bearer pex_..." \
-  -H "Content-Type: application/json" \
-  -d '{
-    "units": [
-      {
-        "code": "CAMPUS_CENTRO",
-        "name": "Campus Centro",
-        "address": "Rua Principal, 123 - Centro, São Paulo - SP"
-      },
-      {
-        "code": "CAMPUS_NORTE",
-        "name": "Campus Zona Norte",
-        "address": "Av. Norte, 456 - Zona Norte, São Paulo - SP"
-      }
-    ]
-  }'
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único da unidade (exemplo: "CAMPUS_CENTRO")
-- `name`: Nome da unidade
-
-### Campos Opcionais
-
-- `address`: Endereço completo
-
-### Resposta
-
-```json
-{
-  "success": true,
-  "message": "Sincronização de unidades concluída.",
-  "data": {
-    "created": 2,
-    "updated": 0,
-    "failed": 0
-  }
-}
-```
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#1-unidade-unit).
 
 ## 2. Sincronizar Áreas
 
-Áreas de conhecimento que agrupam cursos relacionados.
-
 **Dependências**: Unidades devem estar sincronizadas
-
-### Endpoint
 
 ```
 POST /integration/v1/areas/sync
 ```
 
-### Exemplo
-
-```json
-{
-  "areas": [
-    {
-      "code": "TECH",
-      "name": "Tecnologia da Informação",
-      "unit_code": "CAMPUS_CENTRO",
-      "responsible_email": "coord.tech@faculdade.edu.br"
-    },
-    {
-      "code": "HEALTH",
-      "name": "Ciências da Saúde",
-      "unit_code": "CAMPUS_NORTE"
-    }
-  ]
-}
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único da área (máximo 255 caracteres)
-- `name`: Nome da área (máximo 255 caracteres)
-- `unit_code`: Código da unidade (deve existir)
-- `responsible_email` **OU** `responsible_code`: Pelo menos um deles é obrigatório
-
-### Campos Opcionais
-
-- `responsible_email`: Email do responsável (deve ser Admin ativo)
-- `responsible_code`: Código do responsável (deve ser Admin ativo)
-
-:::note[IMPORTANTE]
-O responsável pela área deve ser um Administrador (Admin):
-
-- Profile type deve ser `'admin'`
-- Não pode estar suspenso (`suspended_at` deve ser `null`)
-- Não aceita Professor ou Aluno como responsável
-
-Se o responsável não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
-:::
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#4-área-area).
 
 ## 3. Sincronizar Cursos
 
-Programas acadêmicos oferecidos pela instituição de ensino.
-
 **Dependências**: Unidades e Áreas devem estar sincronizadas
-
-### Endpoint
 
 ```
 POST /integration/v1/courses/sync
 ```
 
-### Exemplo
-
-```json
-{
-  "courses": [
-    {
-      "code": "CC001",
-      "name": "Ciência da Computação",
-      "description": "Bacharelado em Ciência da Computação - Duração 4 anos",
-      "area_code": "TECH",
-      "unit_code": "CAMPUS_CENTRO",
-      "responsible_code": "ADMIN001"
-    },
-    {
-      "code": "ENF001",
-      "name": "Enfermagem",
-      "description": "Bacharelado em Enfermagem - Duração 5 anos",
-      "area_code": "HEALTH",
-      "unit_code": "CAMPUS_NORTE",
-      "responsible_email": "coord.enf@faculdade.edu.br"
-    }
-  ]
-}
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único do curso (máximo 255 caracteres)
-- `name`: Nome do curso (máximo 255 caracteres)
-- `area_code`: Código da área (deve existir)
-- `unit_code`: Código da unidade (deve existir)
-- `responsible_email` **OU** `responsible_code`: Pelo menos um deles é obrigatório
-
-### Campos Opcionais
-
-- `description`: Descrição detalhada
-
-:::note[IMPORTANTE]
-O responsável pelo curso deve ser um Administrador (Admin):
-
-- Profile type deve ser `'admin'`
-- Não pode estar suspenso (`suspended_at` deve ser `null`)
-- Não aceita Professor ou Aluno como responsável
-- Se ambos `responsible_email` e `responsible_code` forem fornecidos, `responsible_code` tem prioridade
-
-Se o responsável não for um Admin ou estiver suspenso, a sincronização falhará com erro 422.
-:::
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#6-curso-course).
 
 ## 4. Sincronizar Disciplinas Base
 
-Componentes curriculares que compõem a grade dos cursos. Representam o cadastro permanente no catálogo curricular, sem vínculo com períodos letivos ou matrículas.
-
 **Dependências**: Cursos devem estar sincronizados
-
-### Endpoint
 
 ```
 POST /integration/v1/subjects/sync
 ```
 
-### Exemplo
-
-```json
-{
-  "subjects": [
-    {
-      "code": "ALG001",
-      "name": "Algoritmos e Programação I",
-      "course_code": "CC001"
-    },
-    {
-      "code": "BD001",
-      "name": "Banco de Dados I",
-      "course_code": "CC001"
-    },
-    {
-      "code": "LIBRAS",
-      "name": "Língua Brasileira de Sinais",
-      "course_code": "CC001",
-      "type": "optativa"
-    }
-  ]
-}
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único da disciplina (máximo 255 caracteres)
-- `name`: Nome da disciplina (máximo 255 caracteres)
-- `course_code`: Código do curso (deve existir)
-
-### Campos Opcionais
-
-- `type`: Tipo de disciplina
-  - `obrigatoria` (padrão se omitido)
-  - `optativa`
-  - `eletiva`
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#8-disciplina-base-subject).
 
 ## 5. Sincronizar Professores
 
-Corpo docente da instituição de ensino.
-
-**Dependências**: Nenhuma (entidade independente, pode ser sincronizada a qualquer momento)
-
- 
-
-### Endpoint
+**Dependências**: Nenhuma (pode ser sincronizado a qualquer momento)
 
 ```
 POST /integration/v1/professors/sync
 ```
 
-### Exemplo
-
-```json
-{
-  "professors": [
-    {
-      "code": "PROF001",
-      "name": "Dr. João Silva",
-      "email": "joao.silva@faculdade.edu.br",
-      "cpf": "12345678901",
-      "phone": "11999999999",
-      "area_code": "TECH"
-    },
-    {
-      "code": "PROF002",
-      "name": "Dra. Maria Santos",
-      "email": "maria.santos@faculdade.edu.br",
-      "cpf": "98765432100",
-      "area_code": "TECH"
-    }
-  ]
-}
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único do professor (máximo 255 caracteres) - matrícula, CPF ou código funcional
-- `name`: Nome completo do docente (máximo 255 caracteres)
-- `email`: Email institucional (deve ser único na plataforma)
-
-### Campos Opcionais
-
-- `cpf`: CPF, apenas 11 dígitos numéricos sem formatação (ex: `12345678901`). Deve ser válido conforme algoritmo de verificação
-- `phone`: Telefone de contato, apenas dígitos numéricos (ex: `11999999999`). Não aceita parênteses, espaços ou hífens
-- `area_code`: Código da área de atuação (deve existir se fornecido)
-
-### Validações Importantes
-
-- Email duplicado resulta em erro 422 (Unprocessable Entity)
-- CPF duplicado resulta em erro 422 (Unprocessable Entity)
-- Code deve ser único entre professores
-- CPF é campo opcional
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#10-professor-professor).
 
 ## 6. Sincronizar Alunos
 
-Estudantes matriculados em programas acadêmicos.
-
-**Dependências**: Nenhuma (entidade independente, pode ser sincronizada a qualquer momento)
-
-
-### Endpoint
+**Dependências**: Cursos devem estar sincronizados (`course_code` obrigatório)
 
 ```
 POST /integration/v1/students/sync
 ```
 
-### Exemplo
-
-```json
-{
-  "students": [
-    {
-      "code": "ALU2024001",
-      "name": "Pedro Oliveira Santos",
-      "email": "pedro.oliveira@aluno.edu.br",
-      "cpf": "11122233344",
-      "phone": "11977777777",
-      "course_code": "CC001"
-    },
-    {
-      "code": "12345678901",
-      "name": "Ana Costa Ferreira",
-      "email": "ana.costa@aluno.edu.br",
-      "cpf": "12345678901",
-      "course_code": "ENF001"
-    }
-  ]
-}
-```
-
-### Campos Obrigatórios
-
-- `code`: Código único do aluno (máximo 255 caracteres) - matrícula, CPF ou RA
-- `name`: Nome completo do estudante (máximo 255 caracteres)
-- `email`: Email institucional (deve ser único na plataforma)
-- `course_code`: Código do curso ao qual está matriculado (deve existir)
-
-### Campos Opcionais
-
-- `cpf`: CPF, apenas 11 dígitos numéricos sem formatação (ex: `12345678901`). Deve ser válido conforme algoritmo de verificação
-- `phone`: Telefone de contato, apenas dígitos numéricos (ex: `11999999999`). Não aceita parênteses, espaços ou hífens
-
-### Observações Importantes
-
-- Campo `code` possui formato flexível: matrícula, CPF ou RA
-- Email duplicado resulta em erro 422 (Unprocessable Entity)
-- CPF duplicado (se fornecido) resulta em erro 422
-- CPF é campo opcional
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#11-aluno-student).
 
 ## 7. Sincronizar Turmas (Enrollments)
 
-Turmas representam instâncias de disciplinas base em períodos letivos específicos, incluindo docente responsável e estudantes matriculados.
+Turmas representam instâncias de disciplinas base em períodos letivos específicos, incluindo um ou mais docentes responsáveis e estudantes matriculados.
 
-**Dependências**: Disciplinas Base, Professores e Alunos devem estar sincronizados
+**Dependências**: Disciplinas Base e Professores devem estar sincronizados. Alunos são opcionais na criação da turma
 
 ### Endpoint
 
@@ -428,8 +173,9 @@ POST /integration/v1/enrollments/sync
     {
       "code": "ALG001-2025.1",
       "subject_code": "ALG001",
-      "professor_code": "PROF001",
+      "professor_codes": ["PROF001", "PROF002"],
       "semester": "2025.1",
+      "course_codes": ["CC001", "SI001"],
       "student_codes": [
         "ALU2024001",
         "ALU2024002"
@@ -438,7 +184,7 @@ POST /integration/v1/enrollments/sync
     {
       "code": "BD001-2025.1",
       "subject_code": "BD001",
-      "professor_code": "PROF002",
+      "professor_codes": ["PROF002"],
       "semester": "2025.1",
       "student_codes": [
         "ALU2024001"
@@ -452,15 +198,20 @@ POST /integration/v1/enrollments/sync
 
 - `code`: Código único da turma (máximo 255 caracteres) - recomendado incluir semestre (exemplo: "ALG001-2025.1")
 - `subject_code`: Código da disciplina base vinculada (deve existir)
-- `professor_code`: Código do docente responsável (deve existir)
+- `professor_codes`: Array com códigos dos docentes responsáveis (pelo menos um deve existir)
 - `semester`: Período letivo (formato: "YYYY.N", exemplos: "2025.1", "2025.2")
+
+:::note[Retrocompatibilidade]
+O campo `professor_code` (singular) ainda é aceito por retrocompatibilidade e equivale a `professor_codes: ["PROF001"]`. Prefira usar `professor_codes` (array) em integrações novas.
+:::
 
 ### Campos Opcionais
 
-- `student_codes`: Array contendo códigos dos alunos matriculados (devem existir)
-  - Pode ser omitido ou enviado como array vazio `[]`
-  - Útil para criar turmas antes de ter alunos matriculados
-- `student_sync_mode`: Define como os alunos enviados são processados (padrão: `replace`)
+- `course_codes`: Cursos adicionais vinculados à turma. Expande a elegibilidade de alunos além do curso da disciplina base
+- `student_codes`: Alunos a matricular. Pode ser omitido ou `[]` para criar a turma sem alunos
+- `student_sync_mode`: Como os alunos enviados são processados (padrão: `replace`)
+
+Para entender elegibilidade de alunos, múltiplos professores e múltiplos cursos, consulte [Conceitos Fundamentais - Turma](conceitos-fundamentais#9-turma-enrollment).
 
 ### Modo de Sincronização de Alunos (`student_sync_mode`)
 
@@ -477,7 +228,7 @@ Use `replace` quando quiser garantir que a turma tenha exatamente os alunos envi
     {
       "code": "ALG001-2025.1",
       "subject_code": "ALG001",
-      "professor_code": "PROF001",
+      "professor_codes": ["PROF001"],
       "semester": "2025.1",
       "student_codes": ["ALU2024010", "ALU2024011"],
       "student_sync_mode": "add"
@@ -488,7 +239,7 @@ Use `replace` quando quiser garantir que a turma tenha exatamente os alunos envi
 
 ### Comportamento de Sincronização
 
-- **Turma existente** (code já cadastrado): Atualiza professor e processa alunos conforme `student_sync_mode`
+- **Turma existente** (code já cadastrado): Adiciona professores novos sem remover os existentes; processa alunos conforme `student_sync_mode`
 - **Turma nova** (code não existe): Cria nova turma com vínculos especificados
 
 ## Matrícula e Desmatrícula Avulsa
@@ -521,8 +272,48 @@ DELETE /integration/v1/enrollments/{code}/students/{studentCode}
 Remove o aluno especificado sem alterar os demais matriculados.
 
 :::note
-O aluno precisa pertencer ao mesmo curso da disciplina da turma, caso contrário a operação retorna erro 422.
+O aluno precisa pertencer a um dos cursos vinculados à turma (curso da disciplina base ou cursos adicionais via `course_codes`), caso contrário a operação retorna erro 422.
 :::
+
+## 8. Sincronizar Diretores
+
+**Dependências**: Unidades devem estar sincronizadas
+
+```
+POST /integration/v1/directors/sync
+```
+
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#2-diretor-director).
+
+## 9. Sincronizar Assessores Pedagógicos
+
+**Dependências**: Unidades devem estar sincronizadas
+
+```
+POST /integration/v1/pedagogical-advisors/sync
+```
+
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#3-assessor-pedagógico-pedagogical-advisor).
+
+## 10. Sincronizar Gestores de Área
+
+**Dependências**: Áreas devem estar sincronizadas
+
+```
+POST /integration/v1/area-managers/sync
+```
+
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#5-gestor-de-área-area-manager).
+
+## 11. Sincronizar Coordenadores
+
+**Dependências**: Cursos devem estar sincronizados
+
+```
+POST /integration/v1/coordinators/sync
+```
+
+Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#7-coordenador-coordinator).
 
 ## Consultando Status da Sincronização
 
@@ -558,7 +349,11 @@ curl -X GET https://{{instituicao}}.proextend.com.br/api/integration/v1/sync-sta
       "subjects": { "total": 120 },
       "professors": { "total": 45 },
       "students": { "total": 850 },
-      "enrollments": { "total": 2340 }
+      "enrollments": { "total": 2340 },
+      "directors": { "total": 4 },
+      "pedagogical_advisors": { "total": 6 },
+      "area_managers": { "total": 8 },
+      "coordinators": { "total": 15 }
     },
     "api_client": {
       "name": "Integração - Acesso Completo",
@@ -572,23 +367,6 @@ curl -X GET https://{{instituicao}}.proextend.com.br/api/integration/v1/sync-sta
 ## Consultando Dados Sincronizados
 
 A API disponibiliza endpoints de consulta (GET) para verificação de dados sincronizados. Todos os endpoints de listagem suportam paginação com `per_page` (padrão: 50, máximo: 200) e `page`.
-
-### Filtros Disponíveis por Endpoint
-
-| Endpoint | Filtros disponíveis |
-|---|---|
-| `GET /units` | `search` |
-| `GET /areas` | `unit_code`, `search` |
-| `GET /courses` | `area_code`, `unit_code`, `search` |
-| `GET /subjects` | `course_code` |
-| `GET /professors` | `active_only` |
-| `GET /students` | `course_code`, `active_only` |
-| `GET /enrollments` | `professor_code`, `subject_code`, `semester` |
-| `GET /professors/{code}/subjects` | `semester` |
-| `GET /admins` | `unit_code`, `area_code`, `active_only` |
-| `GET /students/{code}/enrollments` | (sem filtros, paginação padrão) |
-
-O filtro `active_only` aceita qualquer valor para ativar (ex: `active_only=1`). Retorna apenas usuários não suspensos.
 
 ### Exemplos de Consulta
 
@@ -625,7 +403,7 @@ GET /integration/v1/enrollments/ALG001-2025.1
 
 **Cenário**: Um ou mais itens do lote referenciam entidades que ainda não existem (ex: `area_code` inválido em um sync de cursos).
 
-O item com a referência inválida falha individualmente — os demais do lote são processados normalmente. A requisição retorna **HTTP 200** com `failed: N`:
+O item com a referência inválida falha individualmente, os demais do lote são processados normalmente. A requisição retorna **HTTP 200** com `failed: N`:
 
 ```json
 {
@@ -721,15 +499,17 @@ Units → Areas → Courses → Subjects → Professors/Students → Enrollments
 A sincronização completa deve ser utilizada na configuração inicial do sistema. Ela consiste em enviar todas as entidades para a API na ordem de dependência correta:
 
 1. **Unidades** - Estabelecimentos de ensino
-2. **Áreas** - Áreas de conhecimento
-3. **Cursos** - Cursos oferecidos
-4. **Disciplinas Base** - Disciplinas que compõem os cursos
-5. **Professores** - Corpo docente
-6. **Alunos** - Estudantes matriculados
-7. **Administradores** - Gestores da instituição (independente, pode ser em qualquer momento)
-8. **Turmas** - Matrículas e vínculos entre alunos e disciplinas
+2. **Diretores** e **Assessores Pedagógicos** - Perfis vinculados à Unidade (podem ser sincronizados após o passo 1)
+3. **Áreas** - Áreas de conhecimento
+4. **Gestores de Área** - Perfis vinculados à Área (podem ser sincronizados após o passo 3)
+5. **Cursos** - Cursos oferecidos
+6. **Coordenadores** - Perfis vinculados ao Curso (podem ser sincronizados após o passo 5)
+7. **Disciplinas Base** - Disciplinas que compõem os cursos
+8. **Professores** - Corpo docente (independente, pode ser sincronizado a qualquer momento)
+9. **Alunos** - Estudantes matriculados (independente, pode ser sincronizado a qualquer momento)
+10. **Turmas** - Instâncias de disciplinas com professores e alunos vinculados
 
-> **Importante**: Respeite essa ordem para evitar erros de dependência. Áreas e Cursos precisam de um Admin como `responsible_code`, então sincronize Admins antes se for usar esse campo.
+> **Importante**: Respeite essa ordem para evitar erros de dependência. Entidades filhas referenciam os codes das entidades pai, que devem existir previamente.
 
 ### Sincronização Incremental (Recomendada para Atualizações)
 

@@ -22,6 +22,10 @@ Remoções em cascata afetam todas as entidades filhas vinculadas. Avalie o impa
 | `DELETE /courses/{code}` | Remove o curso e, em cascata, todas as disciplinas e alunos vinculados |
 | `DELETE /subjects/{code}` | Remove a disciplina base e, em cascata, todas as turmas vinculadas |
 | `DELETE /professors/{code}` | Remove o professor. Turmas são preservadas |
+| `DELETE /coordinators/{code}` | Remove o coordenador. Soft delete |
+| `DELETE /area-managers/{code}` | Remove o gestor de área. Soft delete |
+| `DELETE /directors/{code}` | Remove o diretor. Soft delete |
+| `DELETE /pedagogical-advisors/{code}` | Remove o assessor pedagógico. Soft delete |
 | `DELETE /students/{code}` | Remove o aluno. Matrículas históricas são preservadas |
 | `DELETE /enrollments/{code}` | Remove a turma e desmatricula todos os alunos vinculados |
 
@@ -51,7 +55,7 @@ Todos os endpoints de remoção retornam o mesmo formato:
 
 ## Alternativa: Suspensão
 
-Para **professores** e **alunos**, considere usar o campo `active: false` na sincronização ao invés de remover. Isso suspende o acesso do usuário sem perder o vínculo histórico com turmas.
+Para **professores**, **coordenadores**, **gestores de área**, **diretores**, **assessores pedagógicos** e **alunos**, considere usar o campo `active: false` na sincronização ao invés de remover. Isso suspende o acesso do usuário sem perder o vínculo histórico.
 
 ```json
 {

@@ -60,17 +60,37 @@ Representam campus ou unidades físicas da instituição de ensino.
 
 Exemplo: Campus Centro, Campus Norte
 
-### 2. Áreas (Areas)
+### 2. Diretores (Directors)
+Diretores de unidade/campus. Vinculados a uma unidade específica.
+
+Exemplo: Roberto Lima (Campus Centro), Carla Neves (Campus Norte)
+
+### 3. Assessores Pedagógicos (Pedagogical Advisors)
+Assessores de apoio pedagógico. Vinculados a uma unidade específica.
+
+Exemplo: Fernanda Costa (Campus Centro)
+
+### 4. Áreas (Areas)
 Áreas de conhecimento que agrupam cursos relacionados.
 
 Exemplo: Tecnologia da Informação, Ciências da Saúde
 
-### 3. Cursos (Courses)
+### 5. Gestores de Área (Area Managers)
+Gestores responsáveis por áreas de conhecimento. Vinculados a uma área específica.
+
+Exemplo: Carlos Mendes (Tecnologia da Informação)
+
+### 6. Cursos (Courses)
 Programas acadêmicos oferecidos pela instituição.
 
 Exemplo: Ciência da Computação, Enfermagem
 
-### 4. Disciplinas Base (Subjects)
+### 7. Coordenadores (Coordinators)
+Coordenadores de curso com acesso ao painel ProExtend. Vinculados a um curso específico.
+
+Exemplo: Prof. Ana Souza (Ciência da Computação)
+
+### 8. Disciplinas Base (Subjects)
 Componentes curriculares que compõem a grade de cursos.
 
 Exemplo: Algoritmos I, Banco de Dados, LIBRAS
@@ -79,35 +99,31 @@ Exemplo: Algoritmos I, Banco de Dados, LIBRAS
 Disciplinas Base representam o cadastro curricular permanente, sem vínculo com períodos letivos ou discentes.
 :::
 
-### 5. Professores (Professors)
-Docentes responsáveis por ministrar disciplinas.
+### 9. Turmas (Enrollments)
+Instâncias de disciplinas base vinculadas a período letivo específico, incluindo um ou mais docentes responsáveis e discentes matriculados. Suportam múltiplos cursos via `course_codes`.
 
-Exemplo: João Silva, Maria Santos
-
-### 6. Alunos (Students)
-Discentes matriculados em programas acadêmicos.
-
-Exemplo: Pedro Oliveira, Ana Costa
-
-### 7. Turmas (Enrollments)
-Instâncias de disciplinas base vinculadas a período letivo específico, incluindo docente responsável e discentes matriculados.
-
-Exemplo: "Algoritmos I - 2025.1" (turma com 30 alunos, Prof. João)
+Exemplo: Turma "Algoritmos I - 2025.1" ministrada pelo Prof. João Silva e Prof. Maria Santos, com 30 alunos dos cursos de Ciência da Computação e Sistemas de Informação
 
 :::note
-Turmas são instâncias de Disciplinas Base em um período letivo.
+Turmas são instâncias de Disciplinas Base em um período letivo. Um aluno pode ser matriculado se pertencer ao curso da disciplina base ou a qualquer curso adicional vinculado via `course_codes`.
 :::
 
-### 8. Administradores (Admins)
+### 10. Professores (Professors)
+Docentes responsáveis por ministrar disciplinas na instituição.
 
-Gestores da instituição com acesso ao painel ProExtend. Podem ser vinculados a unidades, áreas e cursos como responsáveis.
+Exemplo: Dr. João Silva, professor da área de Tecnologia da Informação, ministra as turmas de Algoritmos I e Banco de Dados no semestre 2025.1
+
+### 11. Alunos (Students)
+Discentes matriculados em programas acadêmicos.
+
+Exemplo: Pedro Oliveira, aluno do curso de Ciência da Computação, matriculado nas turmas de Algoritmos I e Banco de Dados no semestre 2025.1
+
+### 12. Administradores (Admins)
+
+Gestores da instituição com acesso completo ao painel ProExtend. Responsáveis por criar integrações, fazer alterações manuais em turmas e gerenciar outras entidades diretamente pela plataforma.
 
 :::note
-Administradores **não são criados via integração**, são gerenciados pelo painel ProExtend. A integração permite apenas consulta via `GET /admins` e `GET /admins/{code}`.
-
-Os endpoints de consulta são úteis para obter os `code` válidos de administradores, necessários ao sincronizar Áreas e Cursos com `responsible_code`.
-
-Filtros disponíveis: `unit_code`, `area_code`, `active_only`.
+Administradores **não são criados via integração**. São cadastrados e gerenciados pelo próprio painel ProExtend.
 :::
 
 ## Distinção: Disciplina Base vs Turma
@@ -209,30 +225,6 @@ https://{{instituicao}}.proextend.com.br/api/integration/v1/
 
 Substituir `{{instituicao}}` pela URL fornecida para sua instituição.
 
-### Endpoints de Consulta
-
-```
-GET /integration/v1/units
-GET /integration/v1/units/{code}
-GET /integration/v1/areas
-GET /integration/v1/courses
-GET /integration/v1/subjects
-GET /integration/v1/professors
-GET /integration/v1/students
-GET /integration/v1/enrollments
-```
-
-### Endpoints de Sincronização
-
-```
-POST /integration/v1/units/sync
-POST /integration/v1/areas/sync
-POST /integration/v1/courses/sync
-POST /integration/v1/subjects/sync
-POST /integration/v1/professors/sync
-POST /integration/v1/students/sync
-POST /integration/v1/enrollments/sync
-```
 
 ## Exemplo de Utilização
 

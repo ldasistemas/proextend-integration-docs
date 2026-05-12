@@ -224,7 +224,16 @@ GET /integration/v1/enrollments/{code}/submissions
           "pending_grade": 3,
           "late_submissions": 1,
           "submission_rate": 93.3
-        }
+        },
+        "submissions": [
+          {
+            "student_id": 101,
+            "status": "graded",
+            "score": 8.5,
+            "submitted_at": "2025-06-28T14:30:00-03:00",
+            "graded_at": "2025-07-01T09:00:00-03:00"
+          }
+        ]
       }
     ]
   },
@@ -256,21 +265,25 @@ GET /integration/v1/students/{code}/enrollments
 ```json
 {
   "success": true,
-  "data": {
-    "student": {
-      "code": "ALU2024001",
-      "name": "Pedro Oliveira Santos",
-      "email": "pedro.oliveira@aluno.edu.br"
-    },
-    "enrollments": [
-      {
-        "code": "ALG001-2025.1",
-        "semester": "2025.1",
-        "subject_name": "Algoritmos e Programação I",
-        "professor_name": "Dr. João Silva"
-      }
-    ]
-  },
+  "data": [
+    {
+      "id": 143,
+      "code": "ALG001-2025.1",
+      "semester": "2025.1",
+      "subject": {
+        "code": "ALG001",
+        "name": "Algoritmos e Programação I",
+        "course": {
+          "code": "CC001",
+          "name": "Ciência da Computação"
+        }
+      },
+      "professors": [
+        { "code": "PROF001", "name": "Dr. João Silva" },
+        { "code": "PROF002", "name": "Dra. Maria Costa" }
+      ]
+    }
+  ],
   "pagination": {
     "total": 1,
     "per_page": 50,
@@ -300,21 +313,24 @@ GET /integration/v1/professors/{code}/subjects
 ```json
 {
   "success": true,
-  "data": {
-    "professor": {
-      "code": "PROF001",
-      "name": "Dr. João Silva",
-      "email": "joao.silva@faculdade.edu.br"
-    },
-    "subjects": [
-      {
-        "code": "ALG001-2025.1",
-        "semester": "2025.1",
-        "subject_name": "Algoritmos e Programação I",
-        "students_count": 28
-      }
-    ]
-  },
+  "data": [
+    {
+      "id": 143,
+      "code": "ALG001-2025.1",
+      "semester": "2025.1",
+      "subject": {
+        "id": 12,
+        "code": "ALG001",
+        "name": "Algoritmos e Programação I",
+        "course": {
+          "id": 3,
+          "code": "CC001",
+          "name": "Ciência da Computação"
+        }
+      },
+      "students_count": 28
+    }
+  ],
   "pagination": {
     "total": 1,
     "per_page": 50,

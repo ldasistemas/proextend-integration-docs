@@ -45,11 +45,12 @@ Referência: [Visão Geral](visao-geral)
 ### 2. Conceitos Fundamentais
 
 Detalha as entidades do sistema e seus relacionamentos:
-- Unidades, Áreas e Cursos
-- Disciplinas Base x Turmas
-- Professores e Alunos
+- Unidades (Units), Diretores (Directors) e Assessores Pedagógicos (Pedagogical Advisors)
+- Áreas (Areas) e Gestores de Área (Area Managers)
+- Cursos (Courses) e Coordenadores (Coordinators)
+- Disciplinas Base (Subjects) e Turmas (Enrollments)
+- Professores (Professors) e Alunos (Students)
 - Hierarquia e dependências entre entidades
-- Especificação de campos obrigatórios e opcionais
 
 Referência: [Conceitos Fundamentais](conceitos-fundamentais)
 
@@ -89,7 +90,7 @@ Referência: [SSO](sso)
 ### 6. Fluxo de Sincronização
 
 Descreve o processo completo de sincronização:
-- Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments
+- Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments. Diretores, Assessores Pedagógicos, Gestores de Área e Coordenadores podem ser sincronizados a qualquer momento após sua dependência direta
 - Especificação de cada endpoint de sincronização
 - Definição de campos obrigatórios e opcionais por entidade
 - Tratamento de erros e códigos de resposta HTTP
@@ -168,12 +169,12 @@ A API implementa comportamento idempotente. Múltiplas sincronizações com mesm
 
 ### Sequência de Sincronização
 
-Ordem obrigatória: Unidades → Áreas → Cursos → Disciplinas Base → Professores/Alunos → Turmas. O não cumprimento desta ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
+Ordem obrigatória: Unidades → Áreas → Cursos → Disciplinas Base → Professores/Alunos → Turmas. Perfis vinculados a cada nível (Diretores e Assessores a Unidades, Gestores a Áreas, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após sua dependência direta. O não cumprimento desta ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
 
 ### Distinção entre Subject e Enrollment
 
 - **Subject (Disciplina Base)**: Componente curricular cadastrado na grade do curso, sem vínculo semestral
-- **Enrollment (Turma)**: Instância de uma disciplina base em período letivo específico, com professor e alunos vinculados
+- **Enrollment (Turma)**: Instância de uma disciplina base em período letivo específico, com um ou mais professores e alunos vinculados. Suporta múltiplos cursos via `course_codes`
 
 Referência: [Conceitos Fundamentais](conceitos-fundamentais).
 
