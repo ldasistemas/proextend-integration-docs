@@ -21,7 +21,7 @@
 <meta name="twitter:image" content="https://ldasistemas.github.io/proextend-integration-docs/img/logo.svg">
 <meta name="theme-color" content="#0980D8">
 <link rel="canonical" href="https://ldasistemas.github.io/proextend-integration-docs/"><link rel="stylesheet" href="/assets/css/styles.8fbb3ff3.css">
-<script src="/assets/js/runtime~main.f0527403.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.5ab3cfec.js" defer="defer"></script>
 <script src="/assets/js/main.bdaf7e00.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -56,11 +56,12 @@
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-conceitos-fundamentais">2. Conceitos Fundamentais<a href="#2-conceitos-fundamentais" class="hash-link" aria-label="Link direto para 2. Conceitos Fundamentais" title="Link direto para 2. Conceitos Fundamentais" translate="no">​</a></h3>
 <p>Detalha as entidades do sistema e seus relacionamentos:</p>
 <ul>
-<li class="">Unidades, Áreas e Cursos</li>
-<li class="">Disciplinas Base x Turmas</li>
-<li class="">Professores e Alunos</li>
+<li class="">Unidades (Units), Diretores (Directors) e Assessores Pedagógicos (Pedagogical Advisors)</li>
+<li class="">Áreas (Areas) e Gestores de Área (Area Managers)</li>
+<li class="">Cursos (Courses) e Coordenadores (Coordinators)</li>
+<li class="">Disciplinas Base (Subjects) e Turmas (Enrollments)</li>
+<li class="">Professores (Professors) e Alunos (Students)</li>
 <li class="">Hierarquia e dependências entre entidades</li>
-<li class="">Especificação de campos obrigatórios e opcionais</li>
 </ul>
 <p>Referência: <a class="" href="/conceitos-fundamentais">Conceitos Fundamentais</a></p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-identificadores-e-codes">3. Identificadores e codes<a href="#3-identificadores-e-codes" class="hash-link" aria-label="Link direto para 3. Identificadores e codes" title="Link direto para 3. Identificadores e codes" translate="no">​</a></h3>
@@ -96,7 +97,7 @@
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="6-fluxo-de-sincronização">6. Fluxo de Sincronização<a href="#6-fluxo-de-sincronização" class="hash-link" aria-label="Link direto para 6. Fluxo de Sincronização" title="Link direto para 6. Fluxo de Sincronização" translate="no">​</a></h3>
 <p>Descreve o processo completo de sincronização:</p>
 <ul>
-<li class="">Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments</li>
+<li class="">Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments. Diretores, Assessores Pedagógicos, Gestores de Área e Coordenadores podem ser sincronizados a qualquer momento após sua dependência direta</li>
 <li class="">Especificação de cada endpoint de sincronização</li>
 <li class="">Definição de campos obrigatórios e opcionais por entidade</li>
 <li class="">Tratamento de erros e códigos de resposta HTTP</li>
@@ -111,7 +112,7 @@
 <p>Endpoints de leitura de dados acadêmicos: atividades, notas e submissões.</p>
 <p>Referência: <a class="" href="/relatorios">Relatórios e Consultas</a></p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="guia-de-utilização">Guia de Utilização<a href="#guia-de-utilização" class="hash-link" aria-label="Link direto para Guia de Utilização" title="Link direto para Guia de Utilização" translate="no">​</a></h2>
-<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="implementação-inicial">Implementa ção Inicial<a href="#implementação-inicial" class="hash-link" aria-label="Link direto para Implementação Inicial" title="Link direto para Implementação Inicial" translate="no">​</a></h3>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="implementação-inicial">Implementação Inicial<a href="#implementação-inicial" class="hash-link" aria-label="Link direto para Implementação Inicial" title="Link direto para Implementação Inicial" translate="no">​</a></h3>
 <ol>
 <li class="">Revisar <a class="" href="/visao-geral">Visão Geral</a> para compreensão do modelo de integração</li>
 <li class="">Estudar <a class="" href="/conceitos-fundamentais">Conceitos Fundamentais</a> para familiarização com o modelo de dados</li>
@@ -158,11 +159,11 @@
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="sincronização-múltipla">Sincronização Múltipla<a href="#sincronização-múltipla" class="hash-link" aria-label="Link direto para Sincronização Múltipla" title="Link direto para Sincronização Múltipla" translate="no">​</a></h3>
 <p>A API implementa comportamento idempotente. Múltiplas sincronizações com mesmo identificador (<code>code</code>) resultam em atualização da entidade existente, não em duplicação. Referência: <a class="" href="/identificadores-e-codes">Identificadores e codes</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="sequência-de-sincronização">Sequência de Sincronização<a href="#sequência-de-sincronização" class="hash-link" aria-label="Link direto para Sequência de Sincronização" title="Link direto para Sequência de Sincronização" translate="no">​</a></h3>
-<p>Ordem obrigatória: Unidades → Áreas → Cursos → Disciplinas Base → Professores/Alunos → Turmas. O não cumprimento desta ordem resultará em erros de dependência. Referência: <a class="" href="/fluxo-de-sincronizacao">Fluxo de Sincronização</a>.</p>
+<p>Ordem obrigatória: Unidades → Áreas → Cursos → Disciplinas Base → Professores/Alunos → Turmas. Perfis vinculados a cada nível (Diretores e Assessores a Unidades, Gestores a Áreas, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após sua dependência direta. O não cumprimento desta ordem resultará em erros de dependência. Referência: <a class="" href="/fluxo-de-sincronizacao">Fluxo de Sincronização</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="distinção-entre-subject-e-enrollment">Distinção entre Subject e Enrollment<a href="#distinção-entre-subject-e-enrollment" class="hash-link" aria-label="Link direto para Distinção entre Subject e Enrollment" title="Link direto para Distinção entre Subject e Enrollment" translate="no">​</a></h3>
 <ul>
 <li class=""><strong>Subject (Disciplina Base)</strong>: Componente curricular cadastrado na grade do curso, sem vínculo semestral</li>
-<li class=""><strong>Enrollment (Turma)</strong>: Instância de uma disciplina base em período letivo específico, com professor e alunos vinculados</li>
+<li class=""><strong>Enrollment (Turma)</strong>: Instância de uma disciplina base em período letivo específico, com um ou mais professores e alunos vinculados. Suporta múltiplos cursos via <code>course_codes</code></li>
 </ul>
 <p>Referência: <a class="" href="/conceitos-fundamentais">Conceitos Fundamentais</a>.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="versionamento">Versionamento<a href="#versionamento" class="hash-link" aria-label="Link direto para Versionamento" title="Link direto para Versionamento" translate="no">​</a></h2>
