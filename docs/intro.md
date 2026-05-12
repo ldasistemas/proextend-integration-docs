@@ -111,6 +111,12 @@ Endpoints de leitura de dados acadêmicos: atividades, notas e submissões.
 
 Referência: [Relatórios e Consultas](relatorios)
 
+### 9. Logs de Integrações
+
+Registro automático de todas as requisições de escrita feitas pela API. Permite acompanhar o histórico de sincronizações, identificar falhas e auditar o uso da integração. Os logs ficam disponíveis por 30 dias no painel e via API.
+
+Referência: [Logs de Integrações](logs-de-integracoes)
+
 ## Guia de Utilização
 
 ### Implementação Inicial
@@ -120,7 +126,8 @@ Referência: [Relatórios e Consultas](relatorios)
 3. Configurar [Autenticação](autenticacao) no painel administrativo (requer permissões de administrador)
 4. Implementar sincronização seguindo [Fluxo de Sincronização](fluxo-de-sincronizacao)
 5. Aplicar diretrizes de [Identificadores e codes](identificadores-e-codes)
-6. (Opcional) Configurar [SSO](sso) para login direto de usuários
+6. Monitorar operações via [Logs de Integrações](logs-de-integracoes)
+7. (Opcional) Configurar [SSO](sso) para login direto de usuários
 
 ### Consulta de Referência
 

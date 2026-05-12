@@ -548,4 +548,4 @@ Agrupe múltiplos registros em uma única requisição para melhorar a performan
 1. Compreender sistema de [Identificadores e codes](identificadores-e-codes)
 2. Testar requisições diretamente pelo [playground interativo](/api)
 3. Configurar rotina de sincronização periódica (incremental)
-4. Implementar monitoramento e alertas de falhas
+4. Implementar monitoramento e alertas de falhas via [Logs de Integrações](logs-de-integracoes)

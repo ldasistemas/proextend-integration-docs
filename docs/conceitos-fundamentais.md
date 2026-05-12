@@ -619,6 +619,7 @@ Recomenda-se utilizar os identificadores já existentes no sistema de origem (ER
 3. Entenda [Identificadores e codes](identificadores-e-codes)
 4. Consulte [Remoção de Entidades](remocao) para gerenciar o ciclo de vida dos dados
 5. Veja [Relatórios e Consultas](relatorios) para leitura de atividades e notas
+6. Monitore operações via [Logs de Integrações](logs-de-integracoes)
 
 ## Suporte
 

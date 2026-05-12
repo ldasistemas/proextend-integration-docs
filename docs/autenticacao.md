@@ -195,6 +195,12 @@ Remoção permanente:
 3. Confirme a operação
 4. Chave removida permanentemente sem possibilidade de recuperação
 
+## Logs de Integrações
+
+Toda requisição de escrita feita pela API (sincronizações, remoções, SSO) é registrada automaticamente e fica disponível no painel em **Avançado > Integrações**. Os logs são mantidos por **30 dias** e removidos automaticamente após esse período.
+
+Consulte [Logs de Integrações](logs-de-integracoes) para detalhes sobre filtros, campos exibidos e exemplos de entradas.
+
 ## Tratamento de Erros
 
 ### Referência de Códigos de Erro

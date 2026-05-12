@@ -72,6 +72,15 @@ const sidebars = {
       },
     },
 
+    {
+      type: 'doc',
+      id: 'logs-de-integracoes',
+      label: 'Logs de Integrações',
+      customProps: {
+        icon: 'lucide:activity',
+      },
+    },
+
   ],
 };
 

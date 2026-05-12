@@ -264,9 +264,11 @@ Para implementação da integração:
 2. Configurar [Autenticação](autenticacao) para obtenção de credenciais
 3. Implementar [Fluxo de Sincronização](fluxo-de-sincronizacao) conforme sequência especificada
 4. Aplicar diretrizes de [Identificadores e codes](identificadores-e-codes)
-5. (Opcional) Implementar [SSO](sso) para login direto de usuários
+5. Monitorar operações via [Logs de Integrações](logs-de-integracoes)
+6. (Opcional) Implementar [SSO](sso) para login direto de usuários
 
 ## Recursos de Monitoramento
 
 - **Health Check**: `GET /integration/v1/health`. Endpoint público sem autenticação. Retorna status da API, versão e tempo de resposta. Útil para verificar disponibilidade antes de sincronizar.
 - **Sync Status**: `GET /integration/v1/sync-status`. Retorna contagem de entidades sincronizadas e informações da última sincronização da chave em uso.
+- **Logs de Integrações**: toda requisição de escrita é registrada automaticamente com status, ação e detalhes da resposta. Os logs ficam disponíveis por 30 dias no painel e via API. Consulte [Logs de Integrações](logs-de-integracoes).
