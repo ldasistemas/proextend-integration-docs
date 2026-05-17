@@ -247,27 +247,39 @@ Acesso para manutenção ou suporte.
 
 ## Tratamento de Erros
 
-### Usuário Não Encontrado
+Todos os erros seguem o shape padronizado `ApiError`. Para detalhes do shape e estratégias de tratamento, consulte [Tratamento de Erros](tratamento-de-erros).
+
+### Usuário Não Encontrado (404)
 
 ```json
 {
   "success": false,
-  "message": "Dados inválidos.",
-  "errors": {
-    "user_code": ["Usuário não encontrado com o código fornecido."]
-  }
+  "message": "Usuário 'PROF999' não encontrado(a).",
+  "errors": [
+    {
+      "type": "code_not_found",
+      "message": "Usuário 'PROF999' não encontrado(a).",
+      "entity": "user",
+      "code": "PROF999"
+    }
+  ]
 }
 ```
 
-### Usuário Suspenso
+### Usuário Suspenso (422)
 
 ```json
 {
   "success": false,
-  "message": "Dados inválidos.",
-  "errors": {
-    "user_code": ["O usuário está suspenso e não pode gerar token SSO."]
-  }
+  "message": "O usuário está suspenso e não pode gerar token SSO.",
+  "errors": [
+    {
+      "type": "constraint_violation",
+      "message": "O usuário está suspenso e não pode gerar token SSO.",
+      "entity": "user",
+      "rule": "user_suspended"
+    }
+  ]
 }
 ```
 
@@ -275,27 +287,42 @@ Acesso para manutenção ou suporte.
 Apenas usuários **ativos** podem gerar tokens SSO. Usuários suspensos (`suspended_at` não nulo) não podem autenticar via SSO até que a suspensão seja removida.
 :::
 
-### Parâmetro Inválido
+### Parâmetro Inválido (422)
 
 ```json
 {
   "success": false,
   "message": "Dados inválidos.",
-  "errors": {
-    "expires_in": ["O tempo de expiração deve estar entre 60 e 31536000 segundos."]
-  }
+  "errors": [
+    {
+      "type": "validation_failed",
+      "message": "O tempo mínimo de expiração é 60 segundos.",
+      "field": "expires_in"
+    }
+  ]
 }
 ```
 
-### Identificador Ausente
+### Identificador Ausente (422)
+
+Quando nem `user_code` nem `user_email` são informados, o `errors[]` traz um item por campo obrigatório:
 
 ```json
 {
   "success": false,
   "message": "Dados inválidos.",
-  "errors": {
-    "user_email": ["O e-mail ou código do usuário é obrigatório."]
-  }
+  "errors": [
+    {
+      "type": "validation_failed",
+      "message": "O e-mail ou código do usuário é obrigatório.",
+      "field": "user_email"
+    },
+    {
+      "type": "validation_failed",
+      "message": "O código ou e-mail do usuário é obrigatório.",
+      "field": "user_code"
+    }
+  ]
 }
 ```
 

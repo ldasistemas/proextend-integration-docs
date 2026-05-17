@@ -17,36 +17,63 @@ A ordem de sincronização é fundamental devido às dependências entre entidad
 
 A configuração inicial requer sincronização completa na seguinte ordem:
 
+Para o setup inicial, sincronize as entidades na ordem abaixo. Cada etapa só pode começar depois que suas dependências (lista no topo de cada bloco) estiverem sincronizadas.
+
+### Etapa 1: Entidades sem dependências
+
+Estas entidades não dependem de nenhuma outra e podem ser sincronizadas em paralelo. Cada uma é referenciada mais adiante por outras entidades.
+
 ```mermaid
 flowchart TD
-    U["Unidades"]
-    AR["Áreas"]
-    CU["Cursos"]
-    DI["Disciplinas Base"]
-    TU["Turmas"]
-    PR["Professores"]
-    AL["Alunos"]
-    DIR["Diretores"]
-    ASSES["Assessores Pedagógicos"]
-    GEST["Gestores de Área"]
-    COORD["Coordenadores"]
-
-    U --> AR
-    AR --> CU
-    CU --> DI
-    DI --> TU
-    PR --> TU
-    AL --> TU
-
-    U -.->|perfil| DIR
-    U -.->|perfil| ASSES
-    AR -.->|perfil| GEST
-    CU -.->|perfil| COORD
+    UNI[1. Unidades]
+    AREA[2. Áreas]
+    DISC[4. Disciplinas Base]
+    PROF[5. Professores]
 ```
 
-:::note
-Diretores, Assessores Pedagógicos, Gestores de Área e Coordenadores podem ser sincronizados a qualquer momento após suas dependências (Unidade, Área ou Curso). Eles não bloqueiam o fluxo principal de Turmas.
-:::
+### Etapa 2: Cursos
+
+Depende de **Unidade** e **Área** (ambos os `code` precisam existir).
+
+```mermaid
+flowchart LR
+    UNI[1. Unidades] --> CURSO[3. Cursos]
+    AREA[2. Áreas] --> CURSO
+```
+
+### Etapa 3: Alunos
+
+Depende de **Curso** (cada aluno informa seu `course_code`).
+
+```mermaid
+flowchart LR
+    CURSO[3. Cursos] --> ALU[6. Alunos]
+```
+
+### Etapa 4: Turmas
+
+Depende de **Disciplina Base**, **Cursos** (`course_codes`, mínimo 1) e **Professores** (`professor_codes`, mínimo 1). Alunos são opcionais e podem ser matriculados depois via endpoint avulso.
+
+```mermaid
+flowchart LR
+    DISC[4. Disciplinas Base] --> TURMA[7. Turmas]
+    CURSO[3. Cursos] --> TURMA
+    PROF[5. Professores] --> TURMA
+    ALU[6. Alunos] -.->|opcional| TURMA
+```
+
+### Perfis vinculados (sincronização independente)
+
+Diretor, Assessor Pedagógico, Gestor de Área e Coordenador podem ser sincronizados a qualquer momento após suas dependências e **não bloqueiam o fluxo principal** de Turmas.
+
+```mermaid
+flowchart LR
+    UNI[1. Unidades] --> DIR[8. Diretores]
+    UNI --> ASSES[9. Assessores Pedagógicos]
+    AREA[2. Áreas] --> GEST[10. Gestores de Área]
+    UNI -.->|também obrigatório| GEST
+    CURSO[3. Cursos] --> COORD[11. Coordenadores]
+```
 
 ### Sincronizações Subsequentes
 
@@ -62,35 +89,73 @@ flowchart LR
 
 ## Falhas Parciais na Sincronização
 
-Todos os endpoints de sincronização processam os itens individualmente. Se um item falhar, os demais são processados normalmente. A requisição retorna **HTTP 200** mesmo com falhas parciais.
+Endpoints de sincronização processam os itens individualmente. Se algum item falhar, os demais continuam sendo processados e a requisição retorna **HTTP 200** mesmo assim. A resposta traz `created`, `updated`, `failed` e, quando há falhas, `data.errors[]` com o detalhamento de cada item que não passou.
 
-A resposta sempre inclui os campos `created`, `updated`, `failed` e, quando há falhas, um array `errors` com o detalhamento de cada erro:
-
-```json
-{
-  "success": true,
-  "message": "Sincronização concluída com erros.",
-  "data": {
-    "created": 8,
-    "updated": 1,
-    "failed": 1,
-    "errors": [
-      {
-        "index": 2,
-        "code": "PROF003",
-        "error": "O e-mail já está cadastrado por outro usuário."
-      }
-    ]
-  }
-}
-```
-
-- `index`: posição do item no array enviado (começa em 0)
-- `code`: identificador do item que falhou (quando disponível)
-- `error`: descrição do motivo da falha
+Shape do `errors[]`, acumulação de múltiplos erros por item, batch misto e exemplos estão em [Tratamento de Erros - Sync com falhas parciais](tratamento-de-erros#sync-com-falhas-parciais-200).
 
 :::note
 Cada request aceita no máximo **500 itens** por sincronização. Para volumes maiores, divida em múltiplas requisições.
+:::
+
+## Modos de Sincronização: `add` vs. `replace`
+
+Algumas entidades possuem **arrays de vínculos** com outras entidades: uma Turma tem listas de professores, cursos e alunos; um Gestor de Área tem uma lista de áreas; um Coordenador tem uma lista de cursos. Em todas essas situações, a API precisa saber se a lista enviada deve **substituir** os vínculos atuais ou apenas **adicionar** novos vínculos aos existentes.
+
+Esse comportamento é controlado pelos campos `*_sync_mode`, que aceitam dois valores:
+
+- **`replace` (padrão)**: a lista enviada substitui completamente a lista atual. Vínculos não enviados são removidos.
+- **`add`**: a lista enviada é mesclada com a lista atual. Vínculos não enviados são preservados.
+
+Se você não enviar o campo `*_sync_mode`, a API usa `replace` por padrão.
+
+### Onde se aplica
+
+| Campo | Entidade | Controla | Padrão |
+|---|---|---|---|
+| `professor_sync_mode` | Turma | Lista de professores responsáveis | `replace` |
+| `course_sync_mode` | Turma e Coordenador | Lista de cursos vinculados | `replace` |
+| `student_sync_mode` | Turma | Lista de alunos matriculados | `replace` |
+| `area_sync_mode` | Gestor de Área | Lista de áreas gerenciadas | `replace` |
+
+### Quando usar `replace`
+
+Use `replace` (ou simplesmente omita o campo) quando o ERP é a fonte da verdade e você está enviando o estado **completo** dos vínculos. Esse é o cenário mais comum: a cada sincronização, o ERP envia tudo que aquele recurso deve ter, e a plataforma se ajusta.
+
+### Quando usar `add`
+
+Use `add` quando você está enviando apenas o **delta** (uma adição), sem ter a lista completa em mãos. Casos típicos:
+
+- Adicionar um novo professor a uma turma sem precisar reenviar os professores antigos.
+- Vincular um curso adicional a um coordenador sem desvincular os outros.
+- Matricular alguns alunos novos sem desmatricular os existentes (alternativa ao endpoint avulso de matrícula).
+
+### Exemplo: combinando modos diferentes
+
+Cada array tem seu próprio modo independente. O exemplo abaixo adiciona um professor e dois alunos à turma `ALG001-2025.1` sem remover quem já estava lá, mas **substitui** a lista de cursos (porque `course_sync_mode` foi omitido e usa o default `replace`):
+
+```json
+{
+  "enrollments": [
+    {
+      "code": "ALG001-2025.1",
+      "subject_code": "ALG001",
+      "semester": "2025.1",
+      "professor_codes": ["PROF003"],
+      "professor_sync_mode": "add",
+      "course_codes": ["CC001"],
+      "student_codes": ["ALU2024010", "ALU2024011"],
+      "student_sync_mode": "add"
+    }
+  ]
+}
+```
+
+### Comportamento em recurso novo
+
+`*_sync_mode` só faz diferença quando o recurso **já existe**. Em recursos novos (`code` inédito), os dois modos produzem o mesmo resultado: a lista enviada é a lista inicial do recurso recém-criado.
+
+:::warning[Breaking change]
+Em versões anteriores, `professor_codes` em uma Turma existente adicionava silenciosamente os novos sem remover os antigos. Agora o default é `replace` em todos os `*_sync_mode`. Integrações que dependiam do comportamento antigo devem enviar `professor_sync_mode: "add"` explicitamente.
 :::
 
 ## 1. Sincronizar Unidades
@@ -105,7 +170,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 ## 2. Sincronizar Áreas
 
-**Dependências**: Unidades devem estar sincronizadas
+**Dependências**: Nenhuma (Área é entidade global da instituição)
 
 ```
 POST /integration/v1/areas/sync
@@ -125,7 +190,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 ## 4. Sincronizar Disciplinas Base
 
-**Dependências**: Cursos devem estar sincronizados
+**Dependências**: Nenhuma (Disciplina Base é entidade global da instituição)
 
 ```
 POST /integration/v1/subjects/sync
@@ -157,7 +222,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 Turmas representam instâncias de disciplinas base em períodos letivos específicos, incluindo um ou mais docentes responsáveis e estudantes matriculados.
 
-**Dependências**: Disciplinas Base e Professores devem estar sincronizados. Alunos são opcionais na criação da turma
+**Dependências**: Disciplinas Base, Cursos (`course_codes`, mínimo 1) e Professores (`professor_codes`, mínimo 1) devem estar sincronizados. Alunos são opcionais na criação da turma
 
 ### Endpoint
 
@@ -174,8 +239,8 @@ POST /integration/v1/enrollments/sync
       "code": "ALG001-2025.1",
       "subject_code": "ALG001",
       "professor_codes": ["PROF001", "PROF002"],
-      "semester": "2025.1",
       "course_codes": ["CC001", "SI001"],
+      "semester": "2025.1",
       "student_codes": [
         "ALU2024001",
         "ALU2024002"
@@ -185,6 +250,7 @@ POST /integration/v1/enrollments/sync
       "code": "BD001-2025.1",
       "subject_code": "BD001",
       "professor_codes": ["PROF002"],
+      "course_codes": ["CC001"],
       "semester": "2025.1",
       "student_codes": [
         "ALU2024001"
@@ -198,49 +264,26 @@ POST /integration/v1/enrollments/sync
 
 - `code`: Código único da turma (máximo 255 caracteres) - recomendado incluir semestre (exemplo: "ALG001-2025.1")
 - `subject_code`: Código da disciplina base vinculada (deve existir)
-- `professor_codes`: Array com códigos dos docentes responsáveis (pelo menos um deve existir)
+- `professor_codes`: Array com códigos dos docentes responsáveis (pelo menos um, todos devem existir)
+- `course_codes`: Array com códigos dos cursos vinculados à turma (pelo menos um, todos devem existir). É o único lugar onde o vínculo curso ↔ disciplina é definido
 - `semester`: Período letivo (formato: "YYYY.N", exemplos: "2025.1", "2025.2")
 
 :::note[Retrocompatibilidade]
-O campo `professor_code` (singular) ainda é aceito por retrocompatibilidade e equivale a `professor_codes: ["PROF001"]`. Prefira usar `professor_codes` (array) em integrações novas.
+Os campos `professor_code` e `course_code` (singulares) ainda são aceitos por retrocompatibilidade e equivalem a arrays de 1 item. Prefira usar `professor_codes` e `course_codes` em integrações novas.
 :::
 
 ### Campos Opcionais
 
-- `course_codes`: Cursos adicionais vinculados à turma. Expande a elegibilidade de alunos além do curso da disciplina base
 - `student_codes`: Alunos a matricular. Pode ser omitido ou `[]` para criar a turma sem alunos
-- `student_sync_mode`: Como os alunos enviados são processados (padrão: `replace`)
+- `professor_sync_mode`: Modo de sincronização dos professores (padrão: `replace`)
+- `course_sync_mode`: Modo de sincronização dos cursos (padrão: `replace`)
+- `student_sync_mode`: Modo de sincronização dos alunos (padrão: `replace`)
 
-Para entender elegibilidade de alunos, múltiplos professores e múltiplos cursos, consulte [Conceitos Fundamentais - Turma](conceitos-fundamentais#9-turma-enrollment).
+Para entender elegibilidade de alunos e múltiplos professores, consulte [Conceitos Fundamentais - Turma](conceitos-fundamentais#9-turma-enrollment).
 
-### Modo de Sincronização de Alunos (`student_sync_mode`)
+### Sync modes da Turma
 
-| Valor | Comportamento |
-|---|---|
-| `replace` (padrão) | Substitui toda a lista. Alunos não enviados são desvinculados |
-| `add` | Apenas adiciona os alunos enviados, sem remover os já matriculados |
-
-Use `replace` quando quiser garantir que a turma tenha exatamente os alunos enviados. Use `add` para adicionar alunos incrementalmente sem precisar reenviar a lista completa.
-
-```json
-{
-  "enrollments": [
-    {
-      "code": "ALG001-2025.1",
-      "subject_code": "ALG001",
-      "professor_codes": ["PROF001"],
-      "semester": "2025.1",
-      "student_codes": ["ALU2024010", "ALU2024011"],
-      "student_sync_mode": "add"
-    }
-  ]
-}
-```
-
-### Comportamento de Sincronização
-
-- **Turma existente** (code já cadastrado): Adiciona professores novos sem remover os existentes; processa alunos conforme `student_sync_mode`
-- **Turma nova** (code não existe): Cria nova turma com vínculos especificados
+A Turma aceita `professor_sync_mode`, `course_sync_mode` e `student_sync_mode` para controlar se as listas enviadas substituem ou adicionam vínculos. Consulte [Modos de Sincronização](#modos-de-sincronização-add-vs-replace) para o comportamento detalhado.
 
 ## Matrícula e Desmatrícula Avulsa
 
@@ -297,7 +340,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 ## 10. Sincronizar Gestores de Área
 
-**Dependências**: Áreas devem estar sincronizadas
+**Dependências**: Áreas e Unidades devem estar sincronizadas
 
 ```
 POST /integration/v1/area-managers/sync
@@ -343,17 +386,25 @@ curl -X GET https://{{instituicao}}.proextend.com.br/api/integration/v1/sync-sta
       "minutes_ago": 15
     },
     "entities": {
-      "units": { "total": 3 },
-      "areas": { "total": 8 },
-      "courses": { "total": 15 },
-      "subjects": { "total": 120 },
-      "professors": { "total": 45 },
-      "students": { "total": 850 },
-      "enrollments": { "total": 2340 },
-      "directors": { "total": 4 },
-      "pedagogical_advisors": { "total": 6 },
-      "area_managers": { "total": 8 },
-      "coordinators": { "total": 15 }
+      "units":                { "total": 3,    "last_updated": "2025-12-31T09:00:00Z" },
+      "directors":            { "total": 4,    "last_updated": "2025-12-31T09:00:00Z" },
+      "pedagogical_advisors": { "total": 6,    "last_updated": "2025-12-31T09:00:00Z" },
+      "areas":                { "total": 8,    "last_updated": "2025-12-31T09:00:00Z" },
+      "area_managers":        { "total": 8,    "last_updated": "2025-12-31T09:00:00Z" },
+      "courses":              { "total": 15,   "last_updated": "2025-12-31T09:00:00Z" },
+      "coordinators":         { "total": 15,   "last_updated": "2025-12-31T09:00:00Z" },
+      "subjects":             { "total": 120,  "last_updated": "2025-12-31T09:00:00Z" },
+      "professors":           { "total": 45,   "last_updated": "2025-12-31T09:00:00Z" },
+      "students":             { "total": 850,  "last_updated": "2025-12-31T09:00:00Z" },
+      "enrollments":          { "total": 2340, "last_updated": "2025-12-31T09:00:00Z" }
+    },
+    "recent_activity": {
+      "last_24h": {
+        "total": 142,
+        "success": 138,
+        "errors": 4,
+        "avg_response_time_ms": 87
+      }
     },
     "api_client": {
       "name": "Integração - Acesso Completo",
@@ -372,7 +423,7 @@ A API disponibiliza endpoints de consulta (GET) para verificação de dados sinc
 
 ```
 GET /integration/v1/units?search=centro
-GET /integration/v1/areas?unit_code=CAMPUS_CENTRO
+GET /integration/v1/areas?search=tech
 GET /integration/v1/courses?area_code=TECH&unit_code=CAMPUS_CENTRO
 GET /integration/v1/professors?active_only=1&per_page=100
 GET /integration/v1/students?course_code=CC001&active_only=1
@@ -391,106 +442,54 @@ GET /integration/v1/enrollments/ALG001-2025.1
 
 ## Tratamento de Erros
 
+A API utiliza um shape padronizado para todos os erros, denominado `ApiError`. Independentedo endpoint ou tipo de falha (validação, dependência ausente, regra de negócio), todo erro segue o mesmo formato base com `type`, `message` e campos contextuais.
+
+Para a especificação completa, glossário de tipos e exemplos por cenário, consulte [Tratamento de Erros](tratamento-de-erros).
+
 ### Códigos de Status HTTP
 
-- **200 OK**: Operação bem-sucedida
+- **200 OK**: Operação bem-sucedida (inclui sync com falhas parciais; veja `data.failed`)
 - **401 Unauthorized**: API Key inválida ou ausente
-- **422 Unprocessable Entity**: Erro de validação de dados
+- **404 Not Found**: Recurso não encontrado por code
+- **422 Unprocessable Entity**: Erro de validação de schema ou regra single-item
 - **429 Too Many Requests**: Limite de taxa excedido
 - **500 Internal Server Error**: Erro interno do servidor
 
-### Erros de Dependência
+### Exemplo Resumido
 
-**Cenário**: Um ou mais itens do lote referenciam entidades que ainda não existem (ex: `area_code` inválido em um sync de cursos).
-
-O item com a referência inválida falha individualmente, os demais do lote são processados normalmente. A requisição retorna **HTTP 200** com `failed: N`:
+Item de sync com `area_code` inexistente:
 
 ```json
 {
   "success": true,
-  "message": "Sincronização de cursos concluída com erros.",
   "data": {
     "created": 1,
-    "updated": 0,
     "failed": 1,
     "errors": [
       {
         "index": 1,
         "code": "ENF001",
-        "error": "Área 'HEALTH' não encontrada."
+        "errors": [
+          {
+            "type": "code_not_found",
+            "message": "Área 'HEALTH' não encontrado(a).",
+            "entity": "area",
+            "code": "HEALTH"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-**Solução**: Sincronizar entidades na ordem correta de dependências:
+**Solução para erros de dependência**: sincronizar entidades na ordem correta:
 
 ```
 Units → Areas → Courses → Subjects → Professors/Students → Enrollments
 ```
 
-### Erros de Duplicação
-
-**Cenário**: Tentativa de criar registro com email ou CPF já cadastrado
-
-**Resposta de Erro**:
-
-```json
-{
-  "success": false,
-  "message": "Erro de validação",
-  "errors": {
-    "email": ["Email já cadastrado na plataforma"]
-  }
-}
-```
-
-**Observação**: A API implementa comportamento idempotente. Sincronização com code existente resulta em **atualização** ao invés de duplicação. Este erro ocorre quando campos únicos (email/CPF) conflitam com registros diferentes.
-
-### Erros de Validação de Formato
-
-**Cenário 1: CPF inválido**
-
-```json
-{
-  "success": false,
-  "message": "Erro de validação",
-  "errors": {
-    "professors.0.cpf": ["O CPF informado é inválido."]
-  }
-}
-```
-
-**Observação**: O CPF é validado conforme algoritmo oficial. Deve ser enviado com apenas 11 dígitos numéricos, sem formatação (`12345678901`).
-
-**Cenário 2: Telefone com formato inválido**
-
-```json
-{
-  "success": false,
-  "message": "Erro de validação",
-  "errors": {
-    "professors.0.phone": ["O telefone deve conter apenas dígitos."]
-  }
-}
-```
-
-**Observação**: O telefone deve conter apenas números, sem parênteses, espaços ou hífens.
-
-**Cenário 3: Campo excede tamanho máximo**
-
-```json
-{
-  "success": false,
-  "message": "Erro de validação",
-  "errors": {
-    "areas.0.code": ["O código não pode ter mais de 255 caracteres."]
-  }
-}
-```
-
-**Solução**: Validar formato e consistência dos dados no sistema de origem antes do envio.
+Para os demais cenários de erro (validação de schema, duplicação de email/CPF, formato inválido, regra de negócio violada), consulte [Tratamento de Erros](tratamento-de-erros).
 
 ## Estratégias de Sincronização
 

@@ -17,9 +17,9 @@ Remoções em cascata afetam todas as entidades filhas vinculadas. Avalie o impa
 
 | Endpoint | Escopo da remoção |
 |---|---|
-| `DELETE /units/{code}` | Remove a unidade e, em cascata, todas as áreas e cursos vinculados |
-| `DELETE /areas/{code}` | Remove a área e, em cascata, todos os cursos vinculados |
-| `DELETE /courses/{code}` | Remove o curso e, em cascata, todas as disciplinas e alunos vinculados |
+| `DELETE /units/{code}` | Remove a unidade e, em cascata, os cursos vinculados (que por sua vez removem seus alunos). **Áreas e disciplinas base não são afetadas** (são entidades globais) |
+| `DELETE /areas/{code}` | Remove a área e, em cascata, os cursos vinculados (que por sua vez removem seus alunos). **Unidades e disciplinas base não são afetadas** |
+| `DELETE /courses/{code}` | Remove o curso e, em cascata, os alunos vinculados. **Disciplinas base não são removidas** (são globais). Turmas que tinham o curso em `course_codes` permanecem (com o curso desvinculado do pivot) |
 | `DELETE /subjects/{code}` | Remove a disciplina base e, em cascata, todas as turmas vinculadas |
 | `DELETE /professors/{code}` | Remove o professor. Turmas são preservadas |
 | `DELETE /coordinators/{code}` | Remove o coordenador. Soft delete |
@@ -27,7 +27,11 @@ Remoções em cascata afetam todas as entidades filhas vinculadas. Avalie o impa
 | `DELETE /directors/{code}` | Remove o diretor. Soft delete |
 | `DELETE /pedagogical-advisors/{code}` | Remove o assessor pedagógico. Soft delete |
 | `DELETE /students/{code}` | Remove o aluno. Matrículas históricas são preservadas |
-| `DELETE /enrollments/{code}` | Remove a turma e desmatricula todos os alunos vinculados |
+| `DELETE /enrollments/{code}` | Remove a turma e desvincula todos os professores, cursos e alunos do pivot |
+
+:::warning
+Ao remover um curso, as turmas que o referenciavam em `course_codes` permanecem ativas, mas com o pivot do curso desvinculado. Se a turma tinha apenas esse curso vinculado, ela passa a não ter cursos, e a próxima sincronização nessa turma exigirá `course_codes` novamente.
+:::
 
 ## Exemplo de Requisição
 
@@ -49,8 +53,8 @@ Todos os endpoints de remoção retornam o mesmo formato:
 
 ### Códigos de Erro
 
-- **401**: API Key inválida ou ausente
-- **403**: Escopo insuficiente (requer `write` ou `full`)
+- **401**: API Key ausente ou inválida
+- **403**: API Key desativada ou scope insuficiente (requer `write` ou `full`)
 - **404**: Entidade não encontrada com o code informado
 
 ## Alternativa: Suspensão

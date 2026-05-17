@@ -71,14 +71,14 @@ Assessores de apoio pedagógico. Vinculados a uma unidade específica.
 Exemplo: Fernanda Costa (Campus Centro)
 
 ### 4. Áreas (Areas)
-Áreas de conhecimento que agrupam cursos relacionados.
+Áreas de conhecimento que agrupam cursos relacionados. Entidade global da instituição: o vínculo com unidade acontece através do curso.
 
 Exemplo: Tecnologia da Informação, Ciências da Saúde
 
 ### 5. Gestores de Área (Area Managers)
-Gestores responsáveis por áreas de conhecimento. Vinculados a uma área específica.
+Gestores responsáveis por uma ou mais áreas de conhecimento, com escopo restrito a uma unidade.
 
-Exemplo: Carlos Mendes (Tecnologia da Informação)
+Exemplo: Carlos Mendes (Tecnologia da Informação + Engenharia, Campus Centro)
 
 ### 6. Cursos (Courses)
 Programas acadêmicos oferecidos pela instituição.
@@ -86,26 +86,26 @@ Programas acadêmicos oferecidos pela instituição.
 Exemplo: Ciência da Computação, Enfermagem
 
 ### 7. Coordenadores (Coordinators)
-Coordenadores de curso com acesso ao painel ProExtend. Vinculados a um curso específico.
+Coordenadores de um ou mais cursos com acesso ao painel ProExtend.
 
-Exemplo: Prof. Ana Souza (Ciência da Computação)
+Exemplo: Prof. Ana Souza (Ciência da Computação + Sistemas de Informação)
 
 ### 8. Disciplinas Base (Subjects)
-Componentes curriculares que compõem a grade de cursos.
+Componentes curriculares do catálogo da instituição. A mesma disciplina pode ser usada por turmas de cursos diferentes. O vínculo curso ↔ disciplina é definido na Turma.
 
 Exemplo: Algoritmos I, Banco de Dados, LIBRAS
 
 :::note
-Disciplinas Base representam o cadastro curricular permanente, sem vínculo com períodos letivos ou discentes.
+Disciplinas Base são entidades globais da instituição, sem vínculo com curso, período letivo ou discentes. O vínculo curso ↔ disciplina existe apenas na Turma (Enrollment), via `course_codes`.
 :::
 
 ### 9. Turmas (Enrollments)
-Instâncias de disciplinas base vinculadas a período letivo específico, incluindo um ou mais docentes responsáveis e discentes matriculados. Suportam múltiplos cursos via `course_codes`.
+Instâncias de disciplinas base em período letivo específico, vinculadas a um ou mais cursos, com um ou mais docentes responsáveis e discentes matriculados.
 
 Exemplo: Turma "Algoritmos I - 2025.1" ministrada pelo Prof. João Silva e Prof. Maria Santos, com 30 alunos dos cursos de Ciência da Computação e Sistemas de Informação
 
 :::note
-Turmas são instâncias de Disciplinas Base em um período letivo. Um aluno pode ser matriculado se pertencer ao curso da disciplina base ou a qualquer curso adicional vinculado via `course_codes`.
+Um aluno pode ser matriculado se pertencer a um dos cursos vinculados à turma via `course_codes`. O campo `course_codes` é obrigatório na criação da turma e é o único lugar onde o vínculo curso ↔ disciplina é definido.
 :::
 
 ### 10. Professores (Professors)
@@ -198,16 +198,7 @@ Cada API Key é configurada com escopo de acesso específico:
 
 Limite configurável por cliente API (padrão: 60 requisições/minuto).
 
-Resposta em caso de excedente de taxa:
-
-```json
-{
-  "success": false,
-  "message": "Muitas tentativas. Por favor, tente novamente mais tarde.",
-  "retry_after": 60,
-  "status": 429
-}
-```
+Quando o limite é atingido, a API retorna **HTTP 429** com `type: rate_limit_exceeded`. Os headers `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` e `Retry-After` vêm preenchidos em todas as respostas, permitindo monitorar o consumo. Detalhes do shape em [Tratamento de Erros](tratamento-de-erros).
 
 ### Requisitos de Segurança
 
@@ -270,5 +261,5 @@ Para implementação da integração:
 ## Recursos de Monitoramento
 
 - **Health Check**: `GET /integration/v1/health`. Endpoint público sem autenticação. Retorna status da API, versão e tempo de resposta. Útil para verificar disponibilidade antes de sincronizar.
-- **Sync Status**: `GET /integration/v1/sync-status`. Retorna contagem de entidades sincronizadas e informações da última sincronização da chave em uso.
+- **Sync Status**: `GET /integration/v1/sync-status`. Retorna contagem e data de atualização de todas as entidades sincronizadas, atividade recente das últimas 24h (total, sucessos, erros e tempo médio de resposta) e informações da chave em uso.
 - **Logs de Integrações**: toda requisição de escrita é registrada automaticamente com status, ação e detalhes da resposta. Os logs ficam disponíveis por 30 dias no painel e via API. Consulte [Logs de Integrações](logs-de-integracoes).

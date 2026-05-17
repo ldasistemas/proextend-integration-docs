@@ -115,17 +115,17 @@ Tabela: disciplinas
   "subjects": [
     {
       "code": "ALG001",
-      "name": "Algoritmos I",
-      "course_code": "CC001"
+      "name": "Algoritmos I"
     },
     {
       "code": "BD001",
-      "name": "Banco de Dados I",
-      "course_code": "CC001"
+      "name": "Banco de Dados I"
     }
   ]
 }
 ```
+
+Disciplinas são entidades globais da instituição e não exigem `course_code`. O vínculo curso ↔ disciplina é feito na Turma via `course_codes`. Consulte [Conceitos Fundamentais](conceitos-fundamentais).
 
 **Não é necessário** armazenar nada além do que já tem no ERP.
 
@@ -156,6 +156,7 @@ Tabela: matriculas
     {
       "code": "ALG001-25.1",
       "subject_code": "ALG001",
+      "course_codes": ["CC001"],
       "professor_codes": ["PROF001"],
       "semester": "2025.1",
       "student_codes": ["ALU001", "ALU002"]
@@ -164,7 +165,7 @@ Tabela: matriculas
 }
 ```
 
-Utilize os códigos existentes no sistema!
+O campo `course_codes` é **obrigatório** na Turma. É onde o vínculo curso ↔ disciplina é definido. Utilize os códigos existentes no sistema!
 
 ### Exemplo 3: Atualizar Professor
 
@@ -224,8 +225,9 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
   "enrollments": [
     {
       "code": "TURMA001",
-      "subject_code": "ALG999",  // disciplina não existe
-      "professor_code": "PROF001",
+      "subject_code": "ALG999",
+      "course_codes": ["CC001"],
+      "professor_codes": ["PROF001"],
       "semester": "2025.1",
       "student_codes": []
     }
@@ -233,7 +235,29 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 }
 ```
 
-**Erro**: Subject not found
+**Resposta da API** (`200` com falha parcial):
+```json
+{
+  "success": true,
+  "created": 0,
+  "updated": 0,
+  "failed": 1,
+  "errors": [
+    {
+      "index": 0,
+      "code": "TURMA001",
+      "errors": [
+        {
+          "type": "code_not_found",
+          "message": "Disciplina 'ALG999' não encontrada(o).",
+          "entity": "subject",
+          "code": "ALG999"
+        }
+      ]
+    }
+  ]
+}
+```
 
 **Solução**: Sincronize disciplinas primeiro
 ```
@@ -241,13 +265,15 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 2. Depois sincronizar turma que usa ALG999
 ```
 
+Detalhes do shape `ApiError` em [Tratamento de Erros](tratamento-de-erros).
+
 ### Erro 3: Code Inválido (Vazio ou Nulo)
 
 **Problema**:
 ```json
 {
   "subjects": [
-    { "code": "", "name": "Algoritmos", "course_code": "CC001" }
+    { "code": "", "name": "Algoritmos" }
   ]
 }
 ```
@@ -258,7 +284,7 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 ```json
 {
   "subjects": [
-    { "code": "ALG001", "name": "Algoritmos", "course_code": "CC001" }
+    { "code": "ALG001", "name": "Algoritmos" }
   ]
 }
 ```

@@ -72,19 +72,49 @@ Chave de integração, entidade, método, status (sucesso ou erro) e período de
   "action": "Sync professors: 3 criados, 1 atualizado",
   "status": 200,
   "success": true,
-  "response_summary": { "created": 3, "updated": 1, "failed": 0 }
+  "result": { "created": 3, "updated": 1, "failed": 0 }
 }
 ```
 
-**Sync com falha:**
+**Sync com validação rejeitada (422):**
 ```json
 {
   "action": "Sync students (falhou)",
   "status": 422,
   "success": false,
-  "error_message": "Dados inválidos.: O código do curso é obrigatório."
+  "error": "O código do curso é obrigatório."
 }
 ```
+
+**Sync com falha parcial em item (200):**
+```json
+{
+  "action": "Sync enrollments: 1 criados, 1 falharam",
+  "status": 200,
+  "success": true,
+  "result": {
+    "created": 1,
+    "updated": 0,
+    "failed": 1,
+    "errors": [
+      {
+        "index": 1,
+        "code": "ALG001-2025.1",
+        "errors": [
+          {
+            "type": "code_not_found",
+            "message": "Professor 'PROF999' não encontrado(a).",
+            "entity": "professor",
+            "code": "PROF999"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+O campo `result` preserva o shape `ApiError` completo para cada item de falha, permitindo filtrar logs por `entity`, `type` ou `rule` programaticamente. Detalhes em [Tratamento de Erros](tratamento-de-erros).
 
 **SSO:**
 ```json
@@ -92,7 +122,7 @@ Chave de integração, entidade, método, status (sucesso ou erro) e período de
   "action": "SSO: gerou token para João Silva",
   "status": 200,
   "success": true,
-  "response_summary": { "user_name": "João Silva", "profile_type": "professor" }
+  "result": { "user_name": "João Silva", "profile_type": "professor" }
 }
 ```
 

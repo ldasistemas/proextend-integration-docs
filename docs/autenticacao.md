@@ -205,57 +205,16 @@ Consulte [Logs de Integrações](logs-de-integracoes) para detalhes sobre filtro
 
 ### Referência de Códigos de Erro
 
-| Código | Nome | Descrição | Solução |
-|--------|------|-----------|---------|
-| **401** | Unauthorized | API Key inválida, desativada ou ausente | Verificar token no header `Authorization: Bearer pex_...` e status no painel |
-| **403** | Forbidden | Scope insuficiente para operação | Alterar scope para `full` ou usar API Key com permissões adequadas |
-| **404** | Not Found | Recurso não encontrado | Verificar se code/endpoint existe |
-| **422** | Unprocessable Entity | Dados inválidos | Validar campos obrigatórios e formatos (CPF, email, etc.) |
-| **429** | Too Many Requests | Rate limit atingido | Aguardar `retry_after` segundos e implementar backoff |
-| **500** | Internal Server Error | Erro interno no servidor | Contatar suporte técnico |
-| **503** | Service Unavailable | API temporariamente indisponível | Tentar novamente após alguns minutos |
+| Código | Causa | Solução |
+|--------|-------|---------|
+| **401** | API Key ausente ou inválida | Verificar header `Authorization: Bearer pex_...` |
+| **403** | API Key desativada ou scope insuficiente | Reativar no painel ou usar API Key com scope adequado (`full`) |
+| **404** | Recurso não encontrado | Verificar se o code existe |
+| **422** | Dados de entrada inválidos | Validar campos obrigatórios e formatos (CPF, email, etc.) |
+| **429** | Limite de requisições por minuto atingido | Aguardar `retry_after` segundos e implementar backoff |
+| **500** | Erro interno no servidor | Contatar suporte técnico |
 
-### Detalhes dos Erros
-
-#### 401 Unauthorized
-```json
-{
-  "success": false,
-  "message": "Unauthenticated",
-  "status": 401
-}
-```
-
-Causas: API Key incorreta, desativada, deletada ou ausente no header
-
-Solução: Verificar token e status no painel (Avançado > Integrações)
-
-#### 403 Forbidden
-```json
-{
-  "success": false,
-  "message": "Insufficient scope",
-  "status": 403
-}
-```
-
-Causas: Tentativa de sincronizar com scope `read` ou consultar com scope `write`
-
-Solução: Alterar scope para `full` no painel
-
-#### 429 Too Many Requests
-```json
-{
-  "success": false,
-  "message": "Muitas tentativas. Por favor, tente novamente mais tarde.",
-  "retry_after": 60,
-  "status": 429
-}
-```
-
-Causas: Excesso de requisições (limite por minuto atingido)
-
-Solução: Aguardar `retry_after` segundos, implementar backoff exponencial ou aumentar rate limit no painel
+Todos os erros seguem o shape padronizado `ApiError`. Para detalhes do formato, exemplos por cenário e o glossário de `rule` (`unauthenticated`, `invalid_api_key`, `api_key_disabled`, `insufficient_scope`, `rate_limit_exceeded`), consulte [Tratamento de Erros](tratamento-de-erros).
 
 ## Segurança
 

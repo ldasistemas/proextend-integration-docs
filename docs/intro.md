@@ -46,9 +46,9 @@ Referência: [Visão Geral](visao-geral)
 
 Detalha as entidades do sistema e seus relacionamentos:
 - Unidades (Units), Diretores (Directors) e Assessores Pedagógicos (Pedagogical Advisors)
-- Áreas (Areas) e Gestores de Área (Area Managers)
-- Cursos (Courses) e Coordenadores (Coordinators)
-- Disciplinas Base (Subjects) e Turmas (Enrollments)
+- Áreas (Areas), entidade global da instituição, e Gestores de Área (Area Managers, multi-área + unidade própria)
+- Cursos (Courses) e Coordenadores (Coordinators, multi-curso)
+- Disciplinas Base (Subjects), entidade global da instituição, e Turmas (Enrollments, com cursos definidos via `course_codes`)
 - Professores (Professors) e Alunos (Students)
 - Hierarquia e dependências entre entidades
 
@@ -90,28 +90,38 @@ Referência: [SSO](sso)
 ### 6. Fluxo de Sincronização
 
 Descreve o processo completo de sincronização:
-- Ordem de sincronização obrigatória: Units → Areas → Courses → Subjects → Professors/Students → Enrollments. Diretores, Assessores Pedagógicos, Gestores de Área e Coordenadores podem ser sincronizados a qualquer momento após sua dependência direta
+- Ordem de sincronização sugerida: Units, Areas e Subjects (entidades globais) → Courses → Professors/Students → Enrollments. Diretores, Assessores, Gestores de Área e Coordenadores podem ser sincronizados a qualquer momento após sua dependência direta
 - Especificação de cada endpoint de sincronização
 - Definição de campos obrigatórios e opcionais por entidade
-- Tratamento de erros e códigos de resposta HTTP
+- Modos de sincronização (`*_sync_mode`: `add` ou `replace`) para arrays de vínculos em Turmas, Coordenadores e Gestores de Área
 - Estratégias de sincronização (completa, incremental, em lote)
 - Operações de consulta de dados sincronizados
 
 Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao)
 
-### 7. Remoção de Entidades
+### 7. Tratamento de Erros
+
+Especifica o shape padronizado `ApiError` retornado por todos os erros da API:
+- 5 tipos de erro: `validation_failed`, `code_not_found`, `constraint_violation`, `not_found`, `internal`
+- Wrappers de resposta para validação, sync com falhas parciais, 404 e single-item
+- Glossário de regras (`rule`) para `constraint_violation`
+- Exemplos por cenário e estratégias de tratamento programático
+
+Referência: [Tratamento de Erros](tratamento-de-erros)
+
+### 8. Remoção de Entidades
 
 Documenta os endpoints `DELETE` e o comportamento de soft delete em cascata.
 
 Referência: [Remoção de Entidades](remocao)
 
-### 8. Relatórios e Consultas
+### 9. Relatórios e Consultas
 
 Endpoints de leitura de dados acadêmicos: atividades, notas e submissões.
 
 Referência: [Relatórios e Consultas](relatorios)
 
-### 9. Logs de Integrações
+### 10. Logs de Integrações
 
 Registro automático de todas as requisições de escrita feitas pela API. Permite acompanhar o histórico de sincronizações, identificar falhas e auditar o uso da integração. Os logs ficam disponíveis por 30 dias no painel e via API.
 
@@ -176,12 +186,12 @@ A API implementa comportamento idempotente. Múltiplas sincronizações com mesm
 
 ### Sequência de Sincronização
 
-Ordem obrigatória: Unidades → Áreas → Cursos → Disciplinas Base → Professores/Alunos → Turmas. Perfis vinculados a cada nível (Diretores e Assessores a Unidades, Gestores a Áreas, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após sua dependência direta. O não cumprimento desta ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
+Ordem sugerida: **Unidades, Áreas e Disciplinas Base** (entidades globais, podem ser sincronizadas em paralelo) → **Cursos** (dependem de Área e Unidade) → **Professores/Alunos** → **Turmas** (dependem de Disciplina Base, Cursos, Professores e Alunos). Perfis vinculados (Diretores e Assessores a Unidades, Gestores a Áreas e Unidade, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após suas dependências diretas. O não cumprimento da ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
 
 ### Distinção entre Subject e Enrollment
 
-- **Subject (Disciplina Base)**: Componente curricular cadastrado na grade do curso, sem vínculo semestral
-- **Enrollment (Turma)**: Instância de uma disciplina base em período letivo específico, com um ou mais professores e alunos vinculados. Suporta múltiplos cursos via `course_codes`
+- **Subject (Disciplina Base)**: Componente curricular global da instituição, sem vínculo com curso, período letivo ou alunos
+- **Enrollment (Turma)**: Instância de uma disciplina base em período letivo específico, vinculada a um ou mais cursos via `course_codes` (obrigatório), com um ou mais professores e alunos matriculados. **A Turma é o único lugar onde o vínculo curso ↔ disciplina é definido.**
 
 Referência: [Conceitos Fundamentais](conceitos-fundamentais).
 

@@ -59,6 +59,7 @@ const sidebars = {
       },
       items: [
         'fluxo-de-sincronizacao',
+        'tratamento-de-erros',
         'remocao',
       ],
     },

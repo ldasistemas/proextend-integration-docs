@@ -14,27 +14,53 @@ Este documento detalha as entidades do sistema de integração ProExtend e seus 
 ### Hierarquia de Entidades
 
 ```mermaid
-flowchart TD
+flowchart LR
+
+    %% Instituição
     INST[Instituição]
 
+    %% Estrutura principal
     INST --> UNI[Unidades]
+    INST --> AREA[Áreas]
+    INST --> DISC[Disciplinas Base]
     INST --> PROF[Professores]
     INST --> ALU[Alunos]
 
-    UNI --> DIR[Diretores]
-    UNI --> ASSES[Assessores Pedagógicos]
-    UNI --> AREA[Áreas]
+    %% Unidade
+    subgraph SG_UNI [ ]
+        UNI --> DIR[Diretores]
+        UNI --> ASSES[Assessores Pedagógicos]
+        UNI --> CURSO[Cursos]
+    end
 
-    AREA --> GEST[Gestores de Área]
-    AREA --> CURSO[Cursos]
+    %% Área
+    subgraph SG_AREA [ ]
+        AREA --> GEST[Gestores de Área]
+        AREA --> CURSO
+    end
 
-    CURSO --> COORD[Coordenadores]
-    CURSO --> DISC[Disciplinas Base]
+    %% Curso
+    subgraph SG_CURSO [ ]
+        CURSO --> COORD[Coordenadores]
+        CURSO --> TURMA[Turmas]
+    end
 
-    DISC --> TURMA[Turmas]
-    PROF --> TURMA
-    ALU --> TURMA
+    %% Turmas
+    subgraph SG_TURMAS [ ]
+        DISC --> TURMA
+        PROF --> TURMA
+        ALU --> TURMA
+    end
+
+    style SG_UNI fill:transparent,stroke:none
+    style SG_AREA fill:transparent,stroke:none
+    style SG_CURSO fill:transparent,stroke:none
+    style SG_TURMAS fill:transparent,stroke:none
 ```
+
+:::note
+Áreas e Disciplinas Base são entidades **globais da instituição**: não pertencem a uma unidade ou curso específico. O vínculo entre Curso e Área (e entre Curso e Unidade) acontece no próprio Curso. O vínculo entre Curso e Disciplina acontece na Turma (via `course_codes`).
+:::
 
 ## Entidades Detalhadas
 
@@ -166,28 +192,27 @@ O Assessor Pedagógico tem a mesma visibilidade de turmas que o Diretor (Directo
 
 - **code**: Código único da área (exemplo: "TECH", "HEALTH")
 - **name**: Nome da área
-- **unit_code**: Código da unidade (obrigatório, deve existir)
 
 #### Exemplo
 
 ```json
 {
   "code": "TECH",
-  "name": "Tecnologia da Informação",
-  "unit_code": "CAMPUS_CENTRO"
+  "name": "Tecnologia da Informação"
 }
 ```
 
 #### Características
 
-- **Depende de**: Unidade (Unit)
+- Não depende de outras entidades: é uma entidade **global da instituição**
+- O vínculo com unidade acontece através do curso (cada curso indica sua unidade via `unit_code`)
 - Possui Gestores de Área (Area Managers) e Cursos (Courses) vinculados
 
 ---
 
 ### 5. Gestor de Área (Area Manager)
 
-Gestor responsável por uma área de conhecimento.
+Gestor responsável por uma ou mais áreas de conhecimento, com escopo restrito a uma unidade.
 
 #### Atributos
 
@@ -196,7 +221,9 @@ Gestor responsável por uma área de conhecimento.
 - **email**: Email institucional (obrigatório, único)
 - **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **area_code**: Código da área que gerencia (obrigatório, deve existir)
+- **area_codes**: Array de códigos das áreas que gerencia (obrigatório, mínimo 1)
+- **area_sync_mode**: Modo de sincronização de áreas (opcional, padrão: `replace`). Aceita `add` ou `replace`. Comportamento detalhado em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace)
+- **unit_code**: Código da unidade do gestor (obrigatório, deve existir). Restringe o escopo às turmas da unidade
 - **active**: Controla o status (opcional)
   - `true` → reativa (remove suspensão)
   - `false` → suspende
@@ -209,31 +236,33 @@ Gestor responsável por uma área de conhecimento.
   "code": "GEST001",
   "name": "Carlos Mendes",
   "email": "carlos.mendes@faculdade.edu.br",
-  "area_code": "TECH"
+  "area_codes": ["TECH", "ENG"],
+  "unit_code": "CAMPUS_CENTRO"
 }
 ```
 
 #### Características
 
-- **Depende de**: Área (Area)
+- **Depende de**: Áreas (Areas) e Unidade (Unit)
 - Sistema cria credenciais de acesso automaticamente
 - Pode ser suspenso sem ser removido via campo `active: false`
 
-O Gestor de Área tem visibilidade sobre todas as turmas dos cursos pertencentes à área que gerencia. Qualquer turma vinculada a um curso dessa área estará visível, independentemente do professor responsável.
+O Gestor de Área tem visibilidade sobre todas as turmas dos cursos pertencentes às áreas que gerencia, **restritas à sua unidade**. Como a área é global da instituição, sem `unit_code` o gestor veria turmas da mesma área em qualquer campus. Por isso a unidade é obrigatória e funciona como filtro de escopo.
 
 ```mermaid
 flowchart TD
-    GEST["Gestor de Área\n(ex: GEST001)"]
-    AREA["Área\n(ex: Tecnologia)"]
-    C1["Curso: Ciência da Computação"]
-    C2["Curso: Sistemas de Informação"]
-    C3["Curso: Engenharia de Software"]
-    T["Turmas de todos\nos cursos da área"]
+    GEST["Gestor de Área\n(ex: GEST001)\nunit: CAMPUS_CENTRO"]
+    A1["Área: Tecnologia"]
+    A2["Área: Engenharia"]
+    C1["Curso CC\nunit: CAMPUS_CENTRO"]
+    C2["Curso ENG\nunit: CAMPUS_CENTRO"]
+    C3["Curso CC\nunit: CAMPUS_NORTE\n(fora do escopo)"]
+    T["Turmas visíveis"]
+    X["Turmas fora\ndo escopo"]
 
-    GEST -->|gerencia| AREA
-    AREA --> C1 --> T
-    AREA --> C2 --> T
-    AREA --> C3 --> T
+    GEST -->|gerencia| A1 --> C1 --> T
+    GEST -->|gerencia| A2 --> C2 --> T
+    A1 --> C3 --> X
 ```
 
 ---
@@ -271,7 +300,7 @@ Curso de graduação ou pós-graduação oferecido pela instituição.
 
 ### 7. Coordenador (Coordinator)
 
-Coordenador de curso, responsável pela gestão acadêmica de um curso específico.
+Coordenador de um ou mais cursos, responsável pela gestão acadêmica.
 
 #### Atributos
 
@@ -280,7 +309,8 @@ Coordenador de curso, responsável pela gestão acadêmica de um curso específi
 - **email**: Email institucional (obrigatório, único)
 - **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **course_code**: Código do curso que coordena (obrigatório, deve existir)
+- **course_codes**: Array de códigos dos cursos que coordena (obrigatório, mínimo 1)
+- **course_sync_mode**: Modo de sincronização de cursos (opcional, padrão: `replace`). Aceita `add` ou `replace`. Comportamento detalhado em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace)
 - **active**: Controla o status (opcional)
   - `true` → reativa (remove suspensão)
   - `false` → suspende
@@ -295,43 +325,40 @@ Coordenador de curso, responsável pela gestão acadêmica de um curso específi
   "email": "ana.souza@faculdade.edu.br",
   "cpf": "11122233344",
   "phone": "11988887777",
-  "course_code": "CC001"
+  "course_codes": ["CC001", "SI001"]
 }
 ```
 
 #### Características
 
-- **Depende de**: Curso (Course)
+- **Depende de**: Cursos (Courses)
 - Sistema cria credenciais de acesso automaticamente
 - Pode ser suspenso sem ser removido via campo `active: false`
 
-O Coordenador tem visibilidade sobre todas as turmas do curso que coordena, incluindo alunos matriculados e atividades criadas. Turmas de outros cursos não são acessíveis, mesmo que compartilhem disciplinas via `course_codes`.
+O Coordenador tem visibilidade sobre todas as turmas dos cursos que coordena. Um coordenador pode coordenar mais de um curso e enxerga as turmas de todos eles. Turmas de cursos não coordenados não são acessíveis, mesmo que compartilhem disciplinas via `course_codes`.
 
 ```mermaid
 flowchart LR
     COORD["Coordenador\n(ex: COORD001)"]
-    CURSO["Curso\n(ex: CC001)"]
-    T1["Turma ALG001-2025.1"]
-    T2["Turma BD001-2025.1"]
-    T3["Turma ... "]
+    C1["Curso CC001"]
+    C2["Curso SI001"]
+    T1["Turmas de CC001"]
+    T2["Turmas de SI001"]
 
-    COORD -->|coordena| CURSO
-    CURSO --> T1
-    CURSO --> T2
-    CURSO --> T3
+    COORD -->|coordena| C1 --> T1
+    COORD -->|coordena| C2 --> T2
 ```
 
 ---
 
 ### 8. Disciplina Base (Subject)
 
-Componente curricular que faz parte da grade do curso.
+Componente curricular do catálogo da instituição. A mesma disciplina base pode ser usada por turmas de cursos diferentes. O vínculo curso ↔ disciplina é definido na Turma (Enrollment) via `course_codes`.
 
 #### Atributos
 
 - **code**: Código único da disciplina (exemplo: "ALG001", "LIBRAS")
 - **name**: Nome da disciplina
-- **course_code**: Código do curso (obrigatório, deve existir)
 
 #### Exemplo
 
@@ -339,14 +366,15 @@ Componente curricular que faz parte da grade do curso.
 {
   "code": "ALG001",
   "name": "Algoritmos e Programação I",
-  "course_code": "CC001"
+  "type": "obrigatoria"
 }
 ```
 
 #### Características
 
-- **Depende de**: Curso (Course)
-- Representa componente curricular permanente, sem vínculo com período letivo ou alunos
+- Não depende de outras entidades: é uma entidade **global da instituição**
+- Representa componente curricular permanente, sem vínculo com período letivo, curso ou alunos
+- O vínculo curso ↔ disciplina existe apenas na Turma (Enrollment), via campo `course_codes`
 - Possui Turmas (Enrollments) vinculadas
 
 ---
@@ -359,11 +387,15 @@ Instância de uma Disciplina Base em período letivo específico, com um ou mais
 
 - **code**: Código único da turma (exemplo: "ALG001-2025.1", "TURMA001")
 - **subject_code**: Código da disciplina base (obrigatório, deve existir)
+- **course_codes**: Array de códigos dos cursos vinculados à turma (obrigatório, pelo menos um; aceita `course_code` singular por retrocompatibilidade). É na turma que o vínculo curso ↔ disciplina é definido
+- **course_sync_mode**: Modo de sincronização de cursos (opcional, padrão: `replace`)
 - **professor_codes**: Array de códigos de professores (obrigatório, pelo menos um; aceita `professor_code` singular por retrocompatibilidade)
+- **professor_sync_mode**: Modo de sincronização de professores (opcional, padrão: `replace`)
 - **semester**: Semestre acadêmico (obrigatório, formato: "YYYY.N", ex: `"2025.1"`, `"2025.2"`)
-- **course_codes**: Array de códigos de cursos adicionais vinculados à turma (opcional)
 - **student_codes**: Array de códigos de alunos (opcional, devem existir se fornecidos)
 - **student_sync_mode**: Modo de sincronização de alunos (opcional, padrão: `replace`)
+
+Os três `*_sync_mode` aceitam `add` (preserva os vínculos existentes e adiciona os novos) ou `replace` (substitui pelos enviados). Detalhes e exemplos em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace).
 
 #### Exemplo
 
@@ -371,9 +403,9 @@ Instância de uma Disciplina Base em período letivo específico, com um ou mais
 {
   "code": "ALG001-2025.1",
   "subject_code": "ALG001",
+  "course_codes": ["CC001", "SI001"],
   "professor_codes": ["PROF001", "PROF002"],
   "semester": "2025.1",
-  "course_codes": ["CC001", "SI001"],
   "student_codes": ["ALU2024001", "ALU2024002", "ALU2024003"]
 }
 ```

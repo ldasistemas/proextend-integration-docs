@@ -272,12 +272,12 @@ GET /integration/v1/students/{code}/enrollments
       "semester": "2025.1",
       "subject": {
         "code": "ALG001",
-        "name": "Algoritmos e Programação I",
-        "course": {
-          "code": "CC001",
-          "name": "Ciência da Computação"
-        }
+        "name": "Algoritmos e Programação I"
       },
+      "courses": [
+        { "code": "CC001", "name": "Ciência da Computação" },
+        { "code": "ENG001", "name": "Engenharia de Software" }
+      ],
       "professors": [
         { "code": "PROF001", "name": "Dr. João Silva" },
         { "code": "PROF002", "name": "Dra. Maria Costa" }
@@ -292,6 +292,8 @@ GET /integration/v1/students/{code}/enrollments
   }
 }
 ```
+
+A disciplina é uma entidade global da instituição e o vínculo com cursos é feito na turma. Por isso `courses` aparece como array no nível da turma, e não dentro de `subject`. Detalhes em [Conceitos Fundamentais](conceitos-fundamentais).
 
 ## Turmas do Professor
 
@@ -321,13 +323,11 @@ GET /integration/v1/professors/{code}/subjects
       "subject": {
         "id": 12,
         "code": "ALG001",
-        "name": "Algoritmos e Programação I",
-        "course": {
-          "id": 3,
-          "code": "CC001",
-          "name": "Ciência da Computação"
-        }
+        "name": "Algoritmos e Programação I"
       },
+      "courses": [
+        { "id": 3, "code": "CC001", "name": "Ciência da Computação" }
+      ],
       "students_count": 28
     }
   ],
