@@ -412,37 +412,23 @@ Os três `*_sync_mode` aceitam `add` (preserva os vínculos existentes e adicion
 
 #### Elegibilidade de Alunos
 
-Toda disciplina base pertence a um curso. Ao criar uma turma, os alunos elegíveis para matrícula são, por padrão, os alunos desse curso.
+A disciplina base não é vinculada a curso. O vínculo curso ↔ disciplina é feito **na turma**, pelo campo `course_codes` (obrigatório). Os alunos elegíveis para matrícula são os pertencentes a qualquer um dos cursos listados em `course_codes`.
 
 ```mermaid
 flowchart LR
-    DISC["Disciplina Base\n(ex: Ética e Democracia)"]
-    CURSO_BASE["Curso base\n(ex: Administração)"]
-    TURMA["Turma\n(ex: ETICA-2025.1)"]
-    ALU_BASE["Alunos de Administração\n✓ elegíveis por padrão"]
-
-    DISC -->|pertence a| CURSO_BASE
-    CURSO_BASE -->|origina| TURMA
-    TURMA --> ALU_BASE
-```
-
-O campo `course_codes` permite vincular cursos adicionais à turma, expandindo a elegibilidade para alunos desses cursos. Útil para disciplinas compartilhadas entre diferentes cursos.
-
-```mermaid
-flowchart LR
-    TURMA["Turma\n(ex: ETICA-2025.1)"]
-    CURSO_BASE["Administração\n(curso da disciplina)"]
-    CURSO_A["Direito\n(via course_codes)"]
-    CURSO_B["Ciências Sociais\n(via course_codes)"]
-
+    DISC["Disciplina Base\n(ex: Ética e Democracia)\nglobal, sem curso"]
+    TURMA["Turma\n(ex: ETICA-2025.1)\ncourse_codes: ADM, DIR, CS"]
     ALU1["Alunos de Administração"]
     ALU2["Alunos de Direito"]
     ALU3["Alunos de Ciências Sociais"]
 
-    TURMA --- CURSO_BASE --> ALU1
-    TURMA --- CURSO_A --> ALU2
-    TURMA --- CURSO_B --> ALU3
+    DISC --> TURMA
+    TURMA --> ALU1
+    TURMA --> ALU2
+    TURMA --> ALU3
 ```
+
+Uma mesma disciplina pode ser usada em turmas vinculadas a cursos diferentes (ou várias delas ao mesmo tempo, via `course_codes` com múltiplos cursos).
 
 #### Múltiplos Professores
 
@@ -596,19 +582,19 @@ Usuário com acesso administrativo completo ao painel ProExtend. Diferentemente 
 
 ## Diferença: Disciplina Base vs Turma
 
-A Disciplina Base é o registro permanente de um componente curricular no catálogo do curso, sem vínculo com período letivo, professores ou alunos. A Turma é a instância dessa disciplina em um semestre específico: é nela que professores e alunos são vinculados e as atividades acontecem.
+A Disciplina Base é o registro permanente de um componente curricular no catálogo da instituição. Não está vinculada a curso, período letivo, professores ou alunos. A Turma é a instância dessa disciplina em um semestre específico: é nela que os cursos (via `course_codes`), professores e alunos são vinculados e as atividades acontecem.
 
-Uma turma pode ter mais de um professor responsável via `professor_codes`, todos com o mesmo nível de acesso. Além disso, via `course_codes`, a turma pode ser vinculada a cursos adicionais além do curso da disciplina base, permitindo que alunos desses cursos também sejam matriculados. Uma mesma Disciplina Base pode originar turmas em semestres diferentes, cada uma com professores e alunos distintos.
+Uma turma pode ter mais de um professor responsável via `professor_codes`, todos com o mesmo nível de acesso, e pode estar vinculada a um ou mais cursos via `course_codes` (obrigatório), permitindo que alunos de qualquer um desses cursos sejam matriculados. Uma mesma Disciplina Base pode originar turmas em semestres e cursos diferentes.
 
 ```mermaid
 flowchart LR
-    DISC["Disciplina Base\nÉtica e Democracia\nCurso: Administração"]
+    DISC["Disciplina Base\nÉtica e Democracia\n(global)"]
 
-    DISC -->|2025.1| T1["Turma ETI001-2025.1"]
-    DISC -->|2025.2| T2["Turma ETI001-2025.2"]
+    DISC -->|2025.1| T1["Turma ETI001-2025.1\ncourse_codes: ADM, DIR"]
+    DISC -->|2025.2| T2["Turma ETI001-2025.2\ncourse_codes: ADM"]
 
     T1 --> P1["Prof. João\nProf. Maria"]
-    T1 --> A1["Alunos de Administração\nAlunos de Direito\nAlunos de Ciências Sociais"]
+    T1 --> A1["Alunos de Administração\nAlunos de Direito"]
 
     T2 --> P2["Prof. Ana"]
     T2 --> A2["Alunos de Administração"]

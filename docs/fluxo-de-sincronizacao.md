@@ -315,7 +315,7 @@ DELETE /integration/v1/enrollments/{code}/students/{studentCode}
 Remove o aluno especificado sem alterar os demais matriculados.
 
 :::note
-O aluno precisa pertencer a um dos cursos vinculados à turma (curso da disciplina base ou cursos adicionais via `course_codes`), caso contrário a operação retorna erro 422.
+O aluno precisa pertencer a um dos cursos vinculados à turma via `course_codes`, caso contrário a operação retorna erro 422.
 :::
 
 ## 8. Sincronizar Diretores

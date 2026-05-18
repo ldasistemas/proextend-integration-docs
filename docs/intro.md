@@ -102,10 +102,10 @@ Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao)
 ### 7. Tratamento de Erros
 
 Especifica o shape padronizado `ApiError` retornado por todos os erros da API:
-- 5 tipos de erro: `validation_failed`, `code_not_found`, `constraint_violation`, `not_found`, `internal`
-- Wrappers de resposta para validação, sync com falhas parciais, 404 e single-item
-- Glossário de regras (`rule`) para `constraint_violation`
-- Exemplos por cenário e estratégias de tratamento programático
+- 7 tipos de erro: `validation_failed`, `code_not_found`, `constraint_violation`, `not_found`, `authentication_failed`, `rate_limit_exceeded`, `internal`
+- Wrappers de resposta para validação, sync com falhas parciais, 404, single-item, auth e rate limit
+- Glossário de regras (`rule`) para `constraint_violation`, `authentication_failed` e `rate_limit_exceeded`
+- Exemplos por cenário
 
 Referência: [Tratamento de Erros](tratamento-de-erros)
 
@@ -186,7 +186,7 @@ A API implementa comportamento idempotente. Múltiplas sincronizações com mesm
 
 ### Sequência de Sincronização
 
-Ordem sugerida: **Unidades, Áreas e Disciplinas Base** (entidades globais, podem ser sincronizadas em paralelo) → **Cursos** (dependem de Área e Unidade) → **Professores/Alunos** → **Turmas** (dependem de Disciplina Base, Cursos, Professores e Alunos). Perfis vinculados (Diretores e Assessores a Unidades, Gestores a Áreas e Unidade, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após suas dependências diretas. O não cumprimento da ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
+Ordem sugerida: **Unidades, Áreas, Disciplinas Base e Professores** (sem dependências, podem ser sincronizados em paralelo) → **Cursos** (dependem de Unidade e Área) → **Alunos** (dependem de Curso) → **Turmas** (dependem de Disciplina Base, Cursos e Professores; Alunos opcionais). Perfis vinculados (Diretores e Assessores a Unidades, Gestores a Áreas e Unidade, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após suas dependências diretas. O não cumprimento da ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
 
 ### Distinção entre Subject e Enrollment
 
