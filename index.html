@@ -21,7 +21,7 @@
 <meta name="twitter:image" content="https://ldasistemas.github.io/proextend-integration-docs/img/logo.svg">
 <meta name="theme-color" content="#0980D8">
 <link rel="canonical" href="https://ldasistemas.github.io/proextend-integration-docs/"><link rel="stylesheet" href="/assets/css/styles.8fbb3ff3.css">
-<script src="/assets/js/runtime~main.cbad13b2.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.e562b447.js" defer="defer"></script>
 <script src="/assets/js/main.44de2c00.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -108,10 +108,10 @@
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="7-tratamento-de-erros">7. Tratamento de Erros<a href="#7-tratamento-de-erros" class="hash-link" aria-label="Link direto para 7. Tratamento de Erros" title="Link direto para 7. Tratamento de Erros" translate="no">​</a></h3>
 <p>Especifica o shape padronizado <code>ApiError</code> retornado por todos os erros da API:</p>
 <ul>
-<li class="">5 tipos de erro: <code>validation_failed</code>, <code>code_not_found</code>, <code>constraint_violation</code>, <code>not_found</code>, <code>internal</code></li>
-<li class="">Wrappers de resposta para validação, sync com falhas parciais, 404 e single-item</li>
-<li class="">Glossário de regras (<code>rule</code>) para <code>constraint_violation</code></li>
-<li class="">Exemplos por cenário e estratégias de tratamento programático</li>
+<li class="">7 tipos de erro: <code>validation_failed</code>, <code>code_not_found</code>, <code>constraint_violation</code>, <code>not_found</code>, <code>authentication_failed</code>, <code>rate_limit_exceeded</code>, <code>internal</code></li>
+<li class="">Wrappers de resposta para validação, sync com falhas parciais, 404, single-item, auth e rate limit</li>
+<li class="">Glossário de regras (<code>rule</code>) para <code>constraint_violation</code>, <code>authentication_failed</code> e <code>rate_limit_exceeded</code></li>
+<li class="">Exemplos por cenário</li>
 </ul>
 <p>Referência: <a class="" href="/tratamento-de-erros">Tratamento de Erros</a></p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="8-remoção-de-entidades">8. Remoção de Entidades<a href="#8-remoção-de-entidades" class="hash-link" aria-label="Link direto para 8. Remoção de Entidades" title="Link direto para 8. Remoção de Entidades" translate="no">​</a></h3>
@@ -172,7 +172,7 @@
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="sincronização-múltipla">Sincronização Múltipla<a href="#sincronização-múltipla" class="hash-link" aria-label="Link direto para Sincronização Múltipla" title="Link direto para Sincronização Múltipla" translate="no">​</a></h3>
 <p>A API implementa comportamento idempotente. Múltiplas sincronizações com mesmo identificador (<code>code</code>) resultam em atualização da entidade existente, não em duplicação. Referência: <a class="" href="/identificadores-e-codes">Identificadores e codes</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="sequência-de-sincronização">Sequência de Sincronização<a href="#sequência-de-sincronização" class="hash-link" aria-label="Link direto para Sequência de Sincronização" title="Link direto para Sequência de Sincronização" translate="no">​</a></h3>
-<p>Ordem sugerida: <strong>Unidades, Áreas e Disciplinas Base</strong> (entidades globais, podem ser sincronizadas em paralelo) → <strong>Cursos</strong> (dependem de Área e Unidade) → <strong>Professores/Alunos</strong> → <strong>Turmas</strong> (dependem de Disciplina Base, Cursos, Professores e Alunos). Perfis vinculados (Diretores e Assessores a Unidades, Gestores a Áreas e Unidade, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após suas dependências diretas. O não cumprimento da ordem resultará em erros de dependência. Referência: <a class="" href="/fluxo-de-sincronizacao">Fluxo de Sincronização</a>.</p>
+<p>Ordem sugerida: <strong>Unidades, Áreas, Disciplinas Base e Professores</strong> (sem dependências, podem ser sincronizados em paralelo) → <strong>Cursos</strong> (dependem de Unidade e Área) → <strong>Alunos</strong> (dependem de Curso) → <strong>Turmas</strong> (dependem de Disciplina Base, Cursos e Professores; Alunos opcionais). Perfis vinculados (Diretores e Assessores a Unidades, Gestores a Áreas e Unidade, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após suas dependências diretas. O não cumprimento da ordem resultará em erros de dependência. Referência: <a class="" href="/fluxo-de-sincronizacao">Fluxo de Sincronização</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="distinção-entre-subject-e-enrollment">Distinção entre Subject e Enrollment<a href="#distinção-entre-subject-e-enrollment" class="hash-link" aria-label="Link direto para Distinção entre Subject e Enrollment" title="Link direto para Distinção entre Subject e Enrollment" translate="no">​</a></h3>
 <ul>
 <li class=""><strong>Subject (Disciplina Base)</strong>: Componente curricular global da instituição, sem vínculo com curso, período letivo ou alunos</li>
