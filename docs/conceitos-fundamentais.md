@@ -514,8 +514,8 @@ Discente matriculado em um curso da instituição.
 
 - **code**: Código único do aluno (matrícula, CPF ou RA)
 - **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
+- **email**: Email institucional (obrigatório). Pode se repetir entre matrículas do mesmo usuário (aluno) em cursos diferentes; ver [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas)
+- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`). Pode se repetir entre matrículas do mesmo usuário (aluno)
 - **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
 - **course_code**: Código do curso (obrigatório, deve existir)
 - **active**: Controla o status do aluno (opcional)
@@ -609,15 +609,15 @@ flowchart LR
 |-------|-------|-----------------|
 | **code** | Obrigatório, único por tipo de entidade | Máximo 255 caracteres |
 | **name** | Obrigatório | Máximo 255 caracteres |
-| **cpf** | Opcional (Professor/Student), apenas 11 dígitos | `"12345678901"` |
-| **email** | Formato válido, único | `"usuario@dominio.com"` |
+| **cpf** | Opcional, apenas 11 dígitos. Único entre perfis administrativos; pode se repetir entre matrículas do mesmo aluno | `"12345678901"` |
+| **email** | Formato válido. Único entre perfis administrativos; pode se repetir entre matrículas do mesmo aluno | `"usuario@dominio.com"` |
 | **phone** | Opcional, apenas dígitos | `"11999999999"` (10-11 dígitos) |
 | **semester** | Formato ano.período | `"2025.1"`, `"2025.2"` |
 | **codes** de referência | Devem existir previamente | `area_code`, `unit_code`, `course_code`, etc. |
 
 **Validações automáticas**:
 - CPF: Valida formato e dígitos verificadores (apenas 11 dígitos sem formatação)
-- Email: Valida formato e unicidade
+- Email: Valida formato. Unicidade exigida para perfis administrativos; não exigida para alunos (ver [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas))
 - Phone: Aceita apenas dígitos numéricos
 - `codes`: valida unicidade dentro do tipo de entidade e tamanho máximo 255
 - Referências: Valida existência antes de criar vínculo

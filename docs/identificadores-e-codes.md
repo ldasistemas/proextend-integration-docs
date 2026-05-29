@@ -181,6 +181,49 @@ flowchart LR
     SYNC -->|mesmo code| PE
 ```
 
+## Aluno com múltiplas matrículas
+
+A integração suporta o caso de um mesmo usuário (aluno) ter **duas ou mais matrículas ativas** em cursos diferentes (cenário comum em instituições com dupla diplomação ou matrícula simultânea).
+
+Cada matrícula é sincronizada como um aluno independente, com:
+
+- `code` único por matrícula
+- `email` igual ao do usuário (aluno) (compartilhado entre as matrículas)
+- `cpf` igual ao do usuário (aluno) (compartilhado entre as matrículas)
+- `course_code` do curso da matrícula em questão
+
+```json
+{
+  "students": [
+    {
+      "code": "MAT-CC-2024001",
+      "name": "João da Silva",
+      "email": "joao.silva@email.com",
+      "cpf": "12345678901",
+      "course_code": "CC001"
+    },
+    {
+      "code": "MAT-ES-2024001",
+      "name": "João da Silva",
+      "email": "joao.silva@email.com",
+      "cpf": "12345678901",
+      "course_code": "ES001"
+    }
+  ]
+}
+```
+
+A integração cria dois usuários distintos na plataforma, cada um vinculado à sua matrícula. Notas, frequência, submissões e histórico ficam **independentes por matrícula**.
+
+### Login do aluno com múltiplas matrículas
+
+- **Recomendado (SSO)**: gere o token via `POST /sso/generate-token` informando o `user_code` da matrícula específica. A plataforma identifica corretamente qual matrícula acessar.
+- **Login tradicional (email/senha)**: não é suportado quando há múltiplas matrículas para o mesmo usuário (aluno). Use SSO.
+
+:::note
+A restrição de e-mail único na plataforma se aplica apenas a **perfis administrativos** (professor, coordenador, gestor de área, diretor, assessor pedagógico, administrador). Para alunos, e-mail e CPF podem se repetir entre matrículas distintas (mesmo `code` continua único).
+:::
+
 ## Códigos Flexíveis
 
 O campo `code` aceita qualquer identificador único do sistema de origem. A escolha do formato fica a critério da instituição, desde que mantida consistência.

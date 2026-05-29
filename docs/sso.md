@@ -74,6 +74,11 @@ O usuário pode ser identificado por **email (e-mail)** ou **code (código)**. �
 | `expires_in` | integer | Não | Tempo de expiração em segundos - padrão: 86400 (24 horas) |
 | `single_use` | boolean | Não | Token de uso único - padrão: false (reutilizável) |
 
+:::warning[Alunos com múltiplas matrículas]
+Quando um mesmo usuário (aluno) tem mais de uma matrícula ativa em cursos diferentes (cada matrícula é um aluno distinto na plataforma com `code` próprio), use sempre `user_code` para gerar o token SSO. O `user_email` não é suficiente para identificar qual matrícula acessar.
+
+Consulte [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas) para detalhes do cenário.
+:::
 
 #### expires_in (Tempo de Expiração)
 
