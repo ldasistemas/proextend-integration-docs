@@ -21,7 +21,7 @@
 <meta name="twitter:image" content="https://ldasistemas.github.io/proextend-integration-docs/img/logo.svg">
 <meta name="theme-color" content="#0980D8">
 <link rel="canonical" href="https://ldasistemas.github.io/proextend-integration-docs/"><link rel="stylesheet" href="/assets/css/styles.8fbb3ff3.css">
-<script src="/assets/js/runtime~main.e562b447.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.7952f2d5.js" defer="defer"></script>
 <script src="/assets/js/main.44de2c00.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -288,8 +288,8 @@
 <ul>
 <li class=""><strong>code</strong>: Código único do aluno (matrícula, CPF ou RA)</li>
 <li class=""><strong>name</strong>: Nome completo</li>
-<li class=""><strong>email</strong>: Email institucional (obrigatório, único)</li>
-<li class=""><strong>cpf</strong>: CPF (opcional, apenas 11 dígitos sem formatação, ex: <code>&quot;12345678901&quot;</code>)</li>
+<li class=""><strong>email</strong>: Email institucional (obrigatório). Pode se repetir entre matrículas do mesmo usuário (aluno) em cursos diferentes; ver <a class="" href="/identificadores-e-codes#aluno-com-m%C3%BAltiplas-matr%C3%ADculas">Aluno com múltiplas matrículas</a></li>
+<li class=""><strong>cpf</strong>: CPF (opcional, apenas 11 dígitos sem formatação, ex: <code>&quot;12345678901&quot;</code>). Pode se repetir entre matrículas do mesmo usuário (aluno)</li>
 <li class=""><strong>phone</strong>: Telefone (opcional, apenas dígitos 10-11 caracteres)</li>
 <li class=""><strong>course_code</strong>: Código do curso (obrigatório, deve existir)</li>
 <li class=""><strong>active</strong>: Controla o status do aluno (opcional)<!-- -->
@@ -336,17 +336,17 @@
 <!-- -->
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="boas-práticas">Boas Práticas<a href="#boas-práticas" class="hash-link" aria-label="Link direto para Boas Práticas" title="Link direto para Boas Práticas" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="regras-de-validação-de-campos">Regras de Validação de Campos<a href="#regras-de-validação-de-campos" class="hash-link" aria-label="Link direto para Regras de Validação de Campos" title="Link direto para Regras de Validação de Campos" translate="no">​</a></h3>
-<table><thead><tr><th>Campo</th><th>Regra</th><th>Formato/Exemplo</th></tr></thead><tbody><tr><td><strong>code</strong></td><td>Obrigatório, único por tipo de entidade</td><td>Máximo 255 caracteres</td></tr><tr><td><strong>name</strong></td><td>Obrigatório</td><td>Máximo 255 caracteres</td></tr><tr><td><strong>cpf</strong></td><td>Opcional (Professor/Student), apenas 11 dígitos</td><td><code>&quot;12345678901&quot;</code></td></tr><tr><td><strong>email</strong></td><td>Formato válido, único</td><td><code>&quot;usuario@dominio.com&quot;</code></td></tr><tr><td><strong>phone</strong></td><td>Opcional, apenas dígitos</td><td><code>&quot;11999999999&quot;</code> (10-11 dígitos)</td></tr><tr><td><strong>semester</strong></td><td>Formato ano.período</td><td><code>&quot;2025.1&quot;</code>, <code>&quot;2025.2&quot;</code></td></tr><tr><td><strong>codes</strong> de referência</td><td>Devem existir previamente</td><td><code>area_code</code>, <code>unit_code</code>, <code>course_code</code>, etc.</td></tr></tbody></table>
+<table><thead><tr><th>Campo</th><th>Regra</th><th>Formato/Exemplo</th></tr></thead><tbody><tr><td><strong>code</strong></td><td>Obrigatório, único por tipo de entidade</td><td>Máximo 255 caracteres</td></tr><tr><td><strong>name</strong></td><td>Obrigatório</td><td>Máximo 255 caracteres</td></tr><tr><td><strong>cpf</strong></td><td>Opcional, apenas 11 dígitos. Único entre perfis administrativos; pode se repetir entre matrículas do mesmo aluno</td><td><code>&quot;12345678901&quot;</code></td></tr><tr><td><strong>email</strong></td><td>Formato válido. Único entre perfis administrativos; pode se repetir entre matrículas do mesmo aluno</td><td><code>&quot;usuario@dominio.com&quot;</code></td></tr><tr><td><strong>phone</strong></td><td>Opcional, apenas dígitos</td><td><code>&quot;11999999999&quot;</code> (10-11 dígitos)</td></tr><tr><td><strong>semester</strong></td><td>Formato ano.período</td><td><code>&quot;2025.1&quot;</code>, <code>&quot;2025.2&quot;</code></td></tr><tr><td><strong>codes</strong> de referência</td><td>Devem existir previamente</td><td><code>area_code</code>, <code>unit_code</code>, <code>course_code</code>, etc.</td></tr></tbody></table>
 <p><strong>Validações automáticas</strong>:</p>
 <ul>
 <li class="">CPF: Valida formato e dígitos verificadores (apenas 11 dígitos sem formatação)</li>
-<li class="">Email: Valida formato e unicidade</li>
+<li class="">Email: Valida formato. Unicidade exigida para perfis administrativos; não exigida para alunos (ver <a class="" href="/identificadores-e-codes#aluno-com-m%C3%BAltiplas-matr%C3%ADculas">Aluno com múltiplas matrículas</a>)</li>
 <li class="">Phone: Aceita apenas dígitos numéricos</li>
 <li class=""><code>codes</code>: valida unicidade dentro do tipo de entidade e tamanho máximo 255</li>
 <li class="">Referências: Valida existência antes de criar vínculo</li>
 </ul>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="utilização-de-identificadores">Utilização de Identificadores<a href="#utilização-de-identificadores" class="hash-link" aria-label="Link direto para Utilização de Identificadores" title="Link direto para Utilização de Identificadores" translate="no">​</a></h3>
-<p>Recomenda-se utilizar os identificadores já existentes no sistema de origem (ERP). Os exemplos abaixo são sugestões de formato, não obrigatórios. Consulte <a class="" href="/identificadores-e-codes">Identificadores e codes</a> para mais detalhes.</p>
+<p>Recomenda-se utilizar os identificadores j á existentes no sistema de origem (ERP). Os exemplos abaixo são sugestões de formato, não obrigatórios. Consulte <a class="" href="/identificadores-e-codes">Identificadores e codes</a> para mais detalhes.</p>
 <ul>
 <li class="">Matrícula de professor: <code>&quot;PROF-2023-001&quot;</code></li>
 <li class="">Código de disciplina: <code>&quot;CC-ALG-001&quot;</code></li>
