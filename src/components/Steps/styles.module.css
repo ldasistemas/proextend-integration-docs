@@ -1,0 +1,70 @@
+.steps {
+  margin: 1.5rem 0;
+  counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+}
+
+.step {
+  position: relative;
+  counter-increment: step;
+  padding: 0 0 1.5rem 2.75rem;
+  margin: 0;
+}
+
+.step::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 36px;
+  bottom: 0;
+  width: 1px;
+  background: var(--proextend-border);
+}
+
+.step:last-child {
+  padding-bottom: 0;
+}
+
+.step:last-child::after {
+  display: none;
+}
+
+.step::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ifm-background-color);
+  border: 1px solid var(--proextend-border);
+  color: var(--ifm-color-primary);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 1;
+}
+
+.stepTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 32px;
+  margin: 0 0 0.5rem;
+  min-height: 32px;
+}
+
+.stepBody > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 996px) {
+  .step {
+    padding-left: 2.5rem;
+  }
+}

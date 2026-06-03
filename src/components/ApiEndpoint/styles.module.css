@@ -1,0 +1,44 @@
+.endpoint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.55rem 0.25rem 0.4rem;
+  border: 1px solid var(--proextend-border);
+  border-radius: var(--pex-radius-sm);
+  background: var(--proextend-surface);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Quando o endpoint está sozinho numa linha (filho direto do conteúdo,
+   não dentro de um <li> ou <p>), vira bloco com respiro acima e abaixo.
+   No meio de texto/bullets, continua inline. */
+:global(.markdown) > .endpoint {
+  display: inline-flex;
+  margin: 1rem 0;
+}
+
+.method {
+  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  border-radius: var(--pex-radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.path {
+  color: var(--ifm-font-color-base);
+  font-weight: 500;
+}
+
+.get    { background: var(--pex-method-get); }
+.post   { background: var(--pex-method-post); }
+.put    { background: var(--pex-method-put); }
+.patch  { background: var(--pex-method-patch); }
+.delete { background: var(--pex-method-delete); }

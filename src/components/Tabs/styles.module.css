@@ -1,0 +1,43 @@
+.root {
+  margin: 1.5rem 0;
+}
+
+.list {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--proextend-border);
+  margin-bottom: 1rem;
+}
+
+.trigger {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--proextend-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: -1px;
+  padding: 0.55rem 0.9rem;
+  transition: color var(--pex-duration-fast) var(--pex-ease),
+    border-color var(--pex-duration-fast) var(--pex-ease);
+}
+
+.trigger:hover {
+  color: var(--ifm-color-primary);
+}
+
+.trigger[data-state='active'] {
+  color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+.content {
+  outline: none;
+}
+
+.content[data-state='inactive'] {
+  display: none;
+}

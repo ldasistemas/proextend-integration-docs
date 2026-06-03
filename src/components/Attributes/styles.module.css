@@ -1,0 +1,122 @@
+.list {
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 14rem) 1fr;
+  gap: 0.5rem 1.25rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--proextend-elev-border);
+}
+
+.row:first-child {
+  border-top: none;
+}
+
+.term {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.name,
+:global(.markdown) .term > .name,
+:global([data-theme='dark']) :global(.markdown) .term > .name {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ifm-heading-color);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.type {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.74rem;
+  color: var(--proextend-text-muted);
+}
+
+.badge {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.08rem 0.4rem;
+  border-radius: var(--pex-radius-pill);
+  line-height: 1.5;
+}
+
+.req {
+  color: var(--pex-required);
+  background: rgba(var(--pex-required-rgb), 0.14);
+}
+
+.opt {
+  color: var(--proextend-text-muted);
+  background: var(--proextend-elev-2);
+}
+
+[data-theme='dark'] .req {
+  background: rgba(var(--pex-required-rgb), 0.16);
+}
+
+.desc {
+  margin: 0;
+  color: var(--ifm-font-color-base);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.desc > :last-child {
+  margin-bottom: 0;
+}
+
+:global(.markdown) .desc :not(pre) > code,
+:global([data-theme='dark']) :global(.markdown) .desc :not(pre) > code {
+  color: var(--ifm-font-color-base);
+}
+
+.values {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.value {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+  font-size: 0.88rem;
+}
+
+.valueKey {
+  flex-shrink: 0;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ifm-heading-color);
+  background: var(--proextend-elev-2);
+  border-radius: var(--pex-radius-sm);
+  padding: 0.05rem 0.4rem;
+}
+
+.valueText {
+  color: var(--proextend-text-muted);
+}
+
+@media (max-width: 700px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

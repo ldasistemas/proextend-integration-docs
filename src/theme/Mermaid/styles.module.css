@@ -1,0 +1,148 @@
+.diagram {
+  position: relative;
+}
+
+.zoomButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--proextend-border);
+  border-radius: var(--pex-radius);
+  background: var(--ifm-background-color);
+  color: var(--ifm-color-primary);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity var(--pex-duration) var(--pex-ease),
+    transform var(--pex-duration) var(--pex-ease), background var(--pex-duration) var(--pex-ease);
+  z-index: 2;
+}
+
+.diagram:hover .zoomButton {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.zoomButton:hover {
+  background: var(--proextend-surface-hover);
+  border-color: var(--ifm-color-primary);
+}
+
+@media (hover: none) {
+  .zoomButton {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--pex-overlay-strong);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: overlayIn 180ms ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.viewport {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+.stage {
+  width: 94vw;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  transition: transform 60ms linear;
+  will-change: transform;
+  user-select: none;
+}
+
+.stage :global(.docusaurus-mermaid-container) {
+  width: 100%;
+  height: 100%;
+  max-width: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage :global(.docusaurus-mermaid-container) > svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.toolbar {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10000;
+}
+
+.toolButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--pex-radius-md);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--pex-duration) var(--pex-ease);
+}
+
+.toolButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hint {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--pex-radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .hint { font-size: 0.7rem; padding: 0.4rem 0.7rem; }
+}
