@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkproextend_integration_docs=globalThis.webpackChunkproextend_integration_docs||[]).push([[6262],{6939(e,n,t){t.r(n),t.d(n,{default:()=>r});var a=t(6540),o=t(6347);function r(){const e=(0,o.W6)();return(0,a.useEffect)(()=>{e.replace("/api")},[]),null}}}]);
