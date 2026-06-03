@@ -1,0 +1,111 @@
+:root {
+  --ifm-color-primary: #0980d8;
+  --ifm-color-primary-dark: #0873c2;
+  --ifm-color-primary-darker: #076db8;
+  --ifm-color-primary-darkest: #065a97;
+  --ifm-color-primary-light: #208de0;
+  --ifm-color-primary-lighter: #3399e3;
+  --ifm-color-primary-lightest: #5aadea;
+
+  --pex-primary-rgb: 9, 128, 216;
+
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-font-weight: 700;
+  --ifm-heading-line-height: 1.25;
+  --ifm-h1-font-size: 2.1rem;
+  --ifm-h2-font-size: 1.55rem;
+  --ifm-h3-font-size: 1.2rem;
+  --ifm-h4-font-size: 1rem;
+  --ifm-code-font-size: 92%;
+
+  --pex-radius-sm: 5px;
+  --pex-radius: 8px;
+  --pex-radius-md: 10px;
+  --pex-radius-lg: 14px;
+  --pex-radius-pill: 999px;
+
+  --pex-duration-fast: 140ms;
+  --pex-duration: 160ms;
+  --pex-duration-slow: 200ms;
+  --pex-ease: ease;
+
+  --pex-shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.18);
+  --pex-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.3);
+
+  --pex-overlay: rgba(15, 23, 30, 0.55);
+  --pex-overlay-strong: rgba(13, 17, 23, 0.94);
+
+  --pex-warning: #d9a441;
+  --pex-warning-rgb: 217, 164, 65;
+  --pex-danger: #d96d6d;
+  --pex-danger-rgb: 217, 109, 109;
+  --pex-required: #b4530f;
+  --pex-required-rgb: 217, 119, 6;
+
+  --pex-method-get: #16a34a;
+  --pex-method-post: #2563eb;
+  --pex-method-put: #d97706;
+  --pex-method-patch: #7c3aed;
+  --pex-method-delete: #dc2626;
+
+  --proextend-border: #d8e6f0;
+  --proextend-surface: #f7fbfe;
+  --proextend-surface-hover: #eef7fd;
+  --proextend-text-muted: #5c7182;
+  --proextend-sidebar-active: rgba(var(--pex-primary-rgb), 0.12);
+  --proextend-navbar-link-bg: rgba(var(--pex-primary-rgb), 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(var(--pex-primary-rgb), 0.1);
+
+  --proextend-elev-1: #ffffff;
+  --proextend-elev-2: #f1f5f9;
+  --proextend-elev-border: #dde5ec;
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f7fbfe;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.85);
+  --ifm-heading-color: #18303f;
+  --ifm-font-color-base: #2a3f4d;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #5aadea;
+  --ifm-color-primary-dark: #3399e3;
+  --ifm-color-primary-darker: #208de0;
+  --ifm-color-primary-darkest: #0980d8;
+  --ifm-color-primary-light: #71b8ed;
+  --ifm-color-primary-lighter: #88c3f0;
+  --ifm-color-primary-lightest: #afd9f5;
+  --pex-primary-rgb: 90, 173, 234;
+
+  --docusaurus-highlighted-code-line-bg: rgba(var(--pex-primary-rgb), 0.2);
+  --proextend-border: #2a3540;
+  --proextend-surface: #161b22;
+  --proextend-surface-hover: #1f2630;
+  --proextend-text-muted: #93acc0;
+  --proextend-sidebar-active: rgba(var(--pex-primary-rgb), 0.16);
+  --proextend-navbar-link-bg: rgba(var(--pex-primary-rgb), 0.16);
+
+  --pex-warning: #e6c074;
+  --pex-danger: #ef9494;
+  --pex-required: #f0b072;
+
+  --pex-method-get: #22c55e;
+  --pex-method-post: #3b82f6;
+  --pex-method-put: #f59e0b;
+  --pex-method-patch: #8b5cf6;
+  --pex-method-delete: #ef4444;
+
+  --proextend-elev-1: #1c2128;
+  --proextend-elev-2: #262c36;
+  --proextend-elev-border: #303843;
+
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #161b22;
+  --ifm-navbar-background-color: #11161d;
+
+  --ifm-heading-color: #f2f8fc;
+  --ifm-font-color-base: #dde8f1;
+}
