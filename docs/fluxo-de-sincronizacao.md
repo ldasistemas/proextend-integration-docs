@@ -19,7 +19,9 @@ A configuração inicial requer sincronização completa na seguinte ordem:
 
 Para o setup inicial, sincronize as entidades na ordem abaixo. Cada etapa só pode começar depois que suas dependências (lista no topo de cada bloco) estiverem sincronizadas.
 
-### Etapa 1: Entidades sem dependências
+<Steps>
+
+<Step title="Etapa 1 - Entidades sem dependências">
 
 Estas entidades não dependem de nenhuma outra e podem ser sincronizadas em paralelo. Cada uma é referenciada mais adiante por outras entidades.
 
@@ -31,7 +33,9 @@ flowchart TD
     PROF[5. Professores]
 ```
 
-### Etapa 2: Cursos
+</Step>
+
+<Step title="Etapa 2 - Cursos">
 
 Depende de **Unidade** e **Área** (ambos os `code` precisam existir).
 
@@ -41,7 +45,9 @@ flowchart LR
     AREA[2. Áreas] --> CURSO
 ```
 
-### Etapa 3: Alunos
+</Step>
+
+<Step title="Etapa 3 - Alunos">
 
 Depende de **Curso** (cada aluno informa seu `course_code`).
 
@@ -50,7 +56,9 @@ flowchart LR
     CURSO[3. Cursos] --> ALU[6. Alunos]
 ```
 
-### Etapa 4: Turmas
+</Step>
+
+<Step title="Etapa 4 - Turmas">
 
 Depende de **Disciplina Base**, **Cursos** (`course_codes`, mínimo 1) e **Professores** (`professor_codes`, mínimo 1). Alunos são opcionais e podem ser matriculados depois via endpoint avulso.
 
@@ -61,6 +69,10 @@ flowchart LR
     PROF[5. Professores] --> TURMA
     ALU[6. Alunos] -.->|opcional| TURMA
 ```
+
+</Step>
+
+</Steps>
 
 ### Perfis vinculados (sincronização independente)
 
@@ -154,17 +166,11 @@ Cada array tem seu próprio modo independente. O exemplo abaixo adiciona um prof
 
 `*_sync_mode` só faz diferença quando o recurso **já existe**. Em recursos novos (`code` inédito), os dois modos produzem o mesmo resultado: a lista enviada é a lista inicial do recurso recém-criado.
 
-:::warning[Breaking change]
-Em versões anteriores, `professor_codes` em uma Turma existente adicionava silenciosamente os novos sem remover os antigos. Agora o default é `replace` em todos os `*_sync_mode`. Integrações que dependiam do comportamento antigo devem enviar `professor_sync_mode: "add"` explicitamente.
-:::
-
 ## 1. Sincronizar Unidades
 
 **Dependências**: Nenhuma (primeira entidade a ser sincronizada)
 
-```
-POST /integration/v1/units/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/units/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#1-unidade-unit).
 
@@ -172,9 +178,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Nenhuma (Área é entidade global da instituição)
 
-```
-POST /integration/v1/areas/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/areas/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#4-área-area).
 
@@ -182,9 +186,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Unidades e Áreas devem estar sincronizadas
 
-```
-POST /integration/v1/courses/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/courses/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#6-curso-course).
 
@@ -192,9 +194,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Nenhuma (Disciplina Base é entidade global da instituição)
 
-```
-POST /integration/v1/subjects/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/subjects/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#8-disciplina-base-subject).
 
@@ -202,9 +202,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Nenhuma (pode ser sincronizado a qualquer momento)
 
-```
-POST /integration/v1/professors/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/professors/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#10-professor-professor).
 
@@ -212,9 +210,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Cursos devem estar sincronizados (`course_code` obrigatório)
 
-```
-POST /integration/v1/students/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/students/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#11-aluno-student).
 
@@ -226,9 +222,7 @@ Turmas representam instâncias de disciplinas base em períodos letivos específ
 
 ### Endpoint
 
-```
-POST /integration/v1/enrollments/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/enrollments/sync" />
 
 ### Exemplo
 
@@ -291,9 +285,7 @@ Para adicionar ou remover um único aluno de uma turma sem precisar reenviar a l
 
 ### Matricular um aluno
 
-```
-POST /integration/v1/enrollments/{code}/students/{studentCode}
-```
+<ApiEndpoint method="POST" path="/integration/v1/enrollments/{code}/students/{studentCode}" />
 
 ```json
 {
@@ -308,23 +300,15 @@ POST /integration/v1/enrollments/{code}/students/{studentCode}
 
 ### Desmatricular um aluno
 
-```
-DELETE /integration/v1/enrollments/{code}/students/{studentCode}
-```
+<ApiEndpoint method="DELETE" path="/integration/v1/enrollments/{code}/students/{studentCode}" />
 
-Remove o aluno especificado sem alterar os demais matriculados.
-
-:::note
-O aluno precisa pertencer a um dos cursos vinculados à turma via `course_codes`, caso contrário a operação retorna erro 422.
-:::
+Remove o aluno especificado sem alterar os demais matriculados. O aluno precisa pertencer a um dos cursos vinculados à turma via `course_codes`, caso contrário a operação retorna erro 422.
 
 ## 8. Sincronizar Diretores
 
 **Dependências**: Unidades devem estar sincronizadas
 
-```
-POST /integration/v1/directors/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/directors/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#2-diretor-director).
 
@@ -332,9 +316,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Unidades devem estar sincronizadas
 
-```
-POST /integration/v1/pedagogical-advisors/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/pedagogical-advisors/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#3-assessor-pedagógico-pedagogical-advisor).
 
@@ -342,9 +324,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Áreas e Unidades devem estar sincronizadas
 
-```
-POST /integration/v1/area-managers/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/area-managers/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#5-gestor-de-área-area-manager).
 
@@ -352,9 +332,7 @@ Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamenta
 
 **Dependências**: Cursos devem estar sincronizados
 
-```
-POST /integration/v1/coordinators/sync
-```
+<ApiEndpoint method="POST" path="/integration/v1/coordinators/sync" />
 
 Consulte os atributos completos em [Conceitos Fundamentais](conceitos-fundamentais#7-coordenador-coordinator).
 
@@ -364,9 +342,7 @@ Após a sincronização, é possível verificar o status geral e estatísticas d
 
 ### Endpoint
 
-```
-GET /integration/v1/sync-status
-```
+<ApiEndpoint method="GET" path="/integration/v1/sync-status" />
 
 ### Exemplo
 
@@ -495,20 +471,11 @@ Para os demais cenários de erro (validação de schema, duplicação de email/C
 
 ### Sincronização Completa (Recomendada para Setup Inicial)
 
-A sincronização completa deve ser utilizada na configuração inicial do sistema. Ela consiste em enviar todas as entidades para a API na ordem de dependência correta:
+Use na configuração inicial do sistema: envie todas as entidades respeitando a ordem de dependência. A sequência completa, com as dependências de cada etapa, está detalhada em [Ordem de Sincronização](#ordem-de-sincronização) no topo desta página.
 
-1. **Unidades** - Estabelecimentos de ensino
-2. **Diretores** e **Assessores Pedagógicos** - Perfis vinculados à Unidade (podem ser sincronizados após o passo 1)
-3. **Áreas** - Áreas de conhecimento
-4. **Gestores de Área** - Perfis vinculados à Área (podem ser sincronizados após o passo 3)
-5. **Cursos** - Cursos oferecidos
-6. **Coordenadores** - Perfis vinculados ao Curso (podem ser sincronizados após o passo 5)
-7. **Disciplinas Base** - Disciplinas que compõem os cursos
-8. **Professores** - Corpo docente (independente, pode ser sincronizado a qualquer momento)
-9. **Alunos** - Estudantes matriculados (independente, pode ser sincronizado a qualquer momento)
-10. **Turmas** - Instâncias de disciplinas com professores e alunos vinculados
-
-> **Importante**: Respeite essa ordem para evitar erros de dependência. Entidades filhas referenciam os codes das entidades pai, que devem existir previamente.
+:::warning[Respeite a ordem de dependência]
+Entidades filhas referenciam os `codes` das entidades pai, que precisam existir previamente. Sincronizar fora de ordem resulta em erros de dependência.
+:::
 
 ### Sincronização Incremental (Recomendada para Atualizações)
 
@@ -538,13 +505,6 @@ Agrupe múltiplos registros em uma única requisição para melhorar a performan
 ```
 
 **Recomendações**:
-- Envie lotes de até 100 registros por requisição
+- Envie no máximo 500 itens por requisição (limite da API)
 - Implemente retry automático em caso de falhas
 - Registre logs de sincronização para auditoria
-
-## Próximos Passos
-
-1. Compreender sistema de [Identificadores e codes](identificadores-e-codes)
-2. Testar requisições diretamente pelo [playground interativo](/api)
-3. Configurar rotina de sincronização periódica (incremental)
-4. Implementar monitoramento e alertas de falhas via [Logs de Integrações](logs-de-integracoes)

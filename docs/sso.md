@@ -57,15 +57,11 @@ flowchart TD
 
 ### Endpoint
 
-```
-POST /integration/v1/sso/generate-token
-```
+<ApiEndpoint method="POST" path="/integration/v1/sso/generate-token" />
 
 ### Parâmetros
 
-:::note[IMPORTANTE]
-O usuário pode ser identificado por **email (e-mail)** ou **code (código)**. É obrigatório fornecer **pelo menos um** dos dois campos.
-:::
+O usuário é identificado por **email** ou **code**. É obrigatório fornecer pelo menos um dos dois.
 
 | Campo | Tipo | Obrigatório | Descrição |
 |-------|------|-------------|-----------|
@@ -74,44 +70,32 @@ O usuário pode ser identificado por **email (e-mail)** ou **code (código)**. �
 | `expires_in` | integer | Não | Tempo de expiração em segundos - padrão: 86400 (24 horas) |
 | `single_use` | boolean | Não | Token de uso único - padrão: false (reutilizável) |
 
-:::warning[Alunos com múltiplas matrículas]
-Quando um mesmo usuário (aluno) tem mais de uma matrícula ativa em cursos diferentes (cada matrícula é um aluno distinto na plataforma com `code` próprio), use sempre `user_code` para gerar o token SSO. O `user_email` não é suficiente para identificar qual matrícula acessar.
-
-Consulte [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas) para detalhes do cenário.
-:::
+Para alunos com mais de uma matrícula ativa em cursos diferentes (cada matrícula é um aluno distinto com `code` próprio), use sempre `user_code`, pois o `user_email` não identifica qual matrícula acessar. Veja [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas).
 
 #### expires_in (Tempo de Expiração)
 
-Define por quanto tempo o token SSO permanecerá válido.
+Define por quanto tempo o token permanece válido. Mínimo `60` (1 min), máximo `31536000` (365 dias), padrão `86400` (24 horas).
 
-:::info[REUTILIZAÇÃO DE LINKS]
-Quando `single_use` é `false`, o **link completo gerado** (exemplo: `https://instituicao.proextend.com.br/login?token=TbbVa3x8KlMnPqRsUvWxYz...`) pode ser **cadastrado em portais** e **acessado múltiplas vezes** durante todo o período definido em `expires_in`. 
+Valores comuns:
 
-Por exemplo, um token com `expires_in: 15552000` (180 dias) permite que o link seja utilizado quantas vezes for necessário por até 6 meses. Ideal para links permanentes em portais institucionais onde usuários acessam recorrentemente.
-:::
-
-- **Mínimo**: 60 segundos (1 minuto)
-- **Máximo**: 31536000 segundos (365 dias)
-- **Padrão**: 86400 segundos (24 horas)
-
-**Valores comuns**:
-- 15 minutos (`900`): Acesso temporário urgente
-- 1 hora (`3600`): Suporte técnico
-- 24 horas (`86400`): Acesso padrão
-- 7 dias (`604800`): Convites de primeiro acesso
-- 30 dias (`2592000`): Acesso de longa duração
-- 90 dias (`7776000`): Acesso de longa duração
-- 180 dias (`15552000`): Portal institucional ou período semestral
+| Valor | Duração | Uso |
+|-------|---------|-----|
+| `900` | 15 minutos | Acesso temporário urgente |
+| `3600` | 1 hora | Suporte técnico |
+| `86400` | 24 horas | Acesso padrão |
+| `604800` | 7 dias | Convites de primeiro acesso |
+| `2592000` | 30 dias | Acesso de longa duração |
+| `15552000` | 180 dias | Portal institucional / semestre |
 
 #### single_use (Uso Único)
 
-Define se o token pode ser usado apenas uma vez ou múltiplas vezes.
+Define se o token pode ser usado uma vez ou múltiplas vezes.
 
-- `true`: Token é invalidado automaticamente após primeiro uso (ideal para links em e-mails, convites, acessos sensíveis)
-- `false`: Token permanece válido até expirar - padrão (ideal para portais institucionais, acessos recorrentes)
+- `true`: invalidado após o primeiro uso. Ideal para links em e-mails e convites.
+- `false` (padrão): permanece válido até expirar. O link gerado pode ser cadastrado em portais e acessado recorrentemente durante todo o `expires_in`. Por exemplo, `15552000` (180 dias) cobre um semestre inteiro.
 
-:::warning[SEGURANÇA]
-Para links enviados por e-mail ou convites de primeiro acesso, **sempre use** `single_use: true`. Isso garante que o token não possa ser reutilizado caso seja interceptado ou compartilhado indevidamente.
+:::warning[Segurança]
+Para links enviados por e-mail ou convites de primeiro acesso, use `single_use: true` para que o token não possa ser reutilizado caso seja interceptado.
 :::
 
 ### Exemplo de Requisição
@@ -142,9 +126,7 @@ Para links enviados por e-mail ou convites de primeiro acesso, **sempre use** `s
 
 O campo `profile_type` reflete o perfil do usuário na plataforma: `professor`, `student`, `coordinator`, `area_manager`, `director` ou `pedagogical_advisor`.
 
-:::note
-Basta informar o `user_code` ou `user_email` do usuário. O sistema identifica automaticamente o perfil e gera a `login_url` apontando para o ambiente correto dentro da plataforma, sem necessidade de configuração adicional.
-:::
+Basta informar o `user_code` ou `user_email`: o sistema identifica automaticamente o perfil e gera a `login_url` apontando para o ambiente correto, sem configuração adicional.
 
 ## Revogar Token SSO
 
@@ -156,9 +138,7 @@ Ao gerar um novo token SSO para um usuário, **todos os tokens anteriores deste 
 
 ### Endpoint
 
-```
-POST /integration/v1/sso/revoke-token
-```
+<ApiEndpoint method="POST" path="/integration/v1/sso/revoke-token" />
 
 ### Parâmetros
 
@@ -196,7 +176,13 @@ POST /integration/v1/sso/revoke-token
 
 ## Casos de Uso Práticos
 
-### 1. Portal Institucional
+<Tabs items={[
+  {value: 'portal', label: 'Portal Institucional'},
+  {value: 'email', label: 'E-mail de Convite'},
+  {value: 'temporario', label: 'Acesso Temporário'},
+]}>
+
+<Tab value="portal">
 
 Link permanente no portal da instituição.
 
@@ -214,7 +200,9 @@ Link permanente no portal da instituição.
 - Token reutilizável
 - Ideal para acesso recorrente
 
-### 2. E-mail de Convite
+</Tab>
+
+<Tab value="email">
 
 Link temporário para primeiro acesso.
 
@@ -232,7 +220,9 @@ Link temporário para primeiro acesso.
 - Uso único
 - Ideal para novos usuários
 
-### 3. Acesso Temporário
+</Tab>
+
+<Tab value="temporario">
 
 Acesso para manutenção ou suporte.
 
@@ -249,6 +239,10 @@ Acesso para manutenção ou suporte.
 - Expira em 15 minutos
 - Uso único
 - Ideal para suporte técnico
+
+</Tab>
+
+</Tabs>
 
 ## Tratamento de Erros
 
@@ -288,9 +282,7 @@ Todos os erros seguem o shape padronizado `ApiError`. Para detalhes do shape e e
 }
 ```
 
-:::note[VALIDAÇÃO]
-Apenas usuários **ativos** podem gerar tokens SSO. Usuários suspensos (`suspended_at` não nulo) não podem autenticar via SSO até que a suspensão seja removida.
-:::
+Apenas usuários ativos podem gerar tokens SSO. Usuários suspensos (`suspended_at` não nulo) ficam bloqueados até que a suspensão seja removida.
 
 ### Parâmetro Inválido (422)
 

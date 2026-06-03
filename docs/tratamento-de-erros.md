@@ -150,7 +150,9 @@ Note que `index: 1` não aparece porque foi sucesso. Use `index` para mapear cad
 
 Os blocos abaixo mostram um exemplo de cada categoria de erro.
 
-### Validação de schema (422)
+<Accordion>
+
+<AccordionItem value="validacao" title="Validação de schema (422)">
 
 ```json
 {
@@ -168,7 +170,9 @@ Os blocos abaixo mostram um exemplo de cada categoria de erro.
 
 O campo `field` vem em dot-notation, apontando exatamente onde está o problema no body enviado.
 
-### Autenticação e autorização (401 / 403)
+</AccordionItem>
+
+<AccordionItem value="auth" title="Autenticação e autorização (401 / 403)">
 
 ```json
 {
@@ -188,7 +192,9 @@ O campo `field` vem em dot-notation, apontando exatamente onde está o problema 
 
 O `rule` indica a causa exata. Quando o scope da chave não cobre a operação, `required_scope` e `client_scope` aparecem para facilitar o diagnóstico.
 
-### Rate limit (429)
+</AccordionItem>
+
+<AccordionItem value="rate-limit" title="Rate limit (429)">
 
 ```json
 {
@@ -207,6 +213,10 @@ O `rule` indica a causa exata. Quando o scope da chave não cobre a operação, 
 ```
 
 Além do JSON, os headers `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` e `Retry-After` vêm preenchidos em **todas** as respostas (não só nas bloqueadas), permitindo monitorar o consumo antes de atingir o limite.
+
+</AccordionItem>
+
+</Accordion>
 
 ## Referência completa de campos
 

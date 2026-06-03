@@ -59,9 +59,17 @@ const sidebars = {
       },
       items: [
         'fluxo-de-sincronizacao',
-        'tratamento-de-erros',
         'remocao',
       ],
+    },
+
+    {
+      type: 'doc',
+      id: 'tratamento-de-erros',
+      label: 'Tratamento de Erros',
+      customProps: {
+        icon: 'lucide:alert-triangle',
+      },
     },
 
     {

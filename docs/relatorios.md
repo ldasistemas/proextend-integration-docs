@@ -17,14 +17,14 @@ Atividades de uma turma com estatísticas de submissão. Retorna 403 se a turma 
 
 ### Endpoint
 
-```
-GET /integration/v1/professors/{code}/subjects/{subjectCode}/activities
-```
+<ApiEndpoint method="GET" path="/integration/v1/professors/{code}/subjects/{subjectCode}/activities" />
 
 ### Parâmetros
 
-- `code`: Código do professor
-- `subjectCode`: Código da turma (enrollment code)
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `code` | string | Sim | Código do professor (path) |
+| `subjectCode` | string | Sim | Código da turma / enrollment code (path) |
 
 ### Resposta
 
@@ -70,14 +70,14 @@ Notas de um aluno em uma turma, com detalhes de cada submissão. Retorna 403 se 
 
 ### Endpoint
 
-```
-GET /integration/v1/students/{code}/subjects/{subjectCode}/grades
-```
+<ApiEndpoint method="GET" path="/integration/v1/students/{code}/subjects/{subjectCode}/grades" />
 
 ### Parâmetros
 
-- `code`: Código do aluno
-- `subjectCode`: Código da turma (enrollment code)
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `code` | string | Sim | Código do aluno (path) |
+| `subjectCode` | string | Sim | Código da turma / enrollment code (path) |
 
 ### Resposta
 
@@ -123,13 +123,13 @@ Notas de todos os alunos de uma turma, paginado por atividade. Apenas atividades
 
 ### Endpoint
 
-```
-GET /integration/v1/enrollments/{code}/grades
-```
+<ApiEndpoint method="GET" path="/integration/v1/enrollments/{code}/grades" />
 
 ### Parâmetros
 
-- `code`: Código da turma
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `code` | string | Sim | Código da turma (path) |
 
 ### Resposta
 
@@ -187,13 +187,13 @@ Estatísticas de submissões por atividade de uma turma.
 
 ### Endpoint
 
-```
-GET /integration/v1/enrollments/{code}/submissions
-```
+<ApiEndpoint method="GET" path="/integration/v1/enrollments/{code}/submissions" />
 
 ### Parâmetros
 
-- `code`: Código da turma
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `code` | string | Sim | Código da turma (path) |
 
 ### Resposta
 
@@ -252,13 +252,13 @@ Turmas em que um aluno está matriculado.
 
 ### Endpoint
 
-```
-GET /integration/v1/students/{code}/enrollments
-```
+<ApiEndpoint method="GET" path="/integration/v1/students/{code}/enrollments" />
 
 ### Parâmetros
 
-- `code`: Código do aluno
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `code` | string | Sim | Código do aluno (path) |
 
 ### Resposta
 
@@ -301,14 +301,14 @@ Turmas vinculadas a um professor, com filtro opcional por semestre.
 
 ### Endpoint
 
-```
-GET /integration/v1/professors/{code}/subjects
-```
+<ApiEndpoint method="GET" path="/integration/v1/professors/{code}/subjects" />
 
 ### Parâmetros
 
-- `code`: Código do professor
-- `semester`: Filtrar por semestre, exemplo: `2025.1` (opcional)
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `code` | string | Sim | Código do professor (path) |
+| `semester` | string | Não | Filtra por semestre, ex: `2025.1` (query) |
 
 ### Resposta
 

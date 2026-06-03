@@ -62,11 +62,28 @@ Removido em:     2026-06-15  ✗
 
 ## Como filtrar os logs
 
-Chave de integração, entidade, método, status (sucesso ou erro) e período de datas.
+Tanto no painel quanto na API, os logs podem ser filtrados pelos critérios abaixo. Combine vários filtros para reduzir o resultado (por exemplo, falhas de sincronização de alunos em um período).
+
+| Filtro | Descrição | Exemplo |
+|---|---|---|
+| Chave de integração | Restringe aos logs de uma API Key específica | `pex_a1b2c3...` |
+| Entidade | Tipo de entidade da operação | `professors`, `students`, `enrollments` |
+| Método | Verbo HTTP da requisição | `POST`, `DELETE` |
+| Status | Resultado da operação | `sucesso` ou `erro` |
+| Período | Intervalo de datas de criação do log | `2026-05-01` a `2026-05-31` |
+
+:::info
+Os nomes exatos dos parâmetros de query (`GET /sync-logs`) e os valores aceitos estão documentados no playground interativo, onde é possível montar e testar a requisição.
+
+**<a href="/api" target="_blank">Acessar API →</a>**
+:::
 
 ## Exemplos de resposta
 
-**Sync com sucesso:**
+<Accordion>
+
+<AccordionItem value="sucesso" title="Sync com sucesso">
+
 ```json
 {
   "action": "Sync professors: 3 criados, 1 atualizado",
@@ -76,7 +93,10 @@ Chave de integração, entidade, método, status (sucesso ou erro) e período de
 }
 ```
 
-**Sync com validação rejeitada (422):**
+</AccordionItem>
+
+<AccordionItem value="rejeitado" title="Sync com validação rejeitada (422)">
+
 ```json
 {
   "action": "Sync students (falhou)",
@@ -86,7 +106,10 @@ Chave de integração, entidade, método, status (sucesso ou erro) e período de
 }
 ```
 
-**Sync com falha parcial em item (200):**
+</AccordionItem>
+
+<AccordionItem value="parcial" title="Sync com falha parcial em item (200)">
+
 ```json
 {
   "action": "Sync enrollments: 1 criados, 1 falharam",
@@ -116,7 +139,10 @@ Chave de integração, entidade, método, status (sucesso ou erro) e período de
 
 O campo `result` preserva o shape `ApiError` completo para cada item de falha, permitindo filtrar logs por `entity`, `type` ou `rule` programaticamente. Detalhes em [Tratamento de Erros](tratamento-de-erros).
 
-**SSO:**
+</AccordionItem>
+
+<AccordionItem value="sso" title="SSO">
+
 ```json
 {
   "action": "SSO: gerou token para João Silva",
@@ -125,6 +151,10 @@ O campo `result` preserva o shape `ApiError` completo para cada item de falha, p
   "result": { "user_name": "João Silva", "profile_type": "professor" }
 }
 ```
+
+</AccordionItem>
+
+</Accordion>
 
 :::note Dados sensíveis
 Campos como `cpf`, `password` e `api_key` são substituídos por `[REDACTED]` antes de ser armazenados.

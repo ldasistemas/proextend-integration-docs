@@ -29,7 +29,7 @@ const config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
-  onBrokenLinks: 'warn',
+  onBrokenLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -50,7 +50,7 @@ const config = {
         },
         blog: false, // Disable blog
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: ['./src/css/tokens.css', './src/css/custom.css'],
         },
         sitemap: {
           changefreq: 'weekly',
@@ -71,6 +71,19 @@ const config = {
           { from: '/referencia-api', to: '/api' },
           { from: '/api-reference', to: '/api' },
         ],
+      },
+    ],
+    // Click-para-ampliar em imagens e diagramas
+    'docusaurus-plugin-image-zoom',
+    // Imagens responsivas com lazy-load + placeholder de baixa qualidade
+    [
+      '@docusaurus/plugin-ideal-image',
+      {
+        quality: 85,
+        max: 1600,
+        min: 640,
+        steps: 3,
+        disableInDev: false,
       },
     ],
   ],
@@ -105,6 +118,28 @@ const config = {
   ],
 
   headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap',
+        rel: 'stylesheet',
+      },
+    },
     {
       tagName: 'link',
       attributes: {
@@ -256,23 +291,38 @@ const config = {
         items: [
           {
             href: '/api',
-            label: 'Acesse a API',
+            label: 'Acessar API',
             position: 'left',
             className: 'header-api-link',
             target: '_blank',
+            rel: 'noopener noreferrer',
+            'aria-label': 'Acessar API (abre em nova aba)',
           },
           {
             href: 'https://proextend.com.br/',
-            label: 'ProExtend',
+            label: 'Site ProExtend',
             position: 'right',
             className: 'header-proextend-link',
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            'aria-label': 'Site da ProExtend (abre em nova aba)',
           },
         ],
       },
       prism: {
         theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
-        additionalLanguages: ['bash', 'json', 'javascript', 'typescript'],
+        darkTheme: prismThemes.oneDark,
+        additionalLanguages: ['bash', 'json', 'javascript', 'typescript', 'php', 'python', 'markup'],
+      },
+      zoom: {
+        selector: '.markdown img',
+        background: {
+          light: 'rgba(255, 255, 255, 0.95)',
+          dark: 'rgba(10, 21, 32, 0.95)',
+        },
+        config: {
+          margin: 24,
+        },
       },
       mermaid: {
         theme: {

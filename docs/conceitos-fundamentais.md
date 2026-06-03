@@ -70,9 +70,11 @@ Campus ou unidade física da instituição.
 
 #### Atributos
 
-- **code**: Identificador único do sistema de origem (ERP). Usado em todas as entidades para mapeamento idempotente. Exemplo: "CAMPUS_CENTRO", "SEDE"
-- **name**: Nome da unidade
-- **address**: Endereço completo (opcional)
+<Attributes>
+  <Attr name="code" type="string" required>Identificador único do sistema de origem (ERP). Usado em todas as entidades para mapeamento idempotente. Exemplo: `CAMPUS_CENTRO`, `SEDE`</Attr>
+  <Attr name="name" type="string" required>Nome da unidade</Attr>
+  <Attr name="address" type="string" required={false}>Endereço completo</Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -97,16 +99,22 @@ Diretor de unidade, responsável pela gestão de um campus.
 
 #### Atributos
 
-- **code**: Código único do diretor
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **unit_code**: Código da unidade que dirige (obrigatório, deve existir)
-- **active**: Controla o status (opcional)
-  - `true` → reativa (remove suspensão)
-  - `false` → suspende
-  - Omitir → não altera o status atual
+<Attributes>
+  <Attr name="code" type="string" required>Código único do diretor</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional (único)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="unit_code" type="string" required>Código da unidade que dirige (deve existir)</Attr>
+  <Attr name="active" type="boolean" required={false}>
+    Controla o status:
+    <AttrValues>
+      <AttrValue value="true">reativa (remove suspensão)</AttrValue>
+      <AttrValue value="false">suspende</AttrValue>
+      <AttrValue value="omitir">não altera o status atual</AttrValue>
+    </AttrValues>
+  </Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -152,16 +160,22 @@ Assessor responsável pelo suporte pedagógico em uma unidade.
 
 #### Atributos
 
-- **code**: Código único do assessor
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **unit_code**: Código da unidade de atuação (obrigatório, deve existir)
-- **active**: Controla o status (opcional)
-  - `true` → reativa (remove suspensão)
-  - `false` → suspende
-  - Omitir → não altera o status atual
+<Attributes>
+  <Attr name="code" type="string" required>Código único do assessor</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional (único)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="unit_code" type="string" required>Código da unidade de atuação (deve existir)</Attr>
+  <Attr name="active" type="boolean" required={false}>
+    Controla o status:
+    <AttrValues>
+      <AttrValue value="true">reativa (remove suspensão)</AttrValue>
+      <AttrValue value="false">suspende</AttrValue>
+      <AttrValue value="omitir">não altera o status atual</AttrValue>
+    </AttrValues>
+  </Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -190,8 +204,10 @@ O Assessor Pedagógico tem a mesma visibilidade de turmas que o Diretor (Directo
 
 #### Atributos
 
-- **code**: Código único da área (exemplo: "TECH", "HEALTH")
-- **name**: Nome da área
+<Attributes>
+  <Attr name="code" type="string" required>Código único da área. Exemplo: `TECH`, `HEALTH`</Attr>
+  <Attr name="name" type="string" required>Nome da área</Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -216,18 +232,30 @@ Gestor responsável por uma ou mais áreas de conhecimento, com escopo restrito 
 
 #### Atributos
 
-- **code**: Código único do gestor
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **area_codes**: Array de códigos das áreas que gerencia (obrigatório, mínimo 1)
-- **area_sync_mode**: Modo de sincronização de áreas (opcional, padrão: `replace`). Aceita `add` ou `replace`. Comportamento detalhado em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace)
-- **unit_code**: Código da unidade do gestor (obrigatório, deve existir). Restringe o escopo às turmas da unidade
-- **active**: Controla o status (opcional)
-  - `true` → reativa (remove suspensão)
-  - `false` → suspende
-  - Omitir → não altera o status atual
+<Attributes>
+  <Attr name="code" type="string" required>Código único do gestor</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional (único)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="area_codes" type="array" required>Códigos das áreas que gerencia (mínimo 1)</Attr>
+  <Attr name="area_sync_mode" type="string" required={false}>
+    Modo de sincronização de áreas (padrão: `replace`). Comportamento detalhado em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace):
+    <AttrValues>
+      <AttrValue value="add">preserva os vínculos existentes e adiciona os novos</AttrValue>
+      <AttrValue value="replace">substitui pelos enviados</AttrValue>
+    </AttrValues>
+  </Attr>
+  <Attr name="unit_code" type="string" required>Código da unidade do gestor (deve existir). Restringe o escopo às turmas da unidade</Attr>
+  <Attr name="active" type="boolean" required={false}>
+    Controla o status:
+    <AttrValues>
+      <AttrValue value="true">reativa (remove suspensão)</AttrValue>
+      <AttrValue value="false">suspende</AttrValue>
+      <AttrValue value="omitir">não altera o status atual</AttrValue>
+    </AttrValues>
+  </Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -273,11 +301,13 @@ Curso de graduação ou pós-graduação oferecido pela instituição.
 
 #### Atributos
 
-- **code**: Código único do curso (exemplo: "CC001", "ENF001")
-- **name**: Nome do curso
-- **description**: Descrição detalhada (opcional)
-- **area_code**: Código da área (obrigatório, deve existir)
-- **unit_code**: Código da unidade (obrigatório, deve existir)
+<Attributes>
+  <Attr name="code" type="string" required>Código único do curso. Exemplo: `CC001`, `ENF001`</Attr>
+  <Attr name="name" type="string" required>Nome do curso</Attr>
+  <Attr name="description" type="string" required={false}>Descrição detalhada</Attr>
+  <Attr name="area_code" type="string" required>Código da área (deve existir)</Attr>
+  <Attr name="unit_code" type="string" required>Código da unidade (deve existir)</Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -304,17 +334,29 @@ Coordenador de um ou mais cursos, responsável pela gestão acadêmica.
 
 #### Atributos
 
-- **code**: Código único do coordenador
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **course_codes**: Array de códigos dos cursos que coordena (obrigatório, mínimo 1)
-- **course_sync_mode**: Modo de sincronização de cursos (opcional, padrão: `replace`). Aceita `add` ou `replace`. Comportamento detalhado em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace)
-- **active**: Controla o status (opcional)
-  - `true` → reativa (remove suspensão)
-  - `false` → suspende
-  - Omitir → não altera o status atual
+<Attributes>
+  <Attr name="code" type="string" required>Código único do coordenador</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional (único)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="course_codes" type="array" required>Códigos dos cursos que coordena (mínimo 1)</Attr>
+  <Attr name="course_sync_mode" type="string" required={false}>
+    Modo de sincronização de cursos (padrão: `replace`). Comportamento detalhado em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace):
+    <AttrValues>
+      <AttrValue value="add">preserva os vínculos existentes e adiciona os novos</AttrValue>
+      <AttrValue value="replace">substitui pelos enviados</AttrValue>
+    </AttrValues>
+  </Attr>
+  <Attr name="active" type="boolean" required={false}>
+    Controla o status:
+    <AttrValues>
+      <AttrValue value="true">reativa (remove suspensão)</AttrValue>
+      <AttrValue value="false">suspende</AttrValue>
+      <AttrValue value="omitir">não altera o status atual</AttrValue>
+    </AttrValues>
+  </Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -357,8 +399,10 @@ Componente curricular do catálogo da instituição. A mesma disciplina base pod
 
 #### Atributos
 
-- **code**: Código único da disciplina (exemplo: "ALG001", "LIBRAS")
-- **name**: Nome da disciplina
+<Attributes>
+  <Attr name="code" type="string" required>Código único da disciplina. Exemplo: `ALG001`, `LIBRAS`</Attr>
+  <Attr name="name" type="string" required>Nome da disciplina</Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -385,15 +429,17 @@ Instância de uma Disciplina Base em período letivo específico, com um ou mais
 
 #### Atributos
 
-- **code**: Código único da turma (exemplo: "ALG001-2025.1", "TURMA001")
-- **subject_code**: Código da disciplina base (obrigatório, deve existir)
-- **course_codes**: Array de códigos dos cursos vinculados à turma (obrigatório, pelo menos um; aceita `course_code` singular por retrocompatibilidade). É na turma que o vínculo curso ↔ disciplina é definido
-- **course_sync_mode**: Modo de sincronização de cursos (opcional, padrão: `replace`)
-- **professor_codes**: Array de códigos de professores (obrigatório, pelo menos um; aceita `professor_code` singular por retrocompatibilidade)
-- **professor_sync_mode**: Modo de sincronização de professores (opcional, padrão: `replace`)
-- **semester**: Semestre acadêmico (obrigatório, formato: "YYYY.N", ex: `"2025.1"`, `"2025.2"`)
-- **student_codes**: Array de códigos de alunos (opcional, devem existir se fornecidos)
-- **student_sync_mode**: Modo de sincronização de alunos (opcional, padrão: `replace`)
+<Attributes>
+  <Attr name="code" type="string" required>Código único da turma. Exemplo: `ALG001-2025.1`, `TURMA001`</Attr>
+  <Attr name="subject_code" type="string" required>Código da disciplina base (deve existir)</Attr>
+  <Attr name="course_codes" type="array" required>Códigos dos cursos vinculados à turma (pelo menos um; aceita `course_code` singular por retrocompatibilidade). É na turma que o vínculo curso ↔ disciplina é definido</Attr>
+  <Attr name="course_sync_mode" type="string" required={false}>Modo de sincronização de cursos (padrão: `replace`)</Attr>
+  <Attr name="professor_codes" type="array" required>Códigos de professores (pelo menos um; aceita `professor_code` singular por retrocompatibilidade)</Attr>
+  <Attr name="professor_sync_mode" type="string" required={false}>Modo de sincronização de professores (padrão: `replace`)</Attr>
+  <Attr name="semester" type="string" required>Semestre acadêmico (formato `YYYY.N`, ex: `2025.1`, `2025.2`)</Attr>
+  <Attr name="student_codes" type="array" required={false}>Códigos de alunos (devem existir se fornecidos)</Attr>
+  <Attr name="student_sync_mode" type="string" required={false}>Modo de sincronização de alunos (padrão: `replace`)</Attr>
+</Attributes>
 
 Os três `*_sync_mode` aceitam `add` (preserva os vínculos existentes e adiciona os novos) ou `replace` (substitui pelos enviados). Detalhes e exemplos em [Fluxo de Sincronização - Modos de sincronização](fluxo-de-sincronizacao#modos-de-sincronização-add-vs-replace).
 
@@ -460,16 +506,22 @@ Docente que leciona disciplinas na instituição.
 
 #### Atributos
 
-- **code**: Código único do professor (matrícula, CPF ou código funcional)
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **area_code**: Código da área de atuação (opcional)
-- **active**: Controla o status do professor (opcional)
-  - `true` → reativa o professor (remove suspensão)
-  - `false` → suspende o professor
-  - Omitir → não altera o status atual
+<Attributes>
+  <Attr name="code" type="string" required>Código único do professor (matrícula, CPF ou código funcional)</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional (único)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="area_code" type="string" required={false}>Código da área de atuação</Attr>
+  <Attr name="active" type="boolean" required={false}>
+    Controla o status do professor:
+    <AttrValues>
+      <AttrValue value="true">reativa o professor (remove suspensão)</AttrValue>
+      <AttrValue value="false">suspende o professor</AttrValue>
+      <AttrValue value="omitir">não altera o status atual</AttrValue>
+    </AttrValues>
+  </Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -512,16 +564,22 @@ Discente matriculado em um curso da instituição.
 
 #### Atributos
 
-- **code**: Código único do aluno (matrícula, CPF ou RA)
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório). Pode se repetir entre matrículas do mesmo usuário (aluno) em cursos diferentes; ver [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`). Pode se repetir entre matrículas do mesmo usuário (aluno)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **course_code**: Código do curso (obrigatório, deve existir)
-- **active**: Controla o status do aluno (opcional)
-  - `true` → reativa o aluno (remove suspensão)
-  - `false` → suspende o aluno
-  - Omitir → não altera o status atual
+<Attributes>
+  <Attr name="code" type="string" required>Código único do aluno (matrícula, CPF ou RA)</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional. Pode se repetir entre matrículas do mesmo usuário (aluno) em cursos diferentes; ver [Aluno com múltiplas matrículas](identificadores-e-codes#aluno-com-múltiplas-matrículas)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`. Pode se repetir entre matrículas do mesmo usuário (aluno)</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="course_code" type="string" required>Código do curso (deve existir)</Attr>
+  <Attr name="active" type="boolean" required={false}>
+    Controla o status do aluno:
+    <AttrValues>
+      <AttrValue value="true">reativa o aluno (remove suspensão)</AttrValue>
+      <AttrValue value="false">suspende o aluno</AttrValue>
+      <AttrValue value="omitir">não altera o status atual</AttrValue>
+    </AttrValues>
+  </Attr>
+</Attributes>
 
 #### Exemplo
 
@@ -565,14 +623,16 @@ Usuário com acesso administrativo completo ao painel ProExtend. Diferentemente 
 
 #### Atributos
 
-- **code**: Código único do administrador
-- **name**: Nome completo
-- **email**: Email institucional (obrigatório, único)
-- **cpf**: CPF (opcional, apenas 11 dígitos sem formatação, ex: `"12345678901"`)
-- **phone**: Telefone (opcional, apenas dígitos 10-11 caracteres)
-- **unit_code**: Código da unidade de atuação (opcional, deve existir se fornecido)
-- **area_code**: Código da área de atuação (opcional, deve existir se fornecido)
-- **course_code**: Código do curso de atuação (opcional, deve existir se fornecido)
+<Attributes>
+  <Attr name="code" type="string" required>Código único do administrador</Attr>
+  <Attr name="name" type="string" required>Nome completo</Attr>
+  <Attr name="email" type="string" required>Email institucional (único)</Attr>
+  <Attr name="cpf" type="string" required={false}>CPF: apenas 11 dígitos sem formatação, ex: `12345678901`</Attr>
+  <Attr name="phone" type="string" required={false}>Telefone: apenas dígitos, 10 a 11 caracteres</Attr>
+  <Attr name="unit_code" type="string" required={false}>Código da unidade de atuação (deve existir se fornecido)</Attr>
+  <Attr name="area_code" type="string" required={false}>Código da área de atuação (deve existir se fornecido)</Attr>
+  <Attr name="course_code" type="string" required={false}>Código do curso de atuação (deve existir se fornecido)</Attr>
+</Attributes>
 
 #### Características
 
@@ -629,15 +689,6 @@ Recomenda-se utilizar os identificadores já existentes no sistema de origem (ER
 - Código de disciplina: `"CC-ALG-001"`
 - RA de aluno: `"202410001"`
 
-
-## Próximos Passos
-
-1. Configure [Autenticação](autenticacao)
-2. Siga o [Fluxo de Sincronização](fluxo-de-sincronizacao)
-3. Entenda [Identificadores e codes](identificadores-e-codes)
-4. Consulte [Remoção de Entidades](remocao) para gerenciar o ciclo de vida dos dados
-5. Veja [Relatórios e Consultas](relatorios) para leitura de atividades e notas
-6. Monitore operações via [Logs de Integrações](logs-de-integracoes)
 
 ## Suporte
 

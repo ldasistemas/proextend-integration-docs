@@ -170,31 +170,6 @@ Para especificação completa de endpoints, consulte [Fluxo de Sincronização](
 3. Consulta de dados via endpoints GET utilizando API Key
    - Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao)
 
-## Perguntas Frequentes
-
-### Armazenamento de IDs Retornados
-
-O sistema não requer armazenamento de IDs internos retornados pela API. A identificação de entidades é realizada através dos `codes` do sistema de origem. Referência: [Identificadores e codes](identificadores-e-codes).
-
-### Mecanismo de Autenticação
-
-A autenticação é realizada via API Key gerada no painel administrativo. A chave deve ser incluída no header HTTP `Authorization: Bearer {api_key}`. Referência: [Autenticação](autenticacao).
-
-### Sincronização Múltipla
-
-A API implementa comportamento idempotente. Múltiplas sincronizações com mesmo identificador (`code`) resultam em atualização da entidade existente, não em duplicação. Referência: [Identificadores e codes](identificadores-e-codes).
-
-### Sequência de Sincronização
-
-Ordem sugerida: **Unidades, Áreas, Disciplinas Base e Professores** (sem dependências, podem ser sincronizados em paralelo) → **Cursos** (dependem de Unidade e Área) → **Alunos** (dependem de Curso) → **Turmas** (dependem de Disciplina Base, Cursos e Professores; Alunos opcionais). Perfis vinculados (Diretores e Assessores a Unidades, Gestores a Áreas e Unidade, Coordenadores a Cursos) podem ser sincronizados a qualquer momento após suas dependências diretas. O não cumprimento da ordem resultará em erros de dependência. Referência: [Fluxo de Sincronização](fluxo-de-sincronizacao).
-
-### Distinção entre Subject e Enrollment
-
-- **Subject (Disciplina Base)**: Componente curricular global da instituição, sem vínculo com curso, período letivo ou alunos
-- **Enrollment (Turma)**: Instância de uma disciplina base em período letivo específico, vinculada a um ou mais cursos via `course_codes` (obrigatório), com um ou mais professores e alunos matriculados. **A Turma é o único lugar onde o vínculo curso ↔ disciplina é definido.**
-
-Referência: [Conceitos Fundamentais](conceitos-fundamentais).
-
 ## Versionamento
 
 - **Versão da API**: v1

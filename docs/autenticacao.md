@@ -43,31 +43,34 @@ flowchart TD
 
 Apenas administradores com permissões adequadas podem gerenciar API Keys de autenticação.
 
-### Passo 1: Acessar Área de Integrações
+<Steps>
+
+<Step title="Acessar Área de Integrações">
 
 1. Acesse o painel administrativo do ProExtend
 2. Navegue para: **Avançado > Integrações**
 3. Visualize a lista de API Keys existentes
 
-### Passo 2: Criar Nova API Key
+</Step>
+
+<Step title="Criar Nova API Key">
 
 Selecione **"Gerar Nova API Key"** ou **"Criar API Client"**
 
-### Passo 3: Configurar API Client
+</Step>
+
+<Step title="Configurar API Client">
 
 Configure os parâmetros:
 
-#### Nome
-Identificador descritivo para a integração.
+**Nome** - Identificador descritivo para a integração.
 
-**Exemplos**:
+Exemplos:
 - "Integração ERP Produção"
 - "Sistema Acadêmico - Sincronização"
 - "Totvs RM - API"
 
-#### Scope (Escopo de Acesso)
-
-Defina o nível de permissão:
+**Scope (Escopo de Acesso)** - Defina o nível de permissão:
 
 - **read**: Operações de leitura (endpoints GET)
   - Listar unidades, professores, alunos
@@ -83,18 +86,15 @@ Defina o nível de permissão:
   - Operações de leitura e escrita
   - Recomendado para integrações completas
 
-#### Rate Limit (Limite de Requisições)
+**Rate Limit (Limite de Requisições)** - Número máximo de requisições por minuto. Padrão: 60 requisições/minuto.
 
-Número máximo de requisições por minuto.
-
-**Padrão**: 60 requisições/minuto
-
-**Exemplos**:
 - **60/min**: Para sincronizações normais
 - **120/min**: Para sincronizações de grande volume
 - **30/min**: Para consultas ocasionais
 
-### Passo 4: Copiar API Key
+</Step>
+
+<Step title="Copiar API Key">
 
 Após criar, a plataforma exibe a API Key gerada:
 
@@ -105,6 +105,10 @@ pex_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
 :::warning[Atenção]
 A chave é exibida **apenas uma vez**. Copie e armazene imediatamente em local seguro, não será possível recuperá-la depois. Caso seja perdida ou comprometida, será necessário gerar uma nova, o que invalida a anterior imediatamente em todos os sistemas que a utilizam.
 :::
+
+</Step>
+
+</Steps>
 
 ## Usando API Key nas Requisições
 
@@ -147,14 +151,7 @@ No painel administrativo:
 
 ### Editar API Key
 
-Campos editáveis:
-- Nome da integração
-- Scope de acesso
-- Rate limit
-
-:::note
-Token não pode ser editado, apenas regenerado.
-:::
+Campos editáveis: nome da integração, scope de acesso e rate limit. O token em si não pode ser editado, apenas regenerado.
 
 ### Gerar/Regenerar API Key
 
@@ -239,11 +236,6 @@ Antes de iniciar a integração:
 - [ ] Tratamento de erros 401, 403 e 429 implementado
 - [ ] Logs de acesso configurados
 - [ ] Documentação interna criada (quem tem acesso)
-
-## Próximos Passos
-
-1. Siga o [Fluxo de Sincronização](fluxo-de-sincronizacao)
-2. Consulte [Identificadores e codes](identificadores-e-codes)
 
 ## Recursos Adicionais
 

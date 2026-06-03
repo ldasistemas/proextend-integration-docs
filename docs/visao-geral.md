@@ -154,8 +154,8 @@ Recuperação de dados sincronizados.
 Permissão requerida: scope `read` ou `full`
 
 Exemplos:
-- `GET /integration/v1/units` - Listagem de unidades
-- `GET /integration/v1/professors/PROF001` - Recuperação de professor por identificador
+- <ApiEndpoint method="GET" path="/integration/v1/units" />: Listagem de unidades
+- <ApiEndpoint method="GET" path="/integration/v1/professors/PROF001" />: Recuperação de professor por identificador
 
 ### Operações de Sincronização (POST)
 
@@ -164,8 +164,8 @@ Criação ou atualização de entidades em lote.
 Permissão requerida: scope `write` ou `full`
 
 Exemplos:
-- `POST /integration/v1/units/sync` - Sincronização de unidades
-- `POST /integration/v1/students/sync` - Sincronização de alunos
+- <ApiEndpoint method="POST" path="/integration/v1/units/sync" />: Sincronização de unidades
+- <ApiEndpoint method="POST" path="/integration/v1/students/sync" />: Sincronização de alunos
 
 Comportamento de sincronização:
 - Entidade com code existente: atualização de dados
@@ -179,8 +179,8 @@ Remoção de entidades por code.
 Permissão requerida: scope `write` ou `full`
 
 Exemplos:
-- `DELETE /integration/v1/units/{code}` - Remove unidade e entidades dependentes
-- `DELETE /integration/v1/professors/{code}` - Remove professor
+- <ApiEndpoint method="DELETE" path="/integration/v1/units/{code}" />: Remove unidade e entidades dependentes
+- <ApiEndpoint method="DELETE" path="/integration/v1/professors/{code}" />: Remove professor
 
 Todas as remoções são soft delete. Entidades pai removem filhos em cascata. Consulte [Remoção de Entidades](remocao) para detalhes.
 
@@ -246,17 +246,6 @@ Exemplos completos em [Fluxo de Sincronização](fluxo-de-sincronizacao).
 2. **Operações Idempotentes**: Sincronizações múltiplas sem efeitos colaterais
 3. **Sincronização Seletiva**: Possibilidade de sincronizar subconjuntos de entidades
 4. **Rastreabilidade**: vinculação de dados através de identificadores do sistema de origem
-
-## Próximas Etapas
-
-Para implementação da integração:
-
-1. Revisar [Conceitos Fundamentais](conceitos-fundamentais) para compreensão do modelo de dados
-2. Configurar [Autenticação](autenticacao) para obtenção de credenciais
-3. Implementar [Fluxo de Sincronização](fluxo-de-sincronizacao) conforme sequência especificada
-4. Aplicar diretrizes de [Identificadores e codes](identificadores-e-codes)
-5. Monitorar operações via [Logs de Integrações](logs-de-integracoes)
-6. (Opcional) Implementar [SSO](sso) para login direto de usuários
 
 ## Recursos de Monitoramento
 

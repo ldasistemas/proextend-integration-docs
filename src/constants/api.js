@@ -6,6 +6,6 @@ const ENV = {
 export const API_BASE_URL =
   (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')
     ? ENV.local
-    : ENV.production;
+    : ENV.local;
 
 export default API_BASE_URL;

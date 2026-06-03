@@ -98,16 +98,12 @@ flowchart TD
 
 ### Exemplo 1: Sincronizar Disciplina
 
-**ERP da Instituição**:
-```
-Tabela: disciplinas
-┌────┬──────────┬─────────────────────┐
-│ id │ codigo   │ nome                │
-├────┼──────────┼─────────────────────┤
-│ 1  │ ALG001   │ Algoritmos I        │
-│ 2  │ BD001    │ Banco de Dados I    │
-└────┴──────────┴─────────────────────┘
-```
+**ERP da Instituição**, tabela `disciplinas`:
+
+| id | codigo | nome |
+|----|--------|------|
+| 1 | `ALG001` | Algoritmos I |
+| 2 | `BD001` | Banco de Dados I |
 
 **Enviar para API**:
 ```json
@@ -131,23 +127,18 @@ Disciplinas são entidades globais da instituição e não exigem `course_code`.
 
 ### Exemplo 2: Sincronizar Turma
 
-**ERP da Instituição**:
-```
-Tabela: turmas
-┌────┬──────────────┬────────────┬──────────────┬──────────┐
-│ id │ codigo       │ disciplina │ professor    │ semestre │
-├────┼──────────────┼────────────┼──────────────┼──────────┤
-│ 10 │ ALG001-25.1  │ ALG001     │ PROF001      │ 2025.1   │
-└────┴──────────────┴────────────┴──────────────┴──────────┘
+**ERP da Instituição**, tabela `turmas`:
 
-Tabela: matriculas
-┌────────┬───────────┐
-│ turma  │ aluno     │
-├────────┼───────────┤
-│ 10     │ ALU001    │
-│ 10     │ ALU002    │
-└────────┴───────────┘
-```
+| id | codigo | disciplina | professor | semestre |
+|----|--------|------------|-----------|----------|
+| 10 | `ALG001-25.1` | `ALG001` | `PROF001` | 2025.1 |
+
+Tabela `matriculas`:
+
+| turma | aluno |
+|-------|-------|
+| 10 | `ALU001` |
+| 10 | `ALU002` |
 
 **Enviar para API**:
 ```json
@@ -236,7 +227,9 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 
 ## Erros Comuns
 
-### Erro 1: Code Duplicado em Criação Inicial
+<Accordion>
+
+<AccordionItem value="erro-1" title="Erro 1: Code Duplicado em Criação Inicial">
 
 **Problema**:
 ```json
@@ -260,7 +253,9 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 }
 ```
 
-### Erro 2: Referência a Code Inexistente
+</AccordionItem>
+
+<AccordionItem value="erro-2" title="Erro 2: Referência a Code Inexistente">
 
 **Problema**:
 ```json
@@ -310,7 +305,9 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 
 Detalhes do shape `ApiError` em [Tratamento de Erros](tratamento-de-erros).
 
-### Erro 3: Code Inválido (Vazio ou Nulo)
+</AccordionItem>
+
+<AccordionItem value="erro-3" title="Erro 3: Code Inválido (Vazio ou Nulo)">
 
 **Problema**:
 ```json
@@ -332,6 +329,10 @@ Detalhes do shape `ApiError` em [Tratamento de Erros](tratamento-de-erros).
 }
 ```
 
+</AccordionItem>
+
+</Accordion>
+
 ## Resumo Executivo
 
 ### Princípios Fundamentais
@@ -349,9 +350,3 @@ Detalhes do shape `ApiError` em [Tratamento de Erros](tratamento-de-erros).
 - [ ] Validar existência de codes referenciados antes de sincronizar
 - [ ] Implementar mecanismo de geração consistente de codes
 - [ ] Documentar convenções adotadas para equipe
-
-## Próximos Passos
-
-1. Revisar [Conceitos Fundamentais](conceitos-fundamentais) para compreender modelo de dados
-2. Seguir [Fluxo de Sincronização](fluxo-de-sincronizacao) para implementar integração
-3. Testar requisições diretamente pelo [playground interativo](/api)
