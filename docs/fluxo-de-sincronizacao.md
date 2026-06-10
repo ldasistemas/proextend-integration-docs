@@ -220,6 +220,10 @@ Turmas representam instâncias de disciplinas base em períodos letivos específ
 
 **Dependências**: Disciplinas Base, Cursos (`course_codes`, mínimo 1) e Professores (`professor_codes`, mínimo 1) devem estar sincronizados. Alunos são opcionais na criação da turma
 
+:::note
+Ao matricular alunos em lote, qualquer aluno cujo curso ainda não esteja em `course_codes` faz esse curso ser **vinculado automaticamente à turma** (a turma se torna multicurso). Não há rejeição por "curso diferente". O aluno é matriculado e o curso dele passa a constar na turma.
+:::
+
 ### Endpoint
 
 <ApiEndpoint method="POST" path="/integration/v1/enrollments/sync" />
@@ -273,7 +277,7 @@ Os campos `professor_code` e `course_code` (singulares) ainda são aceitos por r
 - `course_sync_mode`: Modo de sincronização dos cursos (padrão: `replace`)
 - `student_sync_mode`: Modo de sincronização dos alunos (padrão: `replace`)
 
-Para entender elegibilidade de alunos e múltiplos professores, consulte [Conceitos Fundamentais - Turma](conceitos-fundamentais#9-turma-enrollment).
+Para entender a vinculação automática de cursos e múltiplos professores, consulte [Conceitos Fundamentais - Turma](conceitos-fundamentais#9-turma-enrollment).
 
 ### Sync modes da Turma
 
@@ -281,11 +285,13 @@ A Turma aceita `professor_sync_mode`, `course_sync_mode` e `student_sync_mode` p
 
 ## Matrícula e Desmatrícula Avulsa
 
-Para adicionar ou remover um único aluno de uma turma sem precisar reenviar a lista completa, use os endpoints avulsos:
+Para adicionar ou remover um único aluno ou professor de uma turma sem precisar reenviar a lista completa, use os endpoints avulsos:
 
 ### Matricular um aluno
 
 <ApiEndpoint method="POST" path="/integration/v1/enrollments/{code}/students/{studentCode}" />
+
+Se o curso do aluno ainda não estiver vinculado à turma, ele é anexado automaticamente (a turma se torna multicurso) e o aluno é matriculado. Os cursos anexados nesta chamada aparecem em `data.auto_attached_courses` (lista vazia quando nenhum curso precisou ser anexado), permitindo auditar quando a turma recebeu um curso novo.
 
 ```json
 {
@@ -293,7 +299,8 @@ Para adicionar ou remover um único aluno de uma turma sem precisar reenviar a l
   "data": {
     "student_code": "ALU2024010",
     "enrollment_code": "ALG001-2025.1",
-    "students_count": 25
+    "students_count": 25,
+    "auto_attached_courses": ["ES001"]
   }
 }
 ```
@@ -302,7 +309,30 @@ Para adicionar ou remover um único aluno de uma turma sem precisar reenviar a l
 
 <ApiEndpoint method="DELETE" path="/integration/v1/enrollments/{code}/students/{studentCode}" />
 
-Remove o aluno especificado sem alterar os demais matriculados. O aluno precisa pertencer a um dos cursos vinculados à turma via `course_codes`, caso contrário a operação retorna erro 422.
+Remove o aluno especificado sem alterar os demais matriculados.
+
+### Vincular um professor
+
+<ApiEndpoint method="POST" path="/integration/v1/enrollments/{code}/professors/{professorCode}" />
+
+Vincula um único professor à turma. É idempotente: vincular um professor já vinculado não duplica o vínculo.
+
+```json
+{
+  "success": true,
+  "data": {
+    "professor_code": "PROF001",
+    "enrollment_code": "ALG001-2025.1",
+    "professors_count": 2
+  }
+}
+```
+
+### Desvincular um professor
+
+<ApiEndpoint method="DELETE" path="/integration/v1/enrollments/{code}/professors/{professorCode}" />
+
+Remove o professor especificado sem alterar os demais vinculados.
 
 ## 8. Sincronizar Diretores
 

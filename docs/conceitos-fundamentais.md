@@ -456,9 +456,11 @@ Os três `*_sync_mode` aceitam `add` (preserva os vínculos existentes e adicion
 }
 ```
 
-#### Elegibilidade de Alunos
+#### Cursos da Turma e Matrícula de Alunos
 
-A disciplina base não é vinculada a curso. O vínculo curso ↔ disciplina é feito **na turma**, pelo campo `course_codes` (obrigatório). Os alunos elegíveis para matrícula são os pertencentes a qualquer um dos cursos listados em `course_codes`.
+A disciplina base não é vinculada a curso. O vínculo curso ↔ disciplina é feito **na turma**, pelo campo `course_codes` (obrigatório na criação, com pelo menos um curso).
+
+Ao matricular alunos, se algum aluno pertencer a um curso que ainda não está em `course_codes`, esse curso é **vinculado automaticamente à turma** (a turma se torna multicurso) e o aluno é matriculado normalmente. Ou seja, `course_codes` define os cursos iniciais da turma, mas ela cresce conforme os cursos dos alunos sincronizados, sem rejeição por "curso diferente".
 
 ```mermaid
 flowchart LR

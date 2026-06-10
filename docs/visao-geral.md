@@ -105,7 +105,7 @@ Instâncias de disciplinas base em período letivo específico, vinculadas a um 
 Exemplo: Turma "Algoritmos I - 2025.1" ministrada pelo Prof. João Silva e Prof. Maria Santos, com 30 alunos dos cursos de Ciência da Computação e Sistemas de Informação
 
 :::note
-Um aluno pode ser matriculado se pertencer a um dos cursos vinculados à turma via `course_codes`. O campo `course_codes` é obrigatório na criação da turma e é o único lugar onde o vínculo curso ↔ disciplina é definido.
+Qualquer aluno pode ser matriculado em uma turma: se o curso dele ainda não estiver em `course_codes`, ele é vinculado automaticamente à turma. O campo `course_codes` é obrigatório na criação da turma e é o lugar onde o vínculo curso ↔ disciplina é definido.
 :::
 
 ### 10. Professores (Professors)

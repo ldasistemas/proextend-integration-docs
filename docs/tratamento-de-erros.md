@@ -36,7 +36,7 @@ Os campos extras (`entity`, `code`, `field`, `rule`, etc.) variam conforme o `ty
 |---|---|---|
 | `validation_failed` | 422 | Schema do request inválido (campo obrigatório ausente, formato errado) |
 | `code_not_found` | 200 (sync) ou 404 | Code referenciado não existe (ex: turma com `subject_code` inexistente) |
-| `constraint_violation` | 200 (sync) ou 422 | Regra de negócio violada (ex: aluno fora dos cursos da turma) |
+| `constraint_violation` | 200 (sync) ou 422 | Regra de negócio violada (ex: turma sem nenhum curso vinculado) |
 | `not_found` | 404 | Recurso buscado por code não existe |
 | `authentication_failed` | 401 ou 403 | API Key ausente, inválida, desativada ou com scope insuficiente |
 | `rate_limit_exceeded` | 429 | Limite de requisições por minuto atingido |
@@ -55,14 +55,13 @@ A localização do `errors[]` depende do cenário. Há dois lugares possíveis:
 ```json
 {
   "success": false,
-  "message": "Aluno 'ALU2024999' pertence a curso diferente dos cursos vinculados à turma 'ALG001-2025.1'.",
+  "message": "Turma 'ALG001-2025.1' ou aluno 'ALU2024999' não encontrado.",
   "errors": [
     {
-      "type": "constraint_violation",
-      "message": "Aluno 'ALU2024999' pertence a curso diferente dos cursos vinculados à turma 'ALG001-2025.1'.",
-      "entity": "student",
-      "rule": "student_course_mismatch",
-      "invalid_codes": ["ALU2024999"]
+      "type": "not_found",
+      "message": "Turma 'ALG001-2025.1' ou aluno 'ALU2024999' não encontrado.",
+      "entity": "enrollment",
+      "code": "ALG001-2025.1"
     }
   ]
 }
@@ -244,7 +243,6 @@ O campo `rule` permite identificar a regra violada sem parsear a mensagem.
 | `at_least_one_course` | `/enrollments/sync`, `/coordinators/sync` | Item sem `course_codes` |
 | `at_least_one_area` | `/area-managers/sync` | Item sem `area_codes` |
 | `enrollment_without_courses` | `/enrollments/sync`, `POST /enrollments/{code}/students/{code}` | Turma sem cursos vinculados |
-| `student_course_mismatch` | `/enrollments/sync`, `POST /enrollments/{code}/students/{code}` | `student.course_code` fora de `enrollment.course_codes` |
 | `user_suspended` | `/sso/generate-token` | Usuário com `suspended_at` não nulo |
 
 ## Regras de autenticação e rate limit
