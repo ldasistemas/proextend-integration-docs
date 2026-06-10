@@ -35,12 +35,14 @@ Os campos extras (`entity`, `code`, `field`, `rule`, etc.) variam conforme o `ty
 | `type` | HTTP | Quando acontece |
 |---|---|---|
 | `validation_failed` | 422 | Schema do request inválido (campo obrigatório ausente, formato errado) |
-| `code_not_found` | 200 (sync) ou 404 | Code referenciado não existe (ex: turma com `subject_code` inexistente) |
-| `constraint_violation` | 200 (sync) ou 422 | Regra de negócio violada (ex: turma sem nenhum curso vinculado) |
+| `code_not_found` | sync (200/207/422) ou 404 | Code referenciado não existe (ex: turma com `subject_code` inexistente) |
+| `constraint_violation` | sync (200/207/422) ou 422 | Regra de negócio violada (ex: turma sem nenhum curso vinculado) |
 | `not_found` | 404 | Recurso buscado por code não existe |
 | `authentication_failed` | 401 ou 403 | API Key ausente, inválida, desativada ou com scope insuficiente |
 | `rate_limit_exceeded` | 429 | Limite de requisições por minuto atingido |
-| `internal` | 200 (sync) ou 500 | Falha inesperada do servidor. Em sync, o item falhado vai para `data.errors[]` e o batch continua (HTTP 200). Fora de sync, vira HTTP 500 |
+| `internal` | sync (200/207/422) ou 500 | Falha inesperada do servidor. Em sync, o item falhado vai para `data.errors[]`. Fora de sync, vira HTTP 500 |
+
+> Em endpoints de sincronização (`*/sync`), o status HTTP reflete o resultado do lote: **200** se todos os itens passaram, **207** se alguns passaram e outros falharam, **422** se nenhum item foi persistido. Veja [Status HTTP do sync em lote](#status-http-do-sync-em-lote).
 
 ## Em que parte da resposta os erros aparecem
 
@@ -48,7 +50,7 @@ A localização do `errors[]` depende do cenário. Há dois lugares possíveis:
 
 **Na raiz da resposta**: o request inteiro falhou. Vale para validação (422), 404, single-item (422), autenticação (401/403) e rate limit (429).
 
-**Em `data.errors[]`**: o request foi aceito mas alguns itens falharam (sync com falhas parciais). O `success` continua `true` e o HTTP é 200; cada item que falhou vira um objeto com `index`, `code` e seu próprio `errors[]`.
+**Em `data.errors[]`**: o request foi aceito e processado item a item (sync em lote). Cada item que falhou vira um objeto com `index`, `code` e seu próprio `errors[]`. O status HTTP varia conforme o resultado do lote (200/207/422) e `success` é `true` quando ao menos um item foi persistido. Veja [Status HTTP do sync em lote](#status-http-do-sync-em-lote).
 
 ### Exemplo de falha em endpoint single (errors na raiz)
 
@@ -67,9 +69,21 @@ A localização do `errors[]` depende do cenário. Há dois lugares possíveis:
 }
 ```
 
-### Sync com falhas parciais (200)
+### Status HTTP do sync em lote
 
-Quando um endpoint de sincronização processa um batch, cada item é tratado individualmente. Os que dão certo entram em `created` ou `updated`; os que falham entram em `data.errors[]` e o batch continua, retornando HTTP 200. Sempre verifique `data.failed` para detectar falhas, mesmo com `success: true`.
+Endpoints de sincronização (`*/sync`) processam cada item de forma independente, então o status HTTP reflete o resultado do lote como um todo:
+
+| Situação | HTTP | `success` |
+|---|---|---|
+| Todos os itens passaram | `200` | `true` |
+| Alguns passaram e outros falharam (parcial) | `207` | `true` |
+| Houve falhas e nenhum item foi persistido | `422` | `false` |
+
+Em todos os casos, a resposta traz `data.created`, `data.updated`, `data.failed` e, quando há falhas, `data.errors[]` com o detalhe de cada item. Independente do status, **sempre verifique `data.failed`** para saber quais itens não passaram. Não trate apenas `200` como sucesso: um `207` significa que parte do lote foi sincronizada.
+
+### Sync com falhas parciais
+
+Quando um endpoint de sincronização processa um batch, cada item é tratado individualmente. Os que dão certo entram em `created` ou `updated`; os que falham entram em `data.errors[]`. Uma falha parcial retorna HTTP 207 (`success: true`); se nada for persistido, retorna 422 (`success: false`).
 
 ```json
 {

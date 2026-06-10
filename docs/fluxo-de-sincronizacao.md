@@ -101,9 +101,9 @@ flowchart LR
 
 ## Falhas Parciais na Sincronização
 
-Endpoints de sincronização processam os itens individualmente. Se algum item falhar, os demais continuam sendo processados e a requisição retorna **HTTP 200** mesmo assim. A resposta traz `created`, `updated`, `failed` e, quando há falhas, `data.errors[]` com o detalhamento de cada item que não passou.
+Endpoints de sincronização processam os itens individualmente. Se algum item falhar, os demais continuam sendo processados. O status HTTP reflete o resultado do lote: **200** se todos passaram, **207** se alguns passaram e outros falharam, **422** se nada foi persistido. A resposta traz `created`, `updated`, `failed` e, quando há falhas, `data.errors[]` com o detalhamento de cada item que não passou.
 
-Shape do `errors[]`, acumulação de múltiplos erros por item, batch misto e exemplos estão em [Tratamento de Erros - Sync com falhas parciais](tratamento-de-erros#sync-com-falhas-parciais-200).
+Shape do `errors[]`, status do lote, acumulação de múltiplos erros por item, batch misto e exemplos estão em [Tratamento de Erros - Status HTTP do sync em lote](tratamento-de-erros#status-http-do-sync-em-lote).
 
 :::note
 Cada request aceita no máximo **500 itens** por sincronização. Para volumes maiores, divida em múltiplas requisições.
@@ -454,10 +454,11 @@ Para a especificação completa, glossário de tipos e exemplos por cenário, co
 
 ### Códigos de Status HTTP
 
-- **200 OK**: Operação bem-sucedida (inclui sync com falhas parciais; veja `data.failed`)
+- **200 OK**: Operação bem-sucedida (no sync, todos os itens passaram)
+- **207 Multi-Status**: Sync em lote com falha parcial (alguns itens passaram, outros falharam; veja `data.failed`)
 - **401 Unauthorized**: API Key inválida ou ausente
 - **404 Not Found**: Recurso não encontrado por code
-- **422 Unprocessable Entity**: Erro de validação de schema ou regra single-item
+- **422 Unprocessable Entity**: Erro de validação de schema, regra single-item, ou sync em lote sem nenhum item persistido
 - **429 Too Many Requests**: Limite de taxa excedido
 - **500 Internal Server Error**: Erro interno do servidor
 

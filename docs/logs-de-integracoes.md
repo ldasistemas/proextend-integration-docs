@@ -108,12 +108,12 @@ Os nomes exatos dos parâmetros de query (`GET /sync-logs`) e os valores aceitos
 
 </AccordionItem>
 
-<AccordionItem value="parcial" title="Sync com falha parcial em item (200)">
+<AccordionItem value="parcial" title="Sync com falha parcial em item (207)">
 
 ```json
 {
   "action": "Sync enrollments: 1 criados, 1 falharam",
-  "status": 200,
+  "status": 207,
   "success": true,
   "result": {
     "created": 1,

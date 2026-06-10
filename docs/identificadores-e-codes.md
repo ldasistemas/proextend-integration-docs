@@ -273,10 +273,10 @@ O campo `code` aceita qualquer identificador único do sistema de origem. A esco
 }
 ```
 
-**Resposta da API** (`200` com falha parcial):
+**Resposta da API** (`422`, nenhum item persistido):
 ```json
 {
-  "success": true,
+  "success": false,
   "created": 0,
   "updated": 0,
   "failed": 1,
