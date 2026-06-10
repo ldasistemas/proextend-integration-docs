@@ -24,7 +24,7 @@
 <meta name="twitter:image" content="https://ldasistemas.github.io/proextend-integration-docs/img/logo.svg">
 <meta name="theme-color" content="#0980D8">
 <link rel="canonical" href="https://ldasistemas.github.io/proextend-integration-docs/"><link rel="stylesheet" href="/assets/css/styles.687998af.css">
-<script src="/assets/js/runtime~main.f649ff78.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.9bf41a5e.js" defer="defer"></script>
 <script src="/assets/js/main.ed1ac0d6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -47,8 +47,8 @@
 <p>Após a configuração inicial, sincronizações periódicas devem seguir o processo:</p>
 <div class="diagram_VNFP"><button type="button" class="zoomButton_JKk6" aria-label="Ampliar diagrama em tela cheia" title="Ampliar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg></button></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="falhas-parciais-na-sincronização">Falhas Parciais na Sincronização<a href="#falhas-parciais-na-sincronização" class="hash-link" aria-label="Link direto para Falhas Parciais na Sincronização" title="Link direto para Falhas Parciais na Sincronização" translate="no">​</a></h2>
-<p>Endpoints de sincronização processam os itens individualmente. Se algum item falhar, os demais continuam sendo processados e a requisição retorna <strong>HTTP 200</strong> mesmo assim. A resposta traz <code>created</code>, <code>updated</code>, <code>failed</code> e, quando há falhas, <code>data.errors[]</code> com o detalhamento de cada item que não passou.</p>
-<p>Shape do <code>errors[]</code>, acumulação de múltiplos erros por item, batch misto e exemplos estão em <a class="" href="/tratamento-de-erros#sync-com-falhas-parciais-200">Tratamento de Erros - Sync com falhas parciais</a>.</p>
+<p>Endpoints de sincronização processam os itens individualmente. Se algum item falhar, os demais continuam sendo processados. O status HTTP reflete o resultado do lote: <strong>200</strong> se todos passaram, <strong>207</strong> se alguns passaram e outros falharam, <strong>422</strong> se nada foi persistido. A resposta traz <code>created</code>, <code>updated</code>, <code>failed</code> e, quando há falhas, <code>data.errors[]</code> com o detalhamento de cada item que não passou.</p>
+<p>Shape do <code>errors[]</code>, status do lote, acumulação de múltiplos erros por item, batch misto e exemplos estão em <a class="" href="/tratamento-de-erros#status-http-do-sync-em-lote">Tratamento de Erros - Status HTTP do sync em lote</a>.</p>
 <div class="theme-admonition theme-admonition-note admonition_xJq3 alert alert--secondary"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></span>observação</div><div class="admonitionContent_BuS1"><p>Cada request aceita no máximo <strong>500 itens</strong> por sincronização. Para volumes maiores, divida em múltiplas requisições.</p></div></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="modos-de-sincronização-add-vs-replace">Modos de Sincronização: <code>add</code> vs. <code>replace</code><a href="#modos-de-sincronização-add-vs-replace" class="hash-link" aria-label="Link direto para modos-de-sincronização-add-vs-replace" title="Link direto para modos-de-sincronização-add-vs-replace" translate="no">​</a></h2>
 <p>Algumas entidades possuem <strong>arrays de vínculos</strong> com outras entidades: uma Turma tem listas de professores, cursos e alunos; um Gestor de Área tem uma lista de áreas; um Coordenador tem uma lista de cursos. Em todas essas situações, a API precisa saber se a lista enviada deve <strong>substituir</strong> os vínculos atuais ou apenas <strong>adicionar</strong> novos vínculos aos existentes.</p>
@@ -176,10 +176,11 @@
 <p>Para a especificação completa, glossário de tipos e exemplos por cenário, consulte <a class="" href="/tratamento-de-erros">Tratamento de Erros</a>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="códigos-de-status-http">Códigos de Status HTTP<a href="#códigos-de-status-http" class="hash-link" aria-label="Link direto para Códigos de Status HTTP" title="Link direto para Códigos de Status HTTP" translate="no">​</a></h3>
 <ul>
-<li class=""><strong>200 OK</strong>: Operação bem-sucedida (inclui sync com falhas parciais; veja <code>data.failed</code>)</li>
+<li class=""><strong>200 OK</strong>: Operação bem-sucedida (no sync, todos os itens passaram)</li>
+<li class=""><strong>207 Multi-Status</strong>: Sync em lote com falha parcial (alguns itens passaram, outros falharam; veja <code>data.failed</code>)</li>
 <li class=""><strong>401 Unauthorized</strong>: API Key inválida ou ausente</li>
 <li class=""><strong>404 Not Found</strong>: Recurso não encontrado por code</li>
-<li class=""><strong>422 Unprocessable Entity</strong>: Erro de validação de schema ou regra single-item</li>
+<li class=""><strong>422 Unprocessable Entity</strong>: Erro de validação de schema, regra single-item, ou sync em lote sem nenhum item persistido</li>
 <li class=""><strong>429 Too Many Requests</strong>: Limite de taxa excedido</li>
 <li class=""><strong>500 Internal Server Error</strong>: Erro interno do servidor</li>
 </ul>
