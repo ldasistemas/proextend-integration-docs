@@ -99,8 +99,6 @@ Notas de um aluno em uma turma, com detalhes de cada submissão. Retorna 403 se 
         "is_team_activity": false,
         "max_score": 10.0,
         "due_date": "2025-06-30T23:59:00-03:00",
-        "allows_late_submission": true,
-        "late_penalty_percentage": 0,
         "submission": {
           "id": 55,
           "status": "graded",
